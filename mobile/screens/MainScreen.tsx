@@ -11,6 +11,7 @@ import {
 import { FontAwesome } from '@expo/vector-icons';
 import { useNavigation, DrawerActions } from '@react-navigation/native';
 import HomeSlider from '../components/HomeSlider';
+import Icon from 'react-native-vector-icons/MaterialIcons'; 
 export default function HomeScreen() {
   const navigation = useNavigation();
 
@@ -127,24 +128,46 @@ export default function HomeScreen() {
         <View style={styles.sectionSpacing} />
         <Text style={styles.sectionTitle}>Sản phẩm nổi bật</Text>
 
-        <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-          {[
-            { img: require('../assets/images/category3.png'), name: 'Nintendo Switch 2', price: '530.000' },
-            { img: require('../assets/images/category4.png'), name: 'The Village (2022)', price: '240.000' },
-            { img: require('../assets/images/iphone16prm.png'), name: 'iPhone 16 Pro Max', price: '32.590.000' },
-          ].map((product, index) => (
-            <TouchableOpacity
-              key={index}
-              style={styles.productCard}
-              onPress={() => {}}
-            >
-              <Image source={product.img} style={styles.categoryImage} />
-              <Text style={styles.productName}>{product.name}</Text>
-              <Text style={styles.productPrice}>{product.price}</Text>
-            </TouchableOpacity>
-          ))}
-        </ScrollView>
+        <View style={styles.card}>
+      {/* Top Icons */}
+      <View style={styles.topIcons}>
+        <Image
+          source={require('../assets/images/Shoppe.jpg')} // Replace with Shopee logo URL or local image
+          style={styles.logo1}
+        />
+        <TouchableOpacity>
+          <Icon name="favorite-border" size={24} color="#FF2D55" />
+        </TouchableOpacity>
+      </View>
 
+      {/* Image Section */}
+      <Image
+        source={require('../assets/images/IP15.jpg')} // Replace with your image URL or local image
+        style={styles.image}
+      />
+
+      {/* Price Section */}
+      <Text style={styles.currentPrice}>32.990.000 đ</Text>
+      <View style={styles.priceContainer}>
+        <Text style={styles.originalPrice}>34.490.000 đ</Text>
+        <Text style={styles.discount}>-4%</Text>
+      </View>
+      
+
+      {/* Details Section */}
+      <View style={styles.details}>
+        <Text>Phí VC: 0 đ</Text>
+        <Text>Tổng: 32.990.000 đ</Text>
+        <Text>Trạng thái: Còn hàng</Text>
+        <Text style={styles.rating}>⭐ Chưa có đánh giá</Text>
+      </View>
+
+      {/* Buy Button with Cart Icon */}
+      <TouchableOpacity style={styles.buyButton}>
+        <Icon name="shopping-cart" size={18} color="white" style={styles.cartIcon} />
+        <Text style={styles.buyButtonText}>Thêm vào giỏ</Text>
+      </TouchableOpacity>
+    </View>
         {/* Khoảng cách giữa các section */}
         <View style={styles.sectionSpacing} />
         <Text style={styles.sectionTitle}>Các danh mục</Text>
@@ -370,5 +393,75 @@ const styles = StyleSheet.create({
     fontWeight: '500',
     color: 'white',
     textAlign: 'center',
+  },
+
+  card: {
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 8,
+    padding: 10,
+    width: 180,
+    alignItems: 'center',
+    backgroundColor: 'white',
+    marginLeft: 0,
+  },
+  topIcons: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    width: '100%',
+    marginBottom: 10,
+    
+  },
+  logo1: {
+    width: 30,
+    height: 30,
+    resizeMode: 'contain',
+    borderRadius: 8,
+  },
+  image: {
+    width: 140,
+    height: 160,
+    resizeMode: 'contain',
+    
+  },
+  priceContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  originalPrice: {
+    textDecorationLine: 'line-through',
+    color: '#888',
+    marginRight: 5,
+  },
+  discount: {
+    color: 'red',
+  },
+  currentPrice: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: 'red',
+  },
+  details: {
+    marginVertical: 10,
+  },
+  rating: {
+    color: '#888',
+  },
+  buyButton: {
+    backgroundColor: 'red',
+    padding: 10,
+    borderRadius: 5,
+    width: '100%',
+    alignItems: 'center',
+    flexDirection: 'row',
+    justifyContent: 'center',
+  },
+  buyButtonText: {
+    color: 'white',
+    fontWeight: 'bold',
+    marginLeft: 5,
+  },
+  cartIcon: {
+    marginRight: 5,
   },
 });
