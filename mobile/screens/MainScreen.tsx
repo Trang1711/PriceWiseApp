@@ -43,6 +43,12 @@ export default function HomeScreen() {
     // Có thể mở link hoặc navigate đến trang chi tiết
   };
 
+  // Đặt biến trạng thái cho từng card trước phần return hoặc trong component
+  const isAvailable1 = true;  // Card 1: còn hàng
+  const isAvailable2 = true;  // Card 2: còn hàng
+  const isAvailable3 = false; // Card 3: hết hàng
+  const isAvailable4 = true;  // Card 4: còn hàng
+
   return (
     <View style={{ flex: 1 }}>
       <ScrollView contentContainerStyle={{ paddingBottom: 120 }} style={[styles.container, { marginTop: 20 }]}>
@@ -128,46 +134,180 @@ export default function HomeScreen() {
         <View style={styles.sectionSpacing} />
         <Text style={styles.sectionTitle}>Sản phẩm nổi bật</Text>
 
-        <View style={styles.card}>
-      {/* Top Icons */}
-      <View style={styles.topIcons}>
-        <Image
-          source={require('../assets/images/Shoppe.jpg')} // Replace with Shopee logo URL or local image
-          style={styles.logo1}
-        />
-        <TouchableOpacity>
-          <Icon name="favorite-border" size={24} color="#FF2D55" />
-        </TouchableOpacity>
-      </View>
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginVertical: 16 }}>
+          <View style={styles.card}>
+            {/* Top Icons */}
+            <View style={styles.topIcons}>
+              <Image
+                source={require('../assets/images/Shoppe.jpg')} // Replace with Shopee logo URL or local image
+                style={styles.logo1}
+              />
+              <TouchableOpacity>
+                {/* <Icon name="favorite-border" size={24} color="#FF2D55" /> */}
+              </TouchableOpacity>
+            </View>
 
-      {/* Image Section */}
-      <Image
-        source={require('../assets/images/IP15.jpg')} // Replace with your image URL or local image
-        style={styles.image}
-      />
+            {/* Image Section */}
+            <Image
+              source={require('../assets/images/IP15.jpg')} // Replace with your image URL or local image
+              style={styles.image}
+            />
 
-      {/* Price Section */}
-      <Text style={styles.currentPrice}>32.990.000 đ</Text>
-      <View style={styles.priceContainer}>
-        <Text style={styles.originalPrice}>34.490.000 đ</Text>
-        <Text style={styles.discount}>-4%</Text>
-      </View>
-      
+            {/* Price Section */}
+            <Text style={styles.currentPrice}>32.990.000 đ</Text>
+            <View style={styles.priceContainer}>
+              <Text style={styles.originalPrice}>34.490.000 đ</Text>
+              <Text style={styles.discount}>-4%</Text>
+            </View>
+            
 
-      {/* Details Section */}
-      <View style={styles.details}>
-        <Text>Phí VC: 0 đ</Text>
-        <Text>Tổng: 32.990.000 đ</Text>
-        <Text>Trạng thái: Còn hàng</Text>
-        <Text style={styles.rating}>⭐ Chưa có đánh giá</Text>
-      </View>
+            {/* Details Section */}
+            <View style={styles.details}>
+              <Text>Phí VC: 0 đ</Text>
+              <Text>Tổng: 32.990.000 đ</Text>
+              <Text style={styles.status}>
+                Trạng thái: <Text style={[styles.statusValue, { color: isAvailable1 ? 'green' : 'red' }]}>{isAvailable1 ? 'Còn hàng' : 'Hết hàng'}</Text>
+              </Text>
+              <Text style={styles.rating}>⭐ Chưa có đánh giá</Text>
+            </View>
 
-      {/* Buy Button with Cart Icon */}
-      <TouchableOpacity style={styles.buyButton}>
-        <Icon name="shopping-cart" size={18} color="white" style={styles.cartIcon} />
-        <Text style={styles.buyButtonText}>Thêm vào giỏ</Text>
-      </TouchableOpacity>
-    </View>
+            {/* Buy Button with Cart Icon */}
+            <TouchableOpacity style={styles.buyButton}>
+              <Icon name="shopping-cart" size={18} color="white" style={styles.cartIcon} />
+              <Text style={styles.buyButtonText}>Tới nơi bán</Text>
+            </TouchableOpacity>
+          </View>
+
+          <View style={styles.card}>
+            {/* Top Icons */}
+            <View style={styles.topIcons}>
+              <Image
+                source={require('../assets/images/Lazada.jpg')} // Replace with Shopee logo URL or local image
+                style={styles.logo1}
+              />
+              <TouchableOpacity>
+                {/* <Icon name="favorite-border" size={24} color="#FF2D55" /> */}
+              </TouchableOpacity>
+            </View>
+
+            {/* Image Section */}
+            <Image
+              source={require('../assets/images/Nitendo.jpg')} // Replace with your image URL or local image
+              style={styles.image}
+            />
+
+            {/* Price Section */}
+            <Text style={styles.currentPrice}>13.499.000 đ</Text>
+            <View style={styles.priceContainer}>
+              <Text style={styles.originalPrice}>15.000.000 đ</Text>
+              <Text style={styles.discount}>-10%</Text>
+            </View>
+            
+
+            {/* Details Section */}
+            <View style={styles.details}>
+              <Text>Phí VC: 0 đ</Text>
+              <Text>Tổng: 13.499.000 đ</Text>
+              <Text style={styles.status}>
+                Trạng thái: <Text style={[styles.statusValue, { color: isAvailable2 ? 'green' : 'red' }]}>{isAvailable2 ? 'Còn hàng' : 'Hết hàng'}</Text>
+              </Text>
+              <Text style={styles.rating}>⭐ Chưa có đánh giá</Text>
+            </View>
+
+            {/* Buy Button with Cart Icon */}
+            <TouchableOpacity style={styles.buyButton}>
+              <Icon name="shopping-cart" size={18} color="white" style={styles.cartIcon} />
+              <Text style={styles.buyButtonText}>Tới nơi bán</Text>
+            </TouchableOpacity>
+          </View>
+
+          <View style={styles.card}>
+            {/* Top Icons */}
+            <View style={styles.topIcons}>
+              <Image
+                source={require('../assets/images/Tiki.jpg')} // Replace with Shopee logo URL or local image
+                style={styles.logo1}
+              />
+              <TouchableOpacity>
+                {/* <Icon name="favorite-border" size={24} color="#FF2D55" /> */}
+              </TouchableOpacity>
+            </View>
+
+            {/* Image Section */}
+            <Image
+              source={require('../assets/images/The_Village.jpg')} // Replace with your image URL or local image
+              style={styles.image}
+            />
+
+            {/* Price Section */}
+            <Text style={styles.currentPrice}>137.012 đ</Text>
+            <View style={styles.priceContainer}>
+              <Text style={styles.originalPrice}>236.000 đ</Text>
+              <Text style={styles.discount}>-42%</Text>
+            </View>
+            
+
+            {/* Details Section */}
+            <View style={styles.details}>
+              <Text>Phí VC: 0 đ</Text>
+              <Text>Tổng: 137.012  đ</Text>
+              <Text style={styles.status}>
+                Trạng thái: <Text style={[styles.statusValue, { color: isAvailable3 ? 'green' : 'red' }]}>{isAvailable3 ? 'Còn hàng' : 'Hết hàng'}</Text>
+              </Text>
+              <Text style={styles.rating}>⭐ Chưa có đánh giá</Text>
+            </View>
+
+            {/* Buy Button with Cart Icon */}
+            <TouchableOpacity style={styles.buyButton}>
+              <Icon name="shopping-cart" size={18} color="white" style={styles.cartIcon} />
+              <Text style={styles.buyButtonText}>Tới nơi bán</Text>
+            </TouchableOpacity>
+          </View>
+
+          <View style={styles.card}>
+            {/* Top Icons */}
+            <View style={styles.topIcons}>
+              <Image
+                source={require('../assets/images/Shoppe.jpg')} // Replace with Shopee logo URL or local image
+                style={styles.logo1}
+              />
+              <TouchableOpacity>
+                {/* <Icon name="favorite-border" size={24} color="#FF2D55" /> */}
+              </TouchableOpacity>
+            </View>
+
+            {/* Image Section */}
+            <Image
+              source={require('../assets/images/IP15.jpg')} // Replace with your image URL or local image
+              style={styles.image}
+            />
+
+            {/* Price Section */}
+            <Text style={styles.currentPrice}>32.990.000 đ</Text>
+            <View style={styles.priceContainer}>
+              <Text style={styles.originalPrice}>34.490.000 đ</Text>
+              <Text style={styles.discount}>-4%</Text>
+            </View>
+            
+
+            {/* Details Section */}
+            <View style={styles.details}>
+              <Text>Phí VC: 0 đ</Text>
+              <Text>Tổng: 32.990.000 đ</Text>
+              <Text style={styles.status}>
+                Trạng thái: <Text style={[styles.statusValue, { color: isAvailable4 ? 'green' : 'red' }]}>{isAvailable4 ? 'Còn hàng' : 'Hết hàng'}</Text>
+              </Text>
+              <Text style={styles.rating}>⭐ Chưa có đánh giá</Text>
+            </View>
+
+            {/* Buy Button with Cart Icon */}
+            <TouchableOpacity style={styles.buyButton}>
+              <Icon name="shopping-cart" size={18} color="white" style={styles.cartIcon} />
+              <Text style={styles.buyButtonText}>Tới nơi bán</Text>
+            </TouchableOpacity>
+          </View>
+        </ScrollView>
+
         {/* Khoảng cách giữa các section */}
         <View style={styles.sectionSpacing} />
         <Text style={styles.sectionTitle}>Các danh mục</Text>
@@ -404,6 +544,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: 'white',
     marginLeft: 0,
+    marginRight:10,
+    // Drop shadow for iOS
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.15,
+    shadowRadius: 4,
+    // Drop shadow for Android
+    elevation: 6,
   },
   topIcons: {
     flexDirection: 'row',
@@ -463,5 +611,14 @@ const styles = StyleSheet.create({
   },
   cartIcon: {
     marginRight: 5,
+  },
+  status: {
+
+    marginBottom: 2,
+    color: '#000',
+  },
+  statusValue: {
+    fontWeight: 'bold',
+    color: 'green',
   },
 });
