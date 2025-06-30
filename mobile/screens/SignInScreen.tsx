@@ -10,20 +10,54 @@ import {
 } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
+import { BASE_URL } from '@/constants';
 
 export default function SignInScreen() {
   const [passwordVisible, setPasswordVisible] = useState(false);
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const router = useRouter();
 
-  const handleSignIn = () => {
-    Alert.alert("Thông báo", "Đăng nhập thành công!", [
-      {
-        text: "OK",
-        onPress: () => {
-          router.replace('/home'); // Trang Home ở app
+  const handleSignIn = async () => {
+    if (!email || !password) {
+      Alert.alert("Lỗi", "Vui lòng nhập đầy đủ email và mật khẩu.");
+      return;
+    }
+
+    try {
+      const response = await fetch(`${BASE_URL}/login`, { 
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
         },
-      },
-    ]);
+        body: JSON.stringify({
+          email: email,
+          password: password
+        })
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.detail || "Lỗi đăng nhập");
+      }
+
+      const data = await response.json();
+
+      if (data.success) {
+        Alert.alert("Đăng nhập thành công", `Chào ${data.user.username}!`, [
+          {
+            text: "OK",
+            onPress: () => router.replace('/home'),
+          }
+        ]);
+      } else {
+        Alert.alert("Lỗi", "Tên đăng nhập hoặc mật khẩu không đúng.");
+      }
+
+    } catch (err) {
+      const error = err as Error;
+      Alert.alert("Lỗi", error.message);
+    }
   };
 
   return (
@@ -41,6 +75,8 @@ export default function SignInScreen() {
         placeholder="E-mail address"
         keyboardType="email-address"
         autoCapitalize="none"
+        value={email}
+        onChangeText={setEmail}
       />
 
       <View style={styles.passwordContainer}>
@@ -48,6 +84,8 @@ export default function SignInScreen() {
           style={styles.input}
           placeholder="Password"
           secureTextEntry={!passwordVisible}
+          value={password}
+          onChangeText={setPassword}
         />
         <TouchableOpacity
           onPress={() => setPasswordVisible(!passwordVisible)}
