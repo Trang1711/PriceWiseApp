@@ -12,7 +12,11 @@ import { FontAwesome } from '@expo/vector-icons';
 import { useNavigation, DrawerActions } from '@react-navigation/native';
 import HomeSlider from '../components/HomeSlider';
 import Icon from 'react-native-vector-icons/MaterialIcons'; 
+<<<<<<< HEAD
 import { router } from 'expo-router';
+=======
+import { router } from 'expo-router'; 
+>>>>>>> Trang
 
 export default function HomeScreen() {
   const navigation = useNavigation();
@@ -340,7 +344,11 @@ export default function HomeScreen() {
         {[ 
           { icon: 'home', label: 'Trang chủ', route: '/home' },
           { icon: 'search', label: 'Khám phá', route: '/explore' },
+<<<<<<< HEAD
           { icon: 'heart', label: 'Yêu thích', route: '/favorites' },
+=======
+          { icon: 'heart', label: 'Yêu thích', route: '/favorite' },
+>>>>>>> Trang
           { icon: 'user', label: 'Cá nhân', route: '/profile' },
         ].map((tab, index) => (
         <TouchableOpacity
