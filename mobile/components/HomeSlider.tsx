@@ -10,7 +10,7 @@ import {
 import { FontAwesome } from '@expo/vector-icons';
 
 const { width: screenWidth } = Dimensions.get('window');
-const slideWidth = screenWidth - 40; // Chiều rộng thực tế của slide
+const slideWidth = screenWidth - 40;
 
 interface SliderItem {
   id: number;
