@@ -66,7 +66,6 @@ export default function ProfileScreen() {
       </TouchableOpacity>
 
       {/* Thanh điều hướng dưới cùng */}
-      <View style={styles.bottomTabContainer}>
         <View style={styles.bottomTab}>
           {[
             { icon: 'home', label: 'trangchu', text: 'Trang chủ' },
@@ -80,7 +79,6 @@ export default function ProfileScreen() {
             </TouchableOpacity>
           ))}
         </View>
-      </View>
     </View>
   );
 }
@@ -119,11 +117,22 @@ const styles = StyleSheet.create({
   bottomTab: {
     flexDirection: 'row',
     justifyContent: 'space-around',
+    alignItems: 'center',
     backgroundColor: '#D17842',
-    paddingVertical: 12,
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
+    paddingVertical: 10,
+    position: 'absolute',
+    borderTopColor: '#ddd',
+    borderRadius: 40,
+    bottom: 0,
+    left: 0,
+    right: 0,
+    height: 120,
   },
-  tab: { alignItems: 'center' },
-  tabText: { fontSize: 12, color: '#fff', marginTop: 4 },
+  tab: {
+    alignItems: 'center',
+  },
+  tabText: {
+    fontSize: 12,
+    color: '#000',
+  },
 });
