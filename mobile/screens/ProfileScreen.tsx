@@ -84,8 +84,6 @@ export default function ProfileScreen() {
     </View>
   );
 }
-<<<<<<< HEAD
-=======
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#fff', paddingHorizontal: 16, paddingTop: 40 },
@@ -129,4 +127,3 @@ const styles = StyleSheet.create({
   tab: { alignItems: 'center' },
   tabText: { fontSize: 12, color: '#fff', marginTop: 4 },
 });
->>>>>>> d424c94 (update)
