@@ -12,6 +12,8 @@ import { FontAwesome } from '@expo/vector-icons';
 import { useNavigation, DrawerActions } from '@react-navigation/native';
 import HomeSlider from '../components/HomeSlider';
 import Icon from 'react-native-vector-icons/MaterialIcons'; 
+import { router } from 'expo-router'; 
+
 export default function HomeScreen() {
   const navigation = useNavigation();
 
@@ -334,15 +336,19 @@ export default function HomeScreen() {
       {/* Thanh điều hướng dưới cùng */}
       <View style={styles.bottomTab}>
         {[ 
-          { icon: 'home', label: 'Trang chủ' },
-          { icon: 'search', label: 'Khám phá' },
-          { icon: 'heart', label: 'Yêu thích' },
-          { icon: 'user', label: 'Cá nhân' },
+          { icon: 'home', label: 'Trang chủ', route: '/home' },
+          { icon: 'search', label: 'Khám phá', route: '/explore' },
+          { icon: 'heart', label: 'Yêu thích', route: '/favorites' },
+          { icon: 'user', label: 'Cá nhân', route: '/profile' },
         ].map((tab, index) => (
-          <TouchableOpacity key={index} style={styles.tab}>
-            <FontAwesome name={tab.icon} size={24} color="#000" />
-            <Text style={styles.tabText}>{tab.label}</Text>
-          </TouchableOpacity>
+        <TouchableOpacity
+          key={index}
+          style={styles.tab}
+          onPress={() => router.push(tab.route)} 
+        >
+          <FontAwesome name={tab.icon} size={24} color="#000" />
+          <Text style={styles.tabText}>{tab.label}</Text>
+        </TouchableOpacity>
         ))}
       </View>
     </View>
