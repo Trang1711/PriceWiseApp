@@ -13,6 +13,7 @@ import {
 import { FontAwesome } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import Slider from '@react-native-community/slider';
+import NavigationBar from '../components/NavigationBar';
 
 export default function Explore() {
   const navigation = useNavigation();
@@ -97,20 +98,7 @@ export default function Explore() {
         </View>
       </ScrollView>
 
-      {/* Bottom Tab Navigation */}
-      <View style={styles.bottomTab}>
-        {[ 
-          { icon: 'home', label: 'trangchu', text: 'Trang chủ' },
-          { icon: 'search', label: 'explore', text: 'Khám phá' },
-          { icon: 'heart', label: 'favorite', text: 'Yêu thích' },
-          { icon: 'user', label: 'profile', text: 'Cá nhân' },
-        ].map((tab, index) => (
-          <TouchableOpacity key={index} style={styles.tab} onPress={() => handleTabPress(tab.label)}>
-            <FontAwesome name={tab.icon} size={28} color="#000" />
-            <Text style={styles.tabText}>{tab.text}</Text>
-          </TouchableOpacity>
-        ))}
-      </View>
+      <NavigationBar />
     </View>
   );
 }
@@ -204,27 +192,6 @@ const styles = StyleSheet.create({
   buyButtonText: {
     color: '#fff',
     fontSize: 12,
-  },
-  bottomTab: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    alignItems: 'center',
-    backgroundColor: '#D17842',
-    paddingVertical: 12,
-    borderTopColor: '#ddd',
-    borderRadius: 20,
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-  },
-  tab: {
-    alignItems: 'center',
-  },
-  tabText: {
-    fontSize: 14,
-    color: '#000',
-    marginTop: 4,
   },
   modalContainer: {
     flex: 1,

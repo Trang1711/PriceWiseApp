@@ -1,6 +1,7 @@
 import React from 'react';
 import {
   Image,
+  SafeAreaView,
   ScrollView,
   StyleSheet,
   Text,
@@ -12,11 +13,8 @@ import { FontAwesome } from '@expo/vector-icons';
 import { useNavigation, DrawerActions } from '@react-navigation/native';
 import HomeSlider from '../components/HomeSlider';
 import Icon from 'react-native-vector-icons/MaterialIcons'; 
-<<<<<<< HEAD
 import { router } from 'expo-router';
-=======
-import { router } from 'expo-router'; 
->>>>>>> Trang
+import NavigationBar from '../components/NavigationBar';
 
 export default function HomeScreen() {
   const navigation = useNavigation();
@@ -58,7 +56,7 @@ export default function HomeScreen() {
   
 
   return (
-    <View style={{ flex: 1 }}>
+    <SafeAreaView style={{ flex: 1 }}>
       <ScrollView contentContainerStyle={{ paddingBottom: 120 }} style={[styles.container, { marginTop: 20 }]}>
         {/* Thanh tìm kiếm */}
         <View style={styles.headerContainer}>
@@ -340,29 +338,10 @@ export default function HomeScreen() {
       {/* Khoảng cách giữa các section */}
       <View style={styles.sectionSpacing} />
       {/* Thanh điều hướng dưới cùng */}
-      <View style={styles.bottomTab}>
-        {[ 
-          { icon: 'home', label: 'Trang chủ', route: '/home' },
-          { icon: 'search', label: 'Khám phá', route: '/explore' },
-<<<<<<< HEAD
-          { icon: 'heart', label: 'Yêu thích', route: '/favorites' },
-=======
-          { icon: 'heart', label: 'Yêu thích', route: '/favorite' },
->>>>>>> Trang
-          { icon: 'user', label: 'Cá nhân', route: '/profile' },
-        ].map((tab, index) => (
-        <TouchableOpacity
-          key={index}
-          style={styles.tab}
-          onPress={() => router.push(tab.route)} 
-        >
-          <FontAwesome name={tab.icon} size={24} color="#000" />
-          <Text style={styles.tabText}>{tab.label}</Text>
-        </TouchableOpacity>
-        ))}
-      </View>
-    </View>
-    
+      
+      <NavigationBar />
+      
+    </SafeAreaView>
   );
 }
 
@@ -463,27 +442,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     flex:1,
   },
-  bottomTab: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    alignItems: 'center',
-    backgroundColor: '#D17842',
-    paddingVertical: 10,
-    position: 'absolute',
-    borderTopColor: '#ddd',
-    borderRadius: 40,
-    bottom: 0,
-    left: 0,
-    right: 0,
-    height: 120,
-  },
-  tab: {
-    alignItems: 'center',
-  },
-  tabText: {
-    fontSize: 12,
-    color: '#000',
-  },
+
     productName: {
     fontSize: 14,
     fontWeight: '500',
