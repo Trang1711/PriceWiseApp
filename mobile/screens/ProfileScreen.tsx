@@ -8,6 +8,7 @@ import {
 } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
+import NavigationBar from '../components/NavigationBar';
 
 export default function ProfileScreen() {
   const router = useRouter();
@@ -65,20 +66,9 @@ export default function ProfileScreen() {
         <FontAwesome name="angle-right" size={20} color="gray" style={{ marginLeft: 'auto' }} />
       </TouchableOpacity>
 
-      {/* Thanh điều hướng dưới cùng */}
-        <View style={styles.bottomTab}>
-          {[
-            { icon: 'home', label: 'trangchu', text: 'Trang chủ' },
-            { icon: 'search', label: 'explore', text: 'Khám phá' },
-            { icon: 'heart', label: 'favorite', text: 'Yêu thích' },
-            { icon: 'user', label: 'profile', text: 'Cá nhân' },
-          ].map((tab, index) => (
-            <TouchableOpacity key={index} style={styles.tab} onPress={() => handleTabPress(tab.label)}>
-              <FontAwesome name={tab.icon} size={28} color="#000" />
-              <Text style={styles.tabText}>{tab.text}</Text>
-            </TouchableOpacity>
-          ))}
-        </View>
+      
+
+        <NavigationBar />
     </View>
   );
 }
