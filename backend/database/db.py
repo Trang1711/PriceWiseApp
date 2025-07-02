@@ -9,7 +9,13 @@ def get_connection():
     raw_conn_str = os.getenv("PYODBC_CONN_STR")
     return pyodbc.connect(raw_conn_str)
 
-
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
+        
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, declarative_base
 

@@ -5,7 +5,7 @@ def send_email(to: str, subject: str, body: str):
     smtp_server = "smtp.gmail.com"
     smtp_port = 587
     smtp_user = "duonghoangsamet@gmail.com"
-    smtp_password = "fuym cdrm oqep kgyh"  # app password
+    smtp_password = "fuym cdrm oqep kgyh"
 
     msg = MIMEText(body, "html", "utf-8")
     msg["Subject"] = subject
