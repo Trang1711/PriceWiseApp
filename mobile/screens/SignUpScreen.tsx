@@ -3,6 +3,7 @@ import { View, Text, TextInput, StyleSheet, TouchableOpacity, Image, Alert } fro
 import { FontAwesome } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { BASE_URL } from '@/constants';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function SignUpScreen() {
   const [email, setEmail] = useState('');
@@ -56,7 +57,7 @@ export default function SignUpScreen() {
   };
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <Image source={require('../assets/images/logo.png')} style={styles.logo} resizeMode="contain" />
       <Text style={styles.title}>Sign Up</Text>
 
@@ -121,12 +122,12 @@ export default function SignUpScreen() {
           <FontAwesome name="facebook" size={40} color="#3b5998" />
         </TouchableOpacity>
       </View>
-    </View>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#fff', padding: 20, justifyContent: 'flex-start', alignItems: 'center' },
+  container: { flex: 1, backgroundColor: '#fff', padding: 20, justifyContent: 'flex-start', alignItems: 'center', marginTop: '20%' },
   logo: { width: 100, height: 100, marginBottom: 20 },
   title: { fontSize: 24, fontWeight: 'bold', marginBottom: 30 },
   input: {

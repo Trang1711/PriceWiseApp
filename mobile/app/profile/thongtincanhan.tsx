@@ -1,26 +1,50 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
-  View,
-  Text,
-  StyleSheet,
-  ScrollView,
-  TouchableOpacity,
-  TextInput,
-  Alert
+  View, Text, StyleSheet, ScrollView,
+  TouchableOpacity, TextInput, Alert,
+  ActivityIndicator
 } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { BASE_URL } from '@/constants';
 
 export default function ThongTinCaNhan() {
-  const [userInfo, setUserInfo] = useState({
-    username: 'sam123',
-    email: 'sam@example.com',
-    password: '********',
-    fullName: 'Nguyễn Văn Sam',
-    phone: '0901234567',
-    address: '123 Đường Lê Lợi, Quận 1, TP.HCM',
-  });
+  const [userInfo, setUserInfo] = useState<any>(null);
+  const [editingField, setEditingField] = useState<string | null>(null);
+  const [tempValue, setTempValue] = useState('');
 
-  const [editingField, setEditingField] = useState(null); // field đang được sửa
-  const [tempValue, setTempValue] = useState(''); // giá trị nhập tạm thời
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const userId = await AsyncStorage.getItem('user_id');
+        console.log("Fetched user_id from storage:", userId);
+
+        if (!userId) {
+          Alert.alert("Lỗi", "Không tìm thấy user_id trong bộ nhớ.");
+          return;
+        }
+
+        const response = await fetch(`${BASE_URL}/api/user/${userId}`);
+        if (!response.ok) throw new Error("Lỗi khi gọi API");
+
+        const data = await response.json();
+        console.log("Fetched user info:", data);
+
+        setUserInfo({
+          username: data.username,
+          email: data.email,
+          password: '********',
+          fullName: data.full_name || '',
+          phone: data.phone_number || '',
+          address: data.address || '',
+        });
+      } catch (err) {
+        console.error("Error fetching user info:", err);
+        Alert.alert("Lỗi", "Không thể tải thông tin người dùng");
+      }
+    };
+    
+    fetchUser();
+  }, []);
 
   const handleEdit = (field: string, value: string) => {
     setEditingField(field);
@@ -28,9 +52,18 @@ export default function ThongTinCaNhan() {
   };
 
   const handleSave = () => {
-    setUserInfo({ ...userInfo, [editingField]: tempValue });
+    setUserInfo({ ...userInfo, [editingField!]: tempValue });
     setEditingField(null);
   };
+
+  if (!userInfo) {
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <ActivityIndicator size="large" color="#007BFF" />
+        <Text style={{ marginTop: 10 }}>Đang tải dữ liệu...</Text>
+      </View>
+    );
+  }
 
   return (
     <ScrollView contentContainerStyle={styles.container}>

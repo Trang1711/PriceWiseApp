@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {
+  ActivityIndicator,
   Image,
   ScrollView,
   StyleSheet,
@@ -11,12 +12,33 @@ import {
 import { FontAwesome } from '@expo/vector-icons';
 import { useNavigation, DrawerActions } from '@react-navigation/native';
 import HomeSlider from '../components/HomeSlider';
-import Icon from 'react-native-vector-icons/MaterialIcons'; 
 import { router } from 'expo-router'; 
+import ProductCard from '../components/ProductCard';
+import axios from 'axios';
+import { BASE_URL } from '@/constants';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function HomeScreen() {
   const navigation = useNavigation();
+  const [products, setProducts] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
 
+  useEffect(() => {
+    axios.get(`${BASE_URL}/api/products`)
+      .then((res) => {
+        setProducts(res.data);
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.error('Error fetching data', err);
+        setLoading(false);
+      });
+  }, []);
+
+  if (loading) {
+    return <ActivityIndicator size="large" color="#000" />;
+  }
+  
   // Dữ liệu slider
   const sliderData = [
     {
@@ -45,14 +67,8 @@ export default function HomeScreen() {
     // Có thể mở link hoặc navigate đến trang chi tiết
   };
 
-  // Đặt biến trạng thái cho từng card trước phần return hoặc trong component
-  const isAvailable1 = true;  // Card 1: còn hàng
-  const isAvailable2 = true;  // Card 2: còn hàng
-  const isAvailable3 = false; // Card 3: hết hàng
-  const isAvailable4 = true;  // Card 4: còn hàng
-
   return (
-    <View style={{ flex: 1 }}>
+    <SafeAreaView style={{ flex: 1 }} edges={['top', 'left', 'right']}>
       <ScrollView contentContainerStyle={{ paddingBottom: 120 }} style={[styles.container, { marginTop: 20 }]}>
         {/* Thanh tìm kiếm */}
         <View style={styles.headerContainer}>
@@ -137,176 +153,22 @@ export default function HomeScreen() {
         <Text style={styles.sectionTitle}>Sản phẩm nổi bật</Text>
 
         <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginVertical: 16 }}>
-          <View style={styles.card}>
-            {/* Top Icons */}
-            <View style={styles.topIcons}>
-              <Image
-                source={require('../assets/images/Shoppe.jpg')} // Replace with Shopee logo URL or local image
-                style={styles.logo1}
+          <View style={{ flexDirection: 'row' }}>
+            {products.map((item, index) => (
+              <ProductCard
+                key={index}
+                platformLogo={item.platformLogo}
+                productImage={item.productImage}
+                currentPrice={item.currentPrice}
+                originalPrice={item.originalPrice}
+                discountPercentage={item.discountPercentage}
+                shippingFee={item.shippingFee}
+                totalPrice={item.totalPrice}
+                isAvailable={item.isAvailable}
+                rating={item.rating}
+                productUrl={item.productUrl}
               />
-              <TouchableOpacity>
-                {/* <Icon name="favorite-border" size={24} color="#FF2D55" /> */}
-              </TouchableOpacity>
-            </View>
-
-            {/* Image Section */}
-            <Image
-              source={require('../assets/images/IP15.jpg')} // Replace with your image URL or local image
-              style={styles.image}
-            />
-
-            {/* Price Section */}
-            <Text style={styles.currentPrice}>32.990.000 đ</Text>
-            <View style={styles.priceContainer}>
-              <Text style={styles.originalPrice}>34.490.000 đ</Text>
-              <Text style={styles.discount}>-4%</Text>
-            </View>
-            
-
-            {/* Details Section */}
-            <View style={styles.details}>
-              <Text>Phí VC: 0 đ</Text>
-              <Text>Tổng: 32.990.000 đ</Text>
-              <Text style={styles.status}>
-                Trạng thái: <Text style={[styles.statusValue, { color: isAvailable1 ? 'green' : 'red' }]}>{isAvailable1 ? 'Còn hàng' : 'Hết hàng'}</Text>
-              </Text>
-              <Text style={styles.rating}>⭐ Chưa có đánh giá</Text>
-            </View>
-
-            {/* Buy Button with Cart Icon */}
-            <TouchableOpacity style={styles.buyButton}>
-              <Icon name="shopping-cart" size={18} color="white" style={styles.cartIcon} />
-              <Text style={styles.buyButtonText}>Tới nơi bán</Text>
-            </TouchableOpacity>
-          </View>
-
-          <View style={styles.card}>
-            {/* Top Icons */}
-            <View style={styles.topIcons}>
-              <Image
-                source={require('../assets/images/Lazada.jpg')} // Replace with Shopee logo URL or local image
-                style={styles.logo1}
-              />
-              <TouchableOpacity>
-                {/* <Icon name="favorite-border" size={24} color="#FF2D55" /> */}
-              </TouchableOpacity>
-            </View>
-
-            {/* Image Section */}
-            <Image
-              source={require('../assets/images/Nitendo.jpg')} // Replace with your image URL or local image
-              style={styles.image}
-            />
-
-            {/* Price Section */}
-            <Text style={styles.currentPrice}>13.499.000 đ</Text>
-            <View style={styles.priceContainer}>
-              <Text style={styles.originalPrice}>15.000.000 đ</Text>
-              <Text style={styles.discount}>-10%</Text>
-            </View>
-            
-
-            {/* Details Section */}
-            <View style={styles.details}>
-              <Text>Phí VC: 0 đ</Text>
-              <Text>Tổng: 13.499.000 đ</Text>
-              <Text style={styles.status}>
-                Trạng thái: <Text style={[styles.statusValue, { color: isAvailable2 ? 'green' : 'red' }]}>{isAvailable2 ? 'Còn hàng' : 'Hết hàng'}</Text>
-              </Text>
-              <Text style={styles.rating}>⭐ Chưa có đánh giá</Text>
-            </View>
-
-            {/* Buy Button with Cart Icon */}
-            <TouchableOpacity style={styles.buyButton}>
-              <Icon name="shopping-cart" size={18} color="white" style={styles.cartIcon} />
-              <Text style={styles.buyButtonText}>Tới nơi bán</Text>
-            </TouchableOpacity>
-          </View>
-
-          <View style={styles.card}>
-            {/* Top Icons */}
-            <View style={styles.topIcons}>
-              <Image
-                source={require('../assets/images/Tiki.jpg')} // Replace with Shopee logo URL or local image
-                style={styles.logo1}
-              />
-              <TouchableOpacity>
-                {/* <Icon name="favorite-border" size={24} color="#FF2D55" /> */}
-              </TouchableOpacity>
-            </View>
-
-            {/* Image Section */}
-            <Image
-              source={require('../assets/images/The_Village.jpg')} // Replace with your image URL or local image
-              style={styles.image}
-            />
-
-            {/* Price Section */}
-            <Text style={styles.currentPrice}>137.012 đ</Text>
-            <View style={styles.priceContainer}>
-              <Text style={styles.originalPrice}>236.000 đ</Text>
-              <Text style={styles.discount}>-42%</Text>
-            </View>
-            
-
-            {/* Details Section */}
-            <View style={styles.details}>
-              <Text>Phí VC: 0 đ</Text>
-              <Text>Tổng: 137.012  đ</Text>
-              <Text style={styles.status}>
-                Trạng thái: <Text style={[styles.statusValue, { color: isAvailable3 ? 'green' : 'red' }]}>{isAvailable3 ? 'Còn hàng' : 'Hết hàng'}</Text>
-              </Text>
-              <Text style={styles.rating}>⭐ Chưa có đánh giá</Text>
-            </View>
-
-            {/* Buy Button with Cart Icon */}
-            <TouchableOpacity style={styles.buyButton}>
-              <Icon name="shopping-cart" size={18} color="white" style={styles.cartIcon} />
-              <Text style={styles.buyButtonText}>Tới nơi bán</Text>
-            </TouchableOpacity>
-          </View>
-
-          <View style={styles.card}>
-            {/* Top Icons */}
-            <View style={styles.topIcons}>
-              <Image
-                source={require('../assets/images/Shoppe.jpg')} // Replace with Shopee logo URL or local image
-                style={styles.logo1}
-              />
-              <TouchableOpacity>
-                {/* <Icon name="favorite-border" size={24} color="#FF2D55" /> */}
-              </TouchableOpacity>
-            </View>
-
-            {/* Image Section */}
-            <Image
-              source={require('../assets/images/IP15.jpg')} // Replace with your image URL or local image
-              style={styles.image}
-            />
-
-            {/* Price Section */}
-            <Text style={styles.currentPrice}>32.990.000 đ</Text>
-            <View style={styles.priceContainer}>
-              <Text style={styles.originalPrice}>34.490.000 đ</Text>
-              <Text style={styles.discount}>-4%</Text>
-            </View>
-            
-
-            {/* Details Section */}
-            <View style={styles.details}>
-              <Text>Phí VC: 0 đ</Text>
-              <Text>Tổng: 32.990.000 đ</Text>
-              <Text style={styles.status}>
-                Trạng thái: <Text style={[styles.statusValue, { color: isAvailable4 ? 'green' : 'red' }]}>{isAvailable4 ? 'Còn hàng' : 'Hết hàng'}</Text>
-              </Text>
-              <Text style={styles.rating}>⭐ Chưa có đánh giá</Text>
-            </View>
-
-            {/* Buy Button with Cart Icon */}
-            <TouchableOpacity style={styles.buyButton}>
-              <Icon name="shopping-cart" size={18} color="white" style={styles.cartIcon} />
-              <Text style={styles.buyButtonText}>Tới nơi bán</Text>
-            </TouchableOpacity>
+            ))}
           </View>
         </ScrollView>
 
@@ -351,7 +213,7 @@ export default function HomeScreen() {
         </TouchableOpacity>
         ))}
       </View>
-    </View>
+    </SafeAreaView>
   );
 }
 

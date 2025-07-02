@@ -7,10 +7,12 @@ import {
   TouchableOpacity,
   Image,
   Alert,
+  SafeAreaView,
 } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { BASE_URL } from '@/constants';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function SignInScreen() {
   const [passwordVisible, setPasswordVisible] = useState(false);
@@ -30,10 +32,7 @@ export default function SignInScreen() {
         headers: {
           "Content-Type": "application/json"
         },
-        body: JSON.stringify({
-          email: email,
-          password: password
-        })
+        body: JSON.stringify({ email, password })
       });
 
       if (!response.ok) {
@@ -44,6 +43,9 @@ export default function SignInScreen() {
       const data = await response.json();
 
       if (data.success) {
+        await AsyncStorage.setItem('user_id', data.user.id.toString());
+        console.log("user_id sau login:", data.user.id);
+
         Alert.alert("Đăng nhập thành công", `Chào ${data.user.username}!`, [
           {
             text: "OK",
@@ -61,7 +63,7 @@ export default function SignInScreen() {
   };
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <Image
         source={require('../assets/images/logo.png')}
         style={styles.logo}
@@ -125,12 +127,12 @@ export default function SignInScreen() {
           <FontAwesome name="facebook" size={40} color="#3b5998" />
         </TouchableOpacity>
       </View>
-    </View>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#fff', padding: 20, alignItems: 'center' },
+  container: { flex: 1, backgroundColor: '#fff', padding: 20, alignItems: 'center', marginTop: '20%' },
   logo: { width: 100, height: 100, marginBottom: 20 },
   title: { fontSize: 24, fontWeight: 'bold', marginBottom: 30 },
   input: {
