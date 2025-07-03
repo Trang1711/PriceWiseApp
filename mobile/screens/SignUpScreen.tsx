@@ -127,9 +127,24 @@ export default function SignUpScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#fff', padding: 20, justifyContent: 'flex-start', alignItems: 'center', marginTop: '20%' },
-  logo: { width: 100, height: 100, marginBottom: 20 },
-  title: { fontSize: 24, fontWeight: 'bold', marginBottom: 30 },
+  container: {
+    flex: 1,
+    backgroundColor: '#fff',
+    padding: 20,
+    justifyContent: 'flex-start',
+    alignItems: 'center',
+     paddingTop: 90,
+  },
+  logo: {
+    width: 100,
+    height: 100,
+    marginBottom: 20,
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginBottom: 30,
+  },
   input: {
     width: '100%', height: 50, backgroundColor: '#f0f0f0', borderRadius: 10,
     marginBottom: 20, paddingHorizontal: 10, borderWidth: 1, borderColor: '#aaa',

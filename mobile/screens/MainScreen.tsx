@@ -12,6 +12,8 @@ import {
 } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
 import { useNavigation, DrawerActions } from '@react-navigation/native';
+import { NavigationContainer } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import HomeSlider from '../components/HomeSlider';
 import { router } from 'expo-router'; 
 import ProductCard from '../components/ProductCard';
@@ -78,16 +80,10 @@ export default function HomeScreen() {
   };
 
   return (
-    <SafeAreaView style={{ flex: 1 }}>
+    <View style={{ flex: 1 }}>
       <ScrollView contentContainerStyle={{ paddingBottom: 120 }} style={[styles.container, { marginTop: 20 }]}>
         {/* Thanh tìm kiếm */}
         <View style={styles.headerContainer}>
-          <TouchableOpacity
-            style={styles.menuButton}
-            onPress={() => navigation.dispatch(DrawerActions.openDrawer())}
-          >
-            <FontAwesome name="bars" size={20} color="#333" />
-          </TouchableOpacity>
 
           <View style={styles.searchBox}>
             <FontAwesome name="search" size={20} color="#D17842" style={styles.searchIcon} />
@@ -98,10 +94,12 @@ export default function HomeScreen() {
             />
           </View>
 
-          <Image
-            source={require('../assets/images/logo.png')}
-            style={styles.logo}
-          />
+          <View style={styles.logoContainer}>
+            <Image
+                source={require('../assets/images/logo1.png')}
+                style={styles.logo}
+            />
+          </View>
         </View>
 
         {/* Home Slider */}
@@ -119,7 +117,7 @@ export default function HomeScreen() {
           {[
             { 
               img: require('../assets/images/category.png'), 
-              label: 'Thời trang&Phụ kiện',
+              label: 'Thời trang & Phụ kiện',
               link: ''
             },
             { 
@@ -129,12 +127,22 @@ export default function HomeScreen() {
             },
             { 
               img: require('../assets/images/laptopmaytinhbang.png'), 
-              label: 'Laptop và Tablet',
+              label: 'Laptop & Tablet',
               link: ''
             },
             { 
               img: require('../assets/images/thietbithethao.png'), 
               label: 'Thiết bị thể thao',
+              link: ''
+            },
+              { 
+              img: require('../assets/images/dienthoaididong.jpg'), 
+              label: 'Điện thoại di động',
+              link: ''
+            },
+              { 
+              img: require('../assets/images/dodunghoctap.png'), 
+              label: 'Đồ dùng học tập',
               link: ''
             },
           ].map((cat, index) => (
@@ -183,32 +191,64 @@ export default function HomeScreen() {
         </ScrollView>
 
         {/* Khoảng cách giữa các section */}
-        <View style={styles.sectionSpacing} />
-        <Text style={styles.sectionTitle}>Các danh mục</Text>
-
-        {[ 
-          { icon: 'shopping-bag', label: 'Thời trang và phụ kiện' },
-          { icon: 'star', label: 'Mỹ phẩm & Làm đẹp' },
-          { icon: 'mobile', label: 'Điện thoại di động' },
-          { icon: 'laptop', label: 'Laptop và máy tính bảng' },
-          { icon: 'soccer-ball-o', label: 'Thiết bị thể thao' },
-          { icon: 'pencil', label: 'Đồ dùng học tập' },
-        ].map((cat, index) => (
-          <TouchableOpacity key={index} style={styles.categoryItem}>
-            <View style={styles.categoryContent}>
-              <FontAwesome name={cat.icon} size={20} color="#333" style={{ marginRight: 8 }} />
-              <Text style={styles.categoryText}>{cat.label}</Text>
+        <View style={styles.userReviewsContainer}>
+          <Text style={styles.ratingTitle}>Đánh giá từ người dùng</Text>
+          {/* Khoảng cách giữa các section */}
+          <View style={styles.sectionSpacing} />
+          {[
+            {
+              name: 'Minh Choco',
+              avatar: require('../assets/images/avatar.png'),
+              stars: 5,
+              comment: 'Ứng dụng xịn sò dễ dùng cực luôn!',
+            },
+            {
+              name: 'Thảo Milk',
+              avatar: require('../assets/images/cat.jpg'),
+              stars: 4,
+              comment: 'Giao diện cute quá trời luôn, mỗi tội hơi lag tí.',
+            },
+            {
+              name: 'Tuấn Dev',
+              avatar: require('../assets/images/cat1.jpg'),
+              stars: 5,
+              comment: 'Quá tuyệt vời, tìm sản phẩm nhanh lẹ. Rất recommend!',
+            },
+            {
+              name: 'Hà Lười',
+              avatar: require('../assets/images/dog1.jpg'),
+              stars: 3,
+              comment: 'Tạm ổn nha, giao diện đẹp nhưng cần thêm sản phẩm ',
+            },
+            {
+              name: 'Trang Mèo',
+              avatar: require('../assets/images/dog2.jpg'),
+              stars: 5,
+              comment: 'App đáng yêu như chính tui vậy. Dùng là nghiện!',
+            },
+          ].map((user, index) => (
+            <View key={index} style={styles.reviewItem}>
+              <Image source={user.avatar} style={styles.reviewAvatar} />
+              <View style={styles.reviewContent}>
+                <Text style={styles.reviewerName}>{user.name}</Text>
+                <View style={styles.starsRow}>
+                  {[...Array(user.stars)].map((_, i) => (
+                    <FontAwesome key={i} name="star" size={16} color="#FFD700" />
+                  ))}
+                </View>
+                <Text style={styles.reviewText}>{user.comment}</Text>
+              </View>
             </View>
-          </TouchableOpacity>
-        ))}
+          ))}
+        </View>
       </ScrollView>
 
       {/* Khoảng cách giữa các section */}
       <View style={styles.sectionSpacing} />
+
       {/* Thanh điều hướng dưới cùng */}
-      
       <NavigationBar />
-    </SafeAreaView>
+    </View>
   );
 }
 
@@ -216,7 +256,8 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
-    backgroundColor: '#fff',
+    paddingTop: 40,
+   
   },
   headerContainer: {
     flexDirection: 'row',
@@ -226,11 +267,20 @@ const styles = StyleSheet.create({
   menuButton: {
     marginRight: 10,
   },
-  logo: {
-    width: 40,
-    height: 40,
-    marginLeft: 10,
-  },
+  logoContainer: {
+        width: 60, // Chiều rộng của khung
+        height: 60, // Chiều cao của khung
+        borderRadius: 30, // Bán kính để tạo hình tròn
+        overflow: 'hidden', // Ẩn phần hình ảnh ra ngoài khung
+        justifyContent: 'center', // Căn giữa hình ảnh
+        alignItems: 'center', // Căn giữa hình ảnh
+        backgroundColor: '#fff', // Màu nền của khung (có thể thay đổi)
+    },
+    logo: {
+        width: '110%', // Đảm bảo logo chiếm toàn bộ khung
+        height: '100%', // Đảm bảo logo chiếm toàn bộ khung
+        resizeMode: 'contain', // Giữ tỷ lệ hình ảnh
+    },
   searchBox: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -309,7 +359,34 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     flex:1,
   },
-
+ bottomTabContainer: {
+    position: 'absolute',
+    bottom: 16,
+    left: 0,
+    right: 0,
+    alignItems: 'center',
+    
+  },
+  bottomTab: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    alignItems: 'center',
+    backgroundColor: '#D17842',
+    paddingVertical: 14,
+    borderRadius: 20,
+    width: 375,
+    marginBottom:20,
+    shadowColor: '#999',
+   
+  },
+  tab: {
+    alignItems: 'center',
+  },
+  tabText: {
+    fontSize: 14,
+    color: '#000',
+    marginTop: 4,
+  },
     productName: {
     fontSize: 14,
     fontWeight: '500',
@@ -337,7 +414,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'space-between',
-    marginBottom: 20,
+    marginBottom: 10,
   },
   categoryGridItem: {
     width: '48%',
@@ -456,7 +533,6 @@ const styles = StyleSheet.create({
     marginRight: 5,
   },
   status: {
-
     marginBottom: 2,
     color: '#000',
   },
@@ -464,4 +540,44 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: 'green',
   },
+  // style đánh giá
+  ratingTitle:{
+    fontSize: 20,
+  },
+ userReviewsContainer: {
+  marginTop: 24,
+  padding: 16,
+  backgroundColor: '#fff0f5',
+  borderRadius: 12,
+  borderWidth: 1,
+  borderColor: '#f5c6da',
+},
+reviewItem: {
+  flexDirection: 'row',
+  marginBottom: 16,
+},
+reviewAvatar: {
+  width: 40,
+  height: 40,
+  borderRadius: 20,
+  marginRight: 12,
+},
+reviewContent: {
+  flex: 1,
+},
+reviewerName: {
+  fontWeight: 'bold',
+  fontSize: 14,
+},
+reviewText: {
+  fontSize: 13,
+  marginTop: 4,
+  color: '#333',
+},
+starsRow: {
+  flexDirection: 'row',
+  marginTop: 2,
+},
+
+
 });

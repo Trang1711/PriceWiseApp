@@ -10,7 +10,7 @@ export default function NavigationBar() {
   const tabs = [
     { icon: 'home', label: 'Trang chủ', route: '/home' },
     { icon: 'search', label: 'Khám phá', route: '/explore' },
-    { icon: 'heart', label: 'Yêu thích', route: '/favorite' },
+    { icon: 'heart', label: 'Yêu thích', route: '/favorites' },
     { icon: 'user', label: 'Cá nhân', route: '/profile' },
   ]
 

@@ -5,7 +5,9 @@ import {
   StyleSheet,
   Image,
   TouchableOpacity,
-  SafeAreaView
+  ScrollView,
+  SafeAreaView,
+  Dimensions,
 } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
@@ -19,108 +21,126 @@ export default function ProfileScreen() {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
-      <View style={styles.header}>
-        <Text style={styles.headerTitle}>Profile</Text>
-        <Image source={require('../assets/images/logo.png')} style={styles.logo} />
-      </View>
-
-      <TouchableOpacity style={styles.profileSection}>
-        <Image
-          source={require('../assets/images/avatar.png')}
-          style={styles.avatar}
-        />
-        <View>
-          <Text style={styles.name}>Sam</Text>
-          <Text style={styles.subtitle}>Show profile</Text>
+    <SafeAreaView style={styles.safeArea}>
+      <ScrollView contentContainerStyle={styles.container} showsVerticalScrollIndicator={false}>
+        {/* Header */}
+        <View style={styles.header}>
+          <Text style={styles.headerTitle}>Hồ sơ</Text>
+          <Image source={require('../assets/images/logo.png')} style={styles.logo} />
         </View>
-        <FontAwesome name="angle-right" size={20} color="gray" style={{ marginLeft: 'auto' }} />
-      </TouchableOpacity>
 
-      <Text style={styles.settingsTitle}>Cài đặt</Text>
+        {/* Thông tin người dùng */}
+        <TouchableOpacity style={styles.profileSection}>
+          <Image source={require('../assets/images/avatar.png')} style={styles.avatar} />
+          <View>
+            <Text style={styles.name}>Sam</Text>
+          </View>
+          <FontAwesome name="angle-right" size={24} color="gray" style={{ marginLeft: 'auto' }} />
+        </TouchableOpacity>
 
-      {/* Các nút điều hướng đến màn hình chi tiết */}
-      <TouchableOpacity
-        style={styles.item}
-        onPress={() => router.push('/profile/thongtincanhan')}
-      >
-        <FontAwesome name="user" size={20} color="#333" style={styles.icon} />
-        <Text style={styles.itemText}>Thông tin cá nhân</Text>
-        <FontAwesome name="angle-right" size={20} color="gray" style={{ marginLeft: 'auto' }} />
-      </TouchableOpacity>
+        <Text style={styles.settingsTitle}>Cài đặt tài khoản</Text>
 
-      <TouchableOpacity
-        style={styles.item}
-        onPress={() => router.push('/profile/lichsu')}
-      >
-        <FontAwesome name="history" size={20} color="#333" style={styles.icon} />
-        <Text style={styles.itemText}>Lịch sử</Text>
-        <FontAwesome name="angle-right" size={20} color="gray" style={{ marginLeft: 'auto' }} />
-      </TouchableOpacity>
+        {/* Các mục cài đặt */}
+        <TouchableOpacity
+          style={styles.item}
+          onPress={() => router.push('/profile/thongtincanhan')}
+        >
+          <FontAwesome name="user" size={22} color="#333" style={styles.icon} />
+          <Text style={styles.itemText}>Thông tin cá nhân</Text>
+          <FontAwesome name="angle-right" size={22} color="gray" style={{ marginLeft: 'auto' }} />
+        </TouchableOpacity>
 
-      <TouchableOpacity
-        style={styles.item}
-        onPress={() => router.push('/profile/yeuthich')}
-      >
-        <FontAwesome name="heart" size={20} color="#333" style={styles.icon} />
-        <Text style={styles.itemText}>Yêu thích</Text>
-        <FontAwesome name="angle-right" size={20} color="gray" style={{ marginLeft: 'auto' }} />
-      </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.item}
+          onPress={() => router.push('/profile/lichsu')}
+        >
+          <FontAwesome name="history" size={22} color="#333" style={styles.icon} />
+          <Text style={styles.itemText}>Lịch sử hoạt động</Text>
+          <FontAwesome name="angle-right" size={22} color="gray" style={{ marginLeft: 'auto' }} />
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={styles.item}
+          onPress={() => router.push('/profile/yeuthich')}
+        >
+          <FontAwesome name="heart" size={22} color="#333" style={styles.icon} />
+          <Text style={styles.itemText}>Danh sách yêu thích</Text>
+          <FontAwesome name="angle-right" size={22} color="gray" style={{ marginLeft: 'auto' }} />
+        </TouchableOpacity>
+
+        {/* Khoảng trống để tránh che mất bởi NavigationBar */}
+        <View style={{ height: 100 }} />
+      </ScrollView>
+
+      {/* Thanh điều hướng dưới */}
       <NavigationBar />
     </SafeAreaView>
   );
 }
 
+const { width } = Dimensions.get('window');
+
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#fff', paddingHorizontal: 16, paddingTop: 40 },
-  header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 },
-  headerTitle: { fontSize: 20, fontWeight: 'bold' },
-  logo: { width: 40, height: 40 },
+  safeArea: {
+    flex: 1,
+    backgroundColor: '#fff',
+  },
+  container: {
+    paddingHorizontal: 20,
+    paddingTop: 40,
+    paddingBottom: 20,
+  },
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 24,
+  },
+  headerTitle: {
+    fontSize: 28,
+    fontWeight: 'bold',
+    color: '#333',
+  },
+  logo: {
+    width: 40,
+    height: 40,
+  },
   profileSection: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#eee',
-    padding: 12,
-    borderRadius: 10,
-    marginBottom: 20
+    backgroundColor: '#f3f3f3',
+    padding: 14,
+    borderRadius: 14,
+    marginBottom: 24,
   },
-  avatar: { width: 50, height: 50, borderRadius: 25, marginRight: 12 },
-  name: { fontSize: 16, fontWeight: '600' },
-  subtitle: { fontSize: 12, color: '#666' },
-  settingsTitle: { fontSize: 16, fontWeight: 'bold', marginBottom: 10 },
+  avatar: {
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    marginRight: 16,
+  },
+  name: {
+    fontSize: 25,
+    fontWeight: '600',
+  },
+  settingsTitle: {
+    fontSize: 25,
+    fontWeight: 'bold',
+    marginBottom: 16,
+    color: '#555',
+  },
   item: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: 12,
+    paddingVertical: 18,
     borderBottomWidth: 1,
-    borderColor: '#ddd',
+    borderColor: '#eee',
   },
-  icon: { marginRight: 10 },
-  itemText: { fontSize: 14, color: '#333' },
-  bottomTabContainer: {
-    position: 'absolute',
-    bottom: 0,
-    width: '100%',
+  icon: {
+    marginRight: 14,
   },
-  bottomTab: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    alignItems: 'center',
-    backgroundColor: '#D17842',
-    paddingVertical: 10,
-    position: 'absolute',
-    borderTopColor: '#ddd',
-    borderRadius: 40,
-    bottom: 0,
-    left: 0,
-    right: 0,
-    height: 120,
-  },
-  tab: {
-    alignItems: 'center',
-  },
-  tabText: {
-    fontSize: 12,
-    color: '#000',
+  itemText: {
+    fontSize: 20,
+    color: '#333',
   },
 });
