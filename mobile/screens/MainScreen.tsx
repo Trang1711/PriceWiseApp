@@ -324,7 +324,7 @@ export default function HomeScreen() {
           { icon: 'mobile', label: 'Điện thoại di động' },
           { icon: 'laptop', label: 'Laptop và máy tính bảng' },
           { icon: 'soccer-ball-o', label: 'Thiết bị thể thao' },
-          { icon: 'pencil', label: 'Đồ dùng học tập' },
+          { icon: 'pencil', label: 'Đồ dùng học tập abc' },
         ].map((cat, index) => (
           <TouchableOpacity key={index} style={styles.categoryItem}>
             <View style={styles.categoryContent}>
@@ -346,6 +346,9 @@ export default function HomeScreen() {
 }
 
 const styles = StyleSheet.create({
+
+  //HEADER
+
   container: {
     flex: 1,
     padding: 20,
@@ -384,6 +387,10 @@ const styles = StyleSheet.create({
     flex: 1,
     height: '100%',
   },
+
+
+  //BANNER
+
   adBanner: {
     backgroundColor: '#FF0000',
     borderRadius: 10,
@@ -396,6 +403,22 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     height:100,
   },
+
+ adContainer: {
+    width: '100%', 
+    alignItems: 'center', 
+    marginTop: 1, 
+    marginBottom: 1, 
+  },
+  adImage: {
+    width: '100%', 
+    height: undefined,
+    aspectRatio: 1.77, 
+    marginTop: -10, 
+  },
+
+  //DANH MỤC
+
   sectionTitle: {
     fontSize: 20,
     fontWeight: 'bold',
@@ -423,48 +446,7 @@ const styles = StyleSheet.create({
   categoryText: {
     textAlign: 'center',
     fontSize:16,
-    
-  },
-  productCard: {
-    backgroundColor: '#FF9966',
-    padding: 10,
-    borderRadius: 10,
-    marginRight: 10,
-    width: 150,
-  },
-  categoryItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingVertical: 10,
-  },
-  categoryContent: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    flex:1,
-  },
 
-    productName: {
-    fontSize: 14,
-    fontWeight: '500',
-    marginTop: 6,
-  },
-  productPrice: {
-    fontSize: 13,
-    color: '#fff',
-    fontWeight: 'bold',
-    marginTop: 4,
-  },
- adContainer: {
-    width: '100%', // Để ảnh chiếm toàn bộ chiều rộng của màn hình
-    alignItems: 'center', // Căn giữa ảnh
-    marginTop: 1, // Khoảng cách từ trên xuống
-    marginBottom: 1, // Khoảng cách từ dưới lên
-  },
-  adImage: {
-    width: '100%', // Kích thước ảnh sẽ là 100% chiều rộng của màn hình
-    height: undefined, // Để chiều cao tự động theo tỷ lệ
-    aspectRatio: 1.77, // Tỷ lệ khung hình cho ảnh (ví dụ: 16:9)
-    marginTop: -10, // Dịch ảnh lên trên
   },
   categoryGrid: {
     flexDirection: 'row',
@@ -511,7 +493,39 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
 
-  card: {
+ //SẢN PHẨM
+ 
+  productCard: {
+    backgroundColor: '#FF9966',
+    padding: 10,
+    borderRadius: 10,
+    marginRight: 10,
+    width: 150,
+  },
+  categoryItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 10,
+  },
+  categoryContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flex:1,
+  },
+
+    productName: {
+    fontSize: 14,
+    fontWeight: '500',
+    marginTop: 6,
+  },
+  productPrice: {
+    fontSize: 13,
+    color: '#fff',
+    fontWeight: 'bold',
+    marginTop: 4,
+  },
+
+    card: {
     borderWidth: 1,
     borderColor: '#ccc',
     borderRadius: 8,
@@ -521,12 +535,12 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
     marginLeft: 0,
     marginRight:10,
-    // Drop shadow for iOS
+
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.15,
     shadowRadius: 4,
-    // Drop shadow for Android
+
     elevation: 6,
   },
   topIcons: {
