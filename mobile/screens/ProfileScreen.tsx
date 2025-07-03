@@ -104,25 +104,5 @@ const styles = StyleSheet.create({
     bottom: 0,
     width: '100%',
   },
-  bottomTab: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    alignItems: 'center',
-    backgroundColor: '#D17842',
-    paddingVertical: 10,
-    position: 'absolute',
-    borderTopColor: '#ddd',
-    borderRadius: 40,
-    bottom: 0,
-    left: 0,
-    right: 0,
-    height: 120,
-  },
-  tab: {
-    alignItems: 'center',
-  },
-  tabText: {
-    fontSize: 12,
-    color: '#000',
-  },
+
 });
