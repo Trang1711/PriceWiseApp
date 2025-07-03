@@ -246,27 +246,26 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 12,
   },
-  bottomTab: {
+   bottomTab: {
     flexDirection: 'row',
     justifyContent: 'space-around',
     alignItems: 'center',
     backgroundColor: '#D17842',
-    paddingVertical: 12,
-    borderTopColor: '#ddd',
-    borderRadius: 30,
+    paddingVertical: 10,
     position: 'absolute',
-    height: 90,
+    borderTopColor: '#ddd',
+    borderRadius: 40,
     bottom: 0,
     left: 0,
     right: 0,
+    height: 120,
   },
   tab: {
     alignItems: 'center',
   },
   tabText: {
-    fontSize: 14,
+    fontSize: 12,
     color: '#000',
-    marginTop: 4,
   },
   modalContainer: {
     flex: 1,

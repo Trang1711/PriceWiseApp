@@ -186,6 +186,12 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.3,
     elevation: 5,
+    position: 'absolute',
+    borderTopColor: '#ddd',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    height: 120,
   },
   tab: {
     alignItems: 'center',
@@ -193,6 +199,5 @@ const styles = StyleSheet.create({
   tabText: {
     fontSize: 14,
     color: '#000',
-    marginTop: 4,
-  },
+  }
 });

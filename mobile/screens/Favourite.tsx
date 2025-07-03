@@ -1,3 +1,5 @@
+import FontAwesome from '@expo/vector-icons/build/FontAwesome';
+import { router } from 'expo-router';
 import React from 'react';
 import {
   View,
@@ -7,7 +9,6 @@ import {
   TouchableOpacity,
   Dimensions,
 } from 'react-native';
-import { FontAwesome } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 
 const { width } = Dimensions.get('window');
