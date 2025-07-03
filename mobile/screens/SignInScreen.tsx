@@ -92,27 +92,76 @@ export default function SignInScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#fff', padding: 20, alignItems: 'center' },
-  logo: { width: 100, height: 100, marginBottom: 20 },
-  title: { fontSize: 24, fontWeight: 'bold', marginBottom: 30 },
+  container: { 
+    flex: 1, 
+    backgroundColor: '#fff',
+     padding: 20, 
+     alignItems: 'center',
+    paddingTop: 90,
+     },
+  logo: 
+  { width: 100, 
+    height: 100,
+     marginBottom: 20 },
+  title: 
+  { fontSize: 24,
+     fontWeight: 'bold', 
+     marginBottom: 30 },
   input: {
-    width: '100%', height: 50, backgroundColor: '#f0f0f0',
-    borderRadius: 10, marginBottom: 20, paddingHorizontal: 15,
-    borderWidth: 1, borderColor: '#aaa',
+    width: '100%', 
+    height: 50, 
+    backgroundColor: '#f0f0f0',
+    borderRadius: 10, 
+    marginBottom: 20, 
+    paddingHorizontal: 15,
+    borderWidth: 1, 
+    borderColor: '#aaa',
   },
-  passwordContainer: { width: '100%', position: 'relative' },
-  icon: { position: 'absolute', right: 15, top: 15 },
-  forgotPassword: { alignSelf: 'flex-end', marginBottom: 20 },
-  forgotText: { fontSize: 14, color: '#D17842', fontWeight: '600' },
+  passwordContainer: { 
+    width: '100%',
+     position: 'relative' },
+  icon: {
+     position: 'absolute',
+      right: 15, 
+      top: 15 },
+  forgotPassword: {
+     alignSelf: 'flex-end',
+      marginBottom: 20 },
+  forgotText: { 
+    fontSize: 14, 
+    color: '#D17842', 
+    fontWeight: '600' },
   button: {
-    backgroundColor: '#D17842', paddingVertical: 12, paddingHorizontal: 30,
-    borderRadius: 10, width: '100%', alignItems: 'center', marginVertical: 10,
+    backgroundColor: '#D17842',
+     paddingVertical: 12,
+      paddingHorizontal: 30,
+    borderRadius: 10, 
+    width: '100%', 
+    alignItems: 'center', 
+    marginVertical: 10,
   },
-  buttonText: { color: '#fff', fontWeight: 'bold', fontSize: 16 },
-  socialText: { marginTop: 15, fontSize: 14, color: '#444', textAlign: 'center' },
-  separator: { height: 1, width: '100%', backgroundColor: '#ccc', marginVertical: 10 },
+  buttonText: {
+     color: '#fff', 
+     fontWeight: 'bold',
+      fontSize: 16 },
+  socialText: {
+     marginTop: 15,
+      fontSize: 14, 
+      color: '#444', 
+      textAlign: 'center' },
+  separator: { 
+    height: 1, 
+    width: '100%', 
+    backgroundColor: '#ccc',
+     marginVertical: 10 },
   socialButtons: {
-    flexDirection: 'row', marginTop: 10, width: '100%', justifyContent: 'space-between',
+    flexDirection: 'row', 
+    marginTop: 10, 
+    width: '100%', 
+    justifyContent: 'space-between',
   },
-  socialButton: { flex: 1, alignItems: 'center', marginHorizontal: 5 },
+  socialButton: { 
+    flex: 1,
+     alignItems: 'center',
+      marginHorizontal: 5 },
 });

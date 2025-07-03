@@ -96,6 +96,7 @@ const styles = StyleSheet.create({
     padding: 20,
     justifyContent: 'flex-start',
     alignItems: 'center',
+     paddingTop: 90,
   },
   logo: {
     width: 100,

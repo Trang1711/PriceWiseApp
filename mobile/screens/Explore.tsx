@@ -8,17 +8,30 @@ import {
   TouchableOpacity,
   ScrollView,
   Modal,
-  Button
+  Button,
 } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import Slider from '@react-native-community/slider';
+import CompareProductScreen from '../screens/CompareProductScreen'; 
+import { router } from 'expo-router'; 
 
 export default function Explore() {
   const navigation = useNavigation();
   const [showPriceFilter, setShowPriceFilter] = useState(false);
   const [minPrice, setMinPrice] = useState(0);
   const [maxPrice, setMaxPrice] = useState(50000000);
+  const [showCategoryFilter, setShowCategoryFilter] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState('');
+
+  const categories = [
+    { id: 'fashion', label: ' Thời trang & phụ kiện' },
+    { id: 'beauty', label: ' Mỹ phẩm & làm đẹp' },
+    { id: 'mobile', label: ' Điện thoại di động' },
+    { id: 'laptop', label: ' Laptop & máy tính bảng' },
+    { id: 'sport', label: ' Thiết bị thể thao' },
+    { id: 'stationery', label: ' Đồ dùng học tập' },
+  ];
 
   const handleTabPress = (label) => {
     navigation.navigate(label);
@@ -26,29 +39,31 @@ export default function Explore() {
 
   return (
     <View style={styles.container}>
-      {/* Header */}
       <Text style={styles.pageTitle}>Finding page</Text>
 
-      {/* Search Bar */}
       <View style={styles.searchContainer}>
-        <TextInput
-          placeholder="iPhone 15 Pro Max"
-          style={styles.searchInput}
-        />
+        <TextInput placeholder="iPhone 15 Pro Max" style={styles.searchInput} />
         <TouchableOpacity>
           <Text style={styles.cancelText}>Huỷ</Text>
         </TouchableOpacity>
       </View>
 
-      {/* Filters */}
       <View style={styles.filterRow}>
         <TouchableOpacity style={styles.filterBox} onPress={() => setShowPriceFilter(true)}>
           <FontAwesome name="filter" size={16} color="#333" />
-          <Text style={styles.filterText}> Giá từ {minPrice.toLocaleString()}đ đến {maxPrice.toLocaleString()}đ</Text>
+          <Text style={styles.filterText}>
+            Giá từ {minPrice.toLocaleString()}đ đến {maxPrice.toLocaleString()}đ
+          </Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity style={styles.filterBox} onPress={() => setShowCategoryFilter(true)}>
+          <FontAwesome name="tags" size={16} color="#333" />
+          <Text style={styles.filterText}>
+            Danh mục: {selectedCategory ? selectedCategory : 'Chọn'}
+          </Text>
         </TouchableOpacity>
       </View>
 
-      {/* Modal Filter */}
       <Modal visible={showPriceFilter} animationType="slide" transparent={true}>
         <View style={styles.modalContainer}>
           <View style={styles.modalContent}>
@@ -59,7 +74,7 @@ export default function Explore() {
               maximumValue={50000000}
               step={1000000}
               value={minPrice}
-              onValueChange={value => setMinPrice(value)}
+              onValueChange={setMinPrice}
             />
             <Text>Đến: {maxPrice.toLocaleString()} đ</Text>
             <Slider
@@ -67,39 +82,61 @@ export default function Explore() {
               maximumValue={50000000}
               step={1000000}
               value={maxPrice}
-              onValueChange={value => setMaxPrice(value)}
+              onValueChange={setMaxPrice}
             />
             <Button title="Áp dụng" onPress={() => setShowPriceFilter(false)} />
           </View>
         </View>
       </Modal>
 
-      <ScrollView>
-        {/* Results Summary */}
-        <Text style={styles.resultsText}>4 kết quả cho "iPhone 15 Pro Max"</Text>
+      <Modal visible={showCategoryFilter} animationType="slide" transparent={true}>
+        <View style={styles.modalContainer}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalTitle}> Chọn danh mục</Text>
+            {categories.map((cat) => (
+              <TouchableOpacity
+                key={cat.id}
+                style={[styles.categoryOption, selectedCategory === cat.label && styles.selectedCategory]}
+                onPress={() => {
+                  setSelectedCategory(cat.label);
+                  setShowCategoryFilter(false);
+                }}>
+                <Text
+                  style={[styles.categoryText, selectedCategory === cat.label && styles.selectedText]}> 
+                  {cat.label}
+                </Text>
+              </TouchableOpacity>
+            ))}
+            <Button title="Đóng" onPress={() => setShowCategoryFilter(false)} />
+          </View>
+        </View>
+      </Modal>
 
-        {/* Product Row */}
+      <ScrollView>
+        <Text style={styles.resultsText}>4 kết quả cho "iPhone 15 Pro Max"</Text>
         <View style={styles.productRow}>
           {[1, 2].map((item) => (
             <View key={item} style={styles.card}>
-              <Image
-                source={require('../assets/images/IP15.jpg')}
-                style={styles.productImage}
-              />
+              <Image source={require('../assets/images/IP15.jpg')} style={styles.productImage} />
               <Text style={styles.price}>32.990.000 đ</Text>
               <Text style={styles.seller}>Ming Store</Text>
               <Text style={styles.ship}>Miễn phí vận chuyển</Text>
-              <TouchableOpacity style={styles.buyButton}>
-                <Text style={styles.buyButtonText}>Tới nơi bán</Text>
-              </TouchableOpacity>
-            </View>
-          ))}
+            <TouchableOpacity
+              style={styles.buyButton}
+              onPress={() => {
+                console.log('Pressed So sánh');
+                router.push('/compare');
+              }}
+            >
+              <Text style={styles.buyButtonText}>So sánh</Text>
+            </TouchableOpacity>
+        </View>
+        ))}
         </View>
       </ScrollView>
 
-      {/* Bottom Tab Navigation */}
       <View style={styles.bottomTab}>
-        {[ 
+        {[
           { icon: 'home', label: 'trangchu', text: 'Trang chủ' },
           { icon: 'search', label: 'explore', text: 'Khám phá' },
           { icon: 'heart', label: 'favorite', text: 'Yêu thích' },
@@ -119,8 +156,9 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
-    paddingTop: 40,
+    paddingTop: 60,
     paddingHorizontal: 16,
+    marginBottom:15,
   },
   pageTitle: {
     fontSize: 18,
@@ -145,14 +183,17 @@ const styles = StyleSheet.create({
   },
   filterRow: {
     flexDirection: 'row',
+    justifyContent: 'space-between',
+    gap: 10,
     marginBottom: 10,
   },
   filterBox: {
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: '#ddd',
-    padding: 8,
+    padding: 10,
     borderRadius: 10,
+    flex: 1,
   },
   filterText: {
     marginLeft: 5,
@@ -212,8 +253,9 @@ const styles = StyleSheet.create({
     backgroundColor: '#D17842',
     paddingVertical: 12,
     borderTopColor: '#ddd',
-    borderRadius: 20,
+    borderRadius: 30,
     position: 'absolute',
+    height: 90,
     bottom: 0,
     left: 0,
     right: 0,
@@ -243,5 +285,25 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
     marginBottom: 10,
-  }
+  },
+  categoryOption: {
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 8,
+    marginBottom: 10,
+  },
+  categoryText: {
+    fontSize: 14,
+    color: '#333',
+  },
+  selectedCategory: {
+    backgroundColor: '#D17842',
+    borderColor: '#D17842',
+  },
+  selectedText: {
+    color: 'white',
+    fontWeight: 'bold',
+  },
 });
