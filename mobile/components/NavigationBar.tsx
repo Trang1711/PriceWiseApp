@@ -15,7 +15,7 @@ export default function NavigationBar() {
   ]
 
   return (
-    <BlurView intensity={40} tint="light" style={styles.bottomTab}>
+    <BlurView intensity={100} tint="light" style={styles.bottomTab}>
       {tabs.map((tab, index) => {
         const isActive = pathname === tab.route
         return (
@@ -59,7 +59,6 @@ const styles = StyleSheet.create({
     shadowColor: '#000',
     shadowOpacity: 0.08,
     shadowRadius: 8,
-    elevation: 8,
     overflow: 'hidden',
   },
   tab: {
@@ -76,6 +75,4 @@ const styles = StyleSheet.create({
     color: '#000',
     fontWeight: 'bold',
   },
-
-  
 })

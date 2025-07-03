@@ -36,8 +36,17 @@ export default function HomeScreen() {
       });
   }, []);
 
-  if (loading) {
-    return <ActivityIndicator size="large" color="#000" />;
+  // if (loading) {
+  //   return <ActivityIndicator size="large" color="#000" />;
+  // }
+
+  if (!loading) {
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <ActivityIndicator size="large" color="#007BFF" />
+        <Text style={{ marginTop: 10 }}>Đang tải dữ liệu...</Text>
+      </View>
+    );
   }
   
   // Dữ liệu slider

@@ -4,7 +4,8 @@ import {
   Text,
   StyleSheet,
   Image,
-  TouchableOpacity
+  TouchableOpacity,
+  SafeAreaView
 } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
@@ -18,7 +19,7 @@ export default function ProfileScreen() {
   };
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.headerTitle}>Profile</Text>
         <Image source={require('../assets/images/logo.png')} style={styles.logo} />
@@ -65,11 +66,8 @@ export default function ProfileScreen() {
         <Text style={styles.itemText}>Yêu thích</Text>
         <FontAwesome name="angle-right" size={20} color="gray" style={{ marginLeft: 'auto' }} />
       </TouchableOpacity>
-
-      
-
-        <NavigationBar />
-    </View>
+      <NavigationBar />
+    </SafeAreaView>
   );
 }
 
