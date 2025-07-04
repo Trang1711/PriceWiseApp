@@ -7,15 +7,19 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import RedirectResponse
-from database.session import engine
-from backend.models import user
-from routers import auth, password
-from routers import product_platform
-from routers import user_router
+
+# Import engine và Base từ db.py
+from database.db import Base, engine
+
+# Import toàn bộ models để SQLAlchemy nhận diện bảng
+import models  # models/__init__.py phải import tất cả model: category, user, product_platform
+
+# Import routers
+from routers import auth, password, product_platform, user_router, category, product_router, favorite
 
 app = FastAPI()
 
-# CORS
+# CORS cấu hình
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"], allow_credentials=True,
@@ -23,15 +27,18 @@ app.add_middleware(
 )
 
 # Tạo bảng nếu chưa có
-user.Base.metadata.create_all(bind=engine)
+Base.metadata.create_all(bind=engine)
 
 # Đăng ký routers
 app.include_router(auth.router)
 app.include_router(password.router)
 app.include_router(product_platform.router)
 app.include_router(user_router.router)
+app.include_router(category.router, prefix="/categories")
+app.include_router(product_router.router)
+app.include_router(favorite.router)
 
+# Deep link reset password
 @app.get("/open-app/reset-password/{user_id}")
 def open_app_reset(user_id: int):
-    # Redirect đến deep link
     return RedirectResponse(url=f"mobile://reset-password/{user_id}")

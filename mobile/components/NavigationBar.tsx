@@ -15,40 +15,46 @@ export default function NavigationBar() {
   ]
 
   return (
-    <BlurView intensity={100} tint="light" style={styles.bottomTab}>
-      {tabs.map((tab, index) => {
-        const isActive = pathname === tab.route
-        console.log('Current pathname:', pathname);
-        return (
-         <TouchableOpacity
-            key={index}
-            style={styles.tab}
-            onPress={() => {
-              if (pathname !== tab.route) {
-                router.push(tab.route);
-              }
-            }}
-            activeOpacity={0.8}
-          >
-            <View style={{ position: 'relative', alignItems: 'center' }}>
-              <FontAwesome
-                name={tab.icon}
-                size={28}
-                color={isActive ? '#000' : '#888'}
-                style={{ fontWeight: isActive ? 'bold' : 'normal' }}
-              />
-            </View>
-            <Text style={[styles.tabText, isActive && styles.tabTextActive]}>
-              {tab.label}
-            </Text>
-          </TouchableOpacity>
-        )
-      })}
-    </BlurView>
+    <View style={styles.bottomTabWrapper}>
+      <BlurView intensity={100} tint="light" style={styles.bottomTab}>
+        {tabs.map((tab, index) => {
+          const isActive = pathname === tab.route
+          return (
+            <TouchableOpacity
+              key={index}
+              style={styles.tab}
+              onPress={() => {
+                if (pathname !== tab.route) {
+                  router.push(tab.route);
+                }
+              }}
+              activeOpacity={0.8}
+            >
+              <View style={{ alignItems: 'center' }}>
+                <FontAwesome
+                  name={tab.icon}
+                  size={28}
+                  color={isActive ? '#000' : '#888'}
+                />
+                <Text style={[styles.tabText, isActive && styles.tabTextActive]}>
+                  {tab.label}
+                </Text>
+              </View>
+            </TouchableOpacity>
+          )
+        })}
+      </BlurView>
+    </View>
   )
 }
 
 const styles = StyleSheet.create({
+  bottomTabWrapper: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+  },
   bottomTab: {
     flexDirection: 'row',
     justifyContent: 'space-around',

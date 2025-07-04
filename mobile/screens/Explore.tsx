@@ -1,4 +1,3 @@
-import React, { useState } from 'react';
 import {
   View,
   Text,
@@ -9,45 +8,93 @@ import {
   ScrollView,
   Modal,
   Button,
+  ActivityIndicator,
 } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
-import { useNavigation } from '@react-navigation/native';
+import { useLocalSearchParams } from 'expo-router';
+import { useEffect, useState } from 'react';
 import Slider from '@react-native-community/slider';
-import CompareProductScreen from '../screens/CompareProductScreen'; 
-import { router } from 'expo-router'; 
-import NavigationBar from '@/components/NavigationBar';
+import { router } from 'expo-router';
+
+interface ProductItem {
+  logo_url?: string;
+  product_platform_id: number;
+  product_id: number;
+  name: string;
+  image_url: string;
+  price: number;
+  platform: string;
+}
 
 export default function Explore() {
-  const navigation = useNavigation();
+  const { categoryId, categoryName } = useLocalSearchParams<{
+    categoryId?: string;
+    categoryName?: string;
+  }>();
+  const [products, setProducts] = useState<ProductItem[]>([]);
   const [showPriceFilter, setShowPriceFilter] = useState(false);
   const [minPrice, setMinPrice] = useState(0);
   const [maxPrice, setMaxPrice] = useState(50000000);
+  const [selectedCategory, setSelectedCategory] = useState<{ id: string, label: string } | null>(null);
   const [showCategoryFilter, setShowCategoryFilter] = useState(false);
-  const [selectedCategory, setSelectedCategory] = useState('');
+  const [loading, setLoading] = useState(false);
 
   const categories = [
-    { id: 'fashion', label: ' Thời trang & phụ kiện' },
-    { id: 'beauty', label: ' Mỹ phẩm & làm đẹp' },
-    { id: 'mobile', label: ' Điện thoại di động' },
-    { id: 'laptop', label: ' Laptop & máy tính bảng' },
-    { id: 'sport', label: ' Thiết bị thể thao' },
-    { id: 'stationery', label: ' Đồ dùng học tập' },
+    { id: '1', label: ' Thời trang & phụ kiện' },
+    { id: '2', label: ' Mỹ phẩm & làm đẹp' },
+    { id: '3', label: ' Điện thoại di động' },
+    { id: '4', label: ' Laptop & máy tính bảng' },
+    { id: '5', label: ' Thiết bị thể thao' },
+    { id: '6', label: ' Đồ dùng học tập' },
   ];
 
-  // const handleTabPress = (label) => {
-  //   navigation.navigate(label);
-  // };
+  useEffect(() => {
+    if (!categoryId) {
+      return;
+    }
+
+    setLoading(true);
+
+    setSelectedCategory({
+      id: String(categoryId),
+      label: categoryName || '',
+    });
+
+    fetch(`http://192.168.1.138:8000/products/by-category/${categoryId}`)
+      .then((res) => res.json())
+      .then((data) => {
+        console.log("Fetched products:", data);
+        setProducts(data);
+      })
+      .catch((err) => {
+        console.error("Fetch error:", err);
+        setProducts([]);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  }, [categoryId, categoryName]);
+
+  if (loading) {
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <ActivityIndicator size="large" color="#007BFF" />
+        <Text style={{ marginTop: 10 }}>Đang tải dữ liệu...</Text>
+      </View>
+    );
+  }
 
   return (
     <View style={styles.container}>
-      <Text style={styles.pageTitle}>Finding page</Text>
+      <Text style={styles.pageTitle}>Danh mục: {categoryName}</Text>
 
       <View style={styles.searchContainer}>
-        <TextInput placeholder="iPhone 15 Pro Max" style={styles.searchInput} />
+        <TextInput placeholder="Tìm kiếm..." style={styles.searchInput} />
         <TouchableOpacity>
           <Text style={styles.cancelText}>Huỷ</Text>
         </TouchableOpacity>
       </View>
+      
 
       <View style={styles.filterRow}>
         <TouchableOpacity style={styles.filterBox} onPress={() => setShowPriceFilter(true)}>
@@ -60,7 +107,7 @@ export default function Explore() {
         <TouchableOpacity style={styles.filterBox} onPress={() => setShowCategoryFilter(true)}>
           <FontAwesome name="tags" size={16} color="#333" />
           <Text style={styles.filterText}>
-            Danh mục: {selectedCategory ? selectedCategory : 'Chọn'}
+            Danh mục: {selectedCategory ? selectedCategory.label : 'Chọn'}
           </Text>
         </TouchableOpacity>
       </View>
@@ -93,46 +140,70 @@ export default function Explore() {
       <Modal visible={showCategoryFilter} animationType="slide" transparent={true}>
         <View style={styles.modalContainer}>
           <View style={styles.modalContent}>
-            <Text style={styles.modalTitle}> Chọn danh mục</Text>
+            <Text style={styles.modalTitle}>Chọn danh mục</Text>
+
             {categories.map((cat) => (
               <TouchableOpacity
                 key={cat.id}
-                style={[styles.categoryOption, selectedCategory === cat.label && styles.selectedCategory]}
+                style={[
+                  styles.categoryOption,
+                  selectedCategory?.id === cat.id && styles.selectedCategory,
+                ]}
                 onPress={() => {
-                  setSelectedCategory(cat.label);
+                  setSelectedCategory(cat);
                   setShowCategoryFilter(false);
-                }}>
+
+                  router.push({
+                    pathname: "/drawer/explore",
+                    params: {
+                      categoryId: cat.id,
+                      categoryName: cat.label,
+                    },
+                  });
+                }}
+              >
                 <Text
-                  style={[styles.categoryText, selectedCategory === cat.label && styles.selectedText]}> 
+                  style={[
+                    styles.categoryText,
+                    selectedCategory?.id === cat.id && styles.selectedText,
+                  ]}
+                >
                   {cat.label}
                 </Text>
               </TouchableOpacity>
             ))}
+
             <Button title="Đóng" onPress={() => setShowCategoryFilter(false)} />
           </View>
         </View>
       </Modal>
-
+        
       <ScrollView>
-        <Text style={styles.resultsText}>4 kết quả cho "iPhone 15 Pro Max"</Text>
         <View style={styles.productRow}>
-          {[1, 2].map((item) => (
-            <View key={item} style={styles.card}>
-              <Image source={require('../assets/images/IP15.jpg')} style={styles.productImage} />
-              <Text style={styles.price}>32.990.000 đ</Text>
-              <Text style={styles.seller}>Ming Store</Text>
-              <Text style={styles.ship}>Miễn phí vận chuyển</Text>
-            <TouchableOpacity
-              style={styles.buyButton}
-              onPress={() => {
-                console.log('Pressed So sánh');
-                router.push('/compare');
-              }}
-            >
-              <Text style={styles.buyButtonText}>So sánh</Text>
-            </TouchableOpacity>
-        </View>
-        ))}
+          {Array.isArray(products) &&
+            products
+              .filter((p) => p.price >= minPrice && p.price <= maxPrice)
+              .map((p) => (
+                <View key={`product-${p.product_platform_id}`} style={styles.card}>
+                  <Image source={{ uri: p.logo_url }} style={styles.logo} />
+                  <Image source={{ uri: p.image_url }} style={styles.productImage} />
+                  <Text style={styles.price}>{p.price?.toLocaleString()} đ</Text>
+                  <Text style={styles.seller}>{p.name}</Text>
+                  <TouchableOpacity
+                    style={styles.buyButton}
+                     onPress={() =>
+                      router.push({
+                        pathname: '/compare',
+                        params: {
+                          productId: p.product_id.toString(),
+                        },
+                      })
+                    }
+                  >
+                    <Text style={styles.buyButtonText}>So sánh</Text>
+                  </TouchableOpacity>
+                </View>
+              ))}
         </View>
       </ScrollView>
     </View>
@@ -192,16 +263,20 @@ const styles = StyleSheet.create({
   },
   productRow: {
     flexDirection: 'row',
-    justifyContent: 'space-around',
-    gap: 10,
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
+    paddingHorizontal: 10,
   },
   card: {
-    width: '45%',
+    width: '47%',
+    marginBottom: 16,
     borderWidth: 1,
     borderColor: '#ccc',
     padding: 10,
     borderRadius: 8,
     alignItems: 'center',
+    position: 'relative',
+    backgroundColor: '#fff',
   },
   productImage: {
     width: 100,
@@ -269,5 +344,13 @@ const styles = StyleSheet.create({
   selectedText: {
     color: 'white',
     fontWeight: 'bold',
+  },
+  logo: {
+    width: 24,
+    height: 24,
+    resizeMode: 'contain',
+    position: 'absolute',
+    top: 8,
+    right: 8,
   },
 });

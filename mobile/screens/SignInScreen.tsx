@@ -98,7 +98,7 @@ export default function SignInScreen() {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
+    <View style={styles.container}>
       <Image
         source={require('../assets/images/logo.png')}
         style={styles.logo}
@@ -173,7 +173,7 @@ export default function SignInScreen() {
           <FontAwesome name="facebook" size={40} color="#3b5998" />
         </TouchableOpacity>
       </View>
-    </SafeAreaView>
+    </View>
   );
 }
 

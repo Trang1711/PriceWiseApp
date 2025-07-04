@@ -109,45 +109,108 @@ export default function HomeScreen() {
         <Text style={styles.sectionTitle}>Danh mục phổ biến</Text>
 
         {/* Grid Categories */}
-        <View style={styles.categoryGrid}>
+        {/* <View style={styles.categoryGrid}>
           {[
             { 
               img: require('../assets/images/category.png'), 
               label: 'Thời trang & Phụ kiện',
-              link: ''
+              link: '',
+              id: 1
             },
             { 
               img: require('../assets/images/comestic.png'), 
               label: 'Mỹ phẩm & Làm đẹp',
-              link: ''
+              link: '',
+              id: 2
             },
             { 
               img: require('../assets/images/laptopmaytinhbang.png'), 
               label: 'Laptop & Tablet',
-              link: ''
+              link: '',
+              id: 4
             },
             { 
               img: require('../assets/images/thietbithethao.png'), 
               label: 'Thiết bị thể thao',
-              link: ''
+              link: '',
+              id: 5
             },
               { 
               img: require('../assets/images/dienthoaididong.jpg'), 
               label: 'Điện thoại di động',
-              link: ''
+              link: '', 
+              id: 3
             },
               { 
               img: require('../assets/images/dodunghoctap.png'), 
               label: 'Đồ dùng học tập',
-              link: ''
+              link: '',
+              id: 6
             },
           ].map((cat, index) => (
             <TouchableOpacity 
               key={index} 
               style={styles.categoryGridItem}
               onPress={() => {
-                // Xử lý khi nhấn vào category
-                console.log('Category pressed:', cat.label);
+                router.push({ pathname: "/drawer/explore", params: { categoryId: index + 1 } });
+              }}
+            >
+              <View style={styles.categoryGridInner}>
+                <View style={styles.categoryGridImage}>
+                  <Image source={cat.img} style={styles.categoryGridImageContent} />
+                </View>
+                <View style={styles.categoryGridTitle}>
+                  <Text style={styles.categoryGridTitleText}>{cat.label}</Text>
+                </View>
+              </View>
+            </TouchableOpacity>
+          ))}
+        </View> */}
+
+       <View style={styles.categoryGrid}>
+          {[
+            { 
+              img: require('../assets/images/category.png'), 
+              label: 'Thời trang & Phụ kiện',
+              id: 1
+            },
+            { 
+              img: require('../assets/images/comestic.png'), 
+              label: 'Mỹ phẩm & Làm đẹp',
+              id: 2
+            },
+            { 
+              img: require('../assets/images/laptopmaytinhbang.png'), 
+              label: 'Laptop & Tablet',
+              id: 4
+            },
+            { 
+              img: require('../assets/images/thietbithethao.png'), 
+              label: 'Thiết bị thể thao',
+              id: 5
+            },
+            { 
+              img: require('../assets/images/dienthoaididong.jpg'), 
+              label: 'Điện thoại di động',
+              id: 3
+            },
+            { 
+              img: require('../assets/images/dodunghoctap.png'), 
+              label: 'Đồ dùng học tập',
+              id: 6
+            },
+          ].map((cat) => (
+            <TouchableOpacity
+              key={`category-${cat.id}`}
+              style={styles.categoryGridItem}
+              onPress={() => {
+                router.push({
+                  pathname: "/drawer/explore",
+                  params: { 
+                    categoryId: cat.id.toString(), 
+                    categoryName: cat.label 
+                  }
+                });
               }}
             >
               <View style={styles.categoryGridInner}>
