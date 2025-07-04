@@ -57,13 +57,14 @@ export default function SignUpScreen() {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
+    <View style={styles.container}>
       <Image source={require('../assets/images/logo.png')} style={styles.logo} resizeMode="contain" />
       <Text style={styles.title}>Sign Up</Text>
 
       <TextInput
         style={styles.input}
         placeholder="E-mail address"
+        placeholderTextColor="#333"
         keyboardType="email-address"
         autoCapitalize="none"
         value={email}
@@ -74,6 +75,7 @@ export default function SignUpScreen() {
         <TextInput
           style={styles.input}
           placeholder="Password"
+          placeholderTextColor="#333"
           secureTextEntry={!passwordVisible}
           value={password}
           onChangeText={setPassword}
@@ -87,6 +89,7 @@ export default function SignUpScreen() {
         <TextInput
           style={styles.input}
           placeholder="Confirm Password"
+          placeholderTextColor="#333"
           secureTextEntry={!confirmVisible}
           value={confirm}
           onChangeText={setConfirm}
@@ -122,7 +125,7 @@ export default function SignUpScreen() {
           <FontAwesome name="facebook" size={40} color="#3b5998" />
         </TouchableOpacity>
       </View>
-    </SafeAreaView>
+    </View>
   );
 }
 

@@ -30,13 +30,24 @@ export default function YeuThichScreen() {
 
       <View style={styles.overlay}>
         <View style={styles.heartBox}>
-          <FontAwesome name="heart" size={40} color="#fff" />
+          <View style={styles.heartIcon}>
+            <Image
+              source={require('../assets/images/heart_icon.jpg')}
+              style={{ width: 70, height: 70, resizeMode: 'contain' }}
+            />
+          </View>
           <Text style={styles.heartText}>Sản phẩm yêu thích</Text>
         </View>
 
         <Text style={styles.messageText}>
           Hiện tại chưa có sản phẩm, hãy cùng{' '}
-          <Text style={{ fontWeight: 'bold' }}>Khám phá</Text> các sản phẩm ~
+          <Text
+            style={{ fontWeight: 'bold', textDecorationLine: 'underline', color: 'black' }}
+            onPress={() => router.push('/explore')}
+          >
+            Khám phá
+          </Text>
+          {' '}các sản phẩm 
         </Text>
       </View>
 
@@ -58,27 +69,40 @@ const styles = StyleSheet.create({
   },
   overlay: {
     flex: 1,
-    justifyContent: 'center',
+    marginTop: '42%',
     alignItems: 'center',
     paddingHorizontal: 20,
   },
   heartBox: {
     backgroundColor: '#EAAE99',
-    padding: 20,
+    padding: 50,
     borderRadius: 20,
     alignItems: 'center',
-    marginBottom: 20,
+    marginBottom: '22%',
   },
   heartText: {
     marginTop: 10,
-    color: '#fff',
+    color: '#333',
     fontSize: 18,
     fontWeight: 'bold',
   },
+
+  heartIcon: {
+    width: 80,
+    height: 80,
+    borderRadius: 15,
+    backgroundColor: '#fff',
+    justifyContent: 'center',
+    alignItems: 'center',
+    elevation: 4,
+    marginBottom: 10,
+  },
+  
   messageText: {
     textAlign: 'center',
     fontSize: 16,
     color: '#333',
+ 
   },
   bottomTab: {
     flexDirection: 'row',

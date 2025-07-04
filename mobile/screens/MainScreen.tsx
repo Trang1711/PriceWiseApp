@@ -15,7 +15,7 @@ import { useNavigation, DrawerActions } from '@react-navigation/native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import HomeSlider from '../components/HomeSlider';
-import { router } from 'expo-router'; 
+import { router, useLocalSearchParams } from 'expo-router'; 
 import ProductCard from '../components/ProductCard';
 import axios from 'axios';
 import { BASE_URL } from '@/constants';
@@ -25,6 +25,9 @@ export default function HomeScreen() {
   const navigation = useNavigation();
   const [products, setProducts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+
+  const params = useLocalSearchParams();
+  const selectedCategory = params.category;
 
   useEffect(() => {
     axios.get(`${BASE_URL}/api/products`)
@@ -150,8 +153,7 @@ export default function HomeScreen() {
               key={index} 
               style={styles.categoryGridItem}
               onPress={() => {
-                // Xử lý khi nhấn vào category
-                console.log('Category pressed:', cat.label);
+                router.push({ pathname: '/explore', params: { category: cat.label } });
               }}
             >
               <View style={styles.categoryGridInner}>
@@ -271,18 +273,18 @@ const styles = StyleSheet.create({
     marginRight: 10,
   },
   logoContainer: {
-        width: 60, // Chiều rộng của khung
-        height: 60, // Chiều cao của khung
-        borderRadius: 30, // Bán kính để tạo hình tròn
-        overflow: 'hidden', // Ẩn phần hình ảnh ra ngoài khung
-        justifyContent: 'center', // Căn giữa hình ảnh
-        alignItems: 'center', // Căn giữa hình ảnh
-        backgroundColor: '#fff', // Màu nền của khung (có thể thay đổi)
+        width: 60, 
+        height: 60, 
+        borderRadius: 30,
+        overflow: 'hidden', 
+        justifyContent: 'center', 
+        alignItems: 'center', 
+        backgroundColor: '#fff', 
     },
     logo: {
-        width: '110%', // Đảm bảo logo chiếm toàn bộ khung
-        height: '100%', // Đảm bảo logo chiếm toàn bộ khung
-        resizeMode: 'contain', // Giữ tỷ lệ hình ảnh
+        width: '110%', 
+        height: '100%', 
+        resizeMode: 'contain', 
     },
   searchBox: {
     flexDirection: 'row',

@@ -12,6 +12,7 @@ import {
 } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
+import { useLocalSearchParams } from 'expo-router';
 import Slider from '@react-native-community/slider';
 import CompareProductScreen from '../screens/CompareProductScreen'; 
 import { router } from 'expo-router'; 
@@ -19,11 +20,12 @@ import NavigationBar from '@/components/NavigationBar';
 
 export default function Explore() {
   const navigation = useNavigation();
+  const params = useLocalSearchParams();
+  const selectedCategory = params.category;
   const [showPriceFilter, setShowPriceFilter] = useState(false);
   const [minPrice, setMinPrice] = useState(0);
   const [maxPrice, setMaxPrice] = useState(50000000);
   const [showCategoryFilter, setShowCategoryFilter] = useState(false);
-  const [selectedCategory, setSelectedCategory] = useState('');
 
   const categories = [
     { id: 'fashion', label: ' Thời trang & phụ kiện' },
@@ -99,7 +101,6 @@ export default function Explore() {
                 key={cat.id}
                 style={[styles.categoryOption, selectedCategory === cat.label && styles.selectedCategory]}
                 onPress={() => {
-                  setSelectedCategory(cat.label);
                   setShowCategoryFilter(false);
                 }}>
                 <Text
@@ -147,7 +148,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     paddingTop: 60,
     paddingHorizontal: 16,
-    marginBottom:15,
+
   },
   pageTitle: {
     fontSize: 18,
