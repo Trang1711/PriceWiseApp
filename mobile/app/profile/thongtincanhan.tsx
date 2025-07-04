@@ -6,11 +6,13 @@ import {
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { BASE_URL } from '@/constants';
+import { FontAwesome } from '@expo/vector-icons';
 
 export default function ThongTinCaNhan() {
   const [userInfo, setUserInfo] = useState<any>(null);
   const [editingField, setEditingField] = useState<string | null>(null);
   const [tempValue, setTempValue] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -32,7 +34,7 @@ export default function ThongTinCaNhan() {
         setUserInfo({
           username: data.username,
           email: data.email,
-          password: '********',
+          password: data.password_hash,
           fullName: data.full_name || '',
           phone: data.phone_number || '',
           address: data.address || '',
@@ -73,28 +75,47 @@ export default function ThongTinCaNhan() {
         <TouchableOpacity
           key={field}
           style={styles.infoBox}
-          onPress={() => handleEdit(field, value)}
+          onPress={() => handleEdit(field, String(value))}
+          activeOpacity={field === 'password' ? 1 : 0.7}
         >
           <Text style={styles.label}>{getLabel(field)}</Text>
+
           {editingField === field ? (
-            <TextInput
-              style={styles.input}
-              value={tempValue}
-              onChangeText={setTempValue}
-              onSubmitEditing={handleSave}
-              autoFocus
-            />
+            <View style={styles.inputWrapper}>
+              <TextInput
+                style={styles.input}
+                value={tempValue}
+                onChangeText={setTempValue}
+                onSubmitEditing={handleSave}
+                autoFocus
+                secureTextEntry={field === 'password' && !showPassword}
+              />
+              {field === 'password' && (
+                <TouchableOpacity
+                  onPress={() => setShowPassword(!showPassword)}
+                  style={styles.eyeIcon}
+                >
+                  <FontAwesome name={showPassword ? 'eye-slash' : 'eye'} size={20} color="#555" />
+                </TouchableOpacity>
+              )}
+            </View>
           ) : (
-            <Text style={styles.value}>{value}</Text>
+            <View style={styles.inputWrapper}>
+              <Text style={styles.value}>
+                {field === 'password' && !showPassword ? '********' : String(value)}
+              </Text>
+              {field === 'password' && (
+                <TouchableOpacity
+                  onPress={() => setShowPassword(!showPassword)}
+                  style={styles.eyeIcon}
+                >
+                  <FontAwesome name={showPassword ? 'eye-slash' : 'eye'} size={20} color="#555" />
+                </TouchableOpacity>
+              )}
+            </View>
           )}
         </TouchableOpacity>
       ))}
-
-      {editingField && (
-        <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
-          <Text style={styles.saveText}>Lưu thay đổi</Text>
-        </TouchableOpacity>
-      )}
     </ScrollView>
   );
 }
@@ -162,5 +183,15 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 16,
     fontWeight: '600',
-  }
+  },
+  inputWrapper: {
+    position: 'relative',
+    justifyContent: 'center',
+  },
+  eyeIcon: {
+    position: 'absolute',
+    right: 10,
+    top: '50%',
+    transform: [{ translateY: -10 }],
+  },
 });

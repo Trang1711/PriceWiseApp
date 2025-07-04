@@ -38,10 +38,6 @@ export default function HomeScreen() {
       });
   }, []);
 
-  // if (loading) {
-  //   return <ActivityIndicator size="large" color="#000" />;
-  // }
-
   if (loading) {
     return (
       <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
@@ -245,9 +241,6 @@ export default function HomeScreen() {
 
       {/* Khoảng cách giữa các section */}
       <View style={styles.sectionSpacing} />
-
-      {/* Thanh điều hướng dưới cùng */}
-      <NavigationBar />
     </View>
   );
 }
@@ -257,7 +250,6 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 20,
     paddingTop: 40,
-   
   },
   headerContainer: {
     flexDirection: 'row',
@@ -268,19 +260,19 @@ const styles = StyleSheet.create({
     marginRight: 10,
   },
   logoContainer: {
-        width: 60, // Chiều rộng của khung
-        height: 60, // Chiều cao của khung
-        borderRadius: 30, // Bán kính để tạo hình tròn
-        overflow: 'hidden', // Ẩn phần hình ảnh ra ngoài khung
-        justifyContent: 'center', // Căn giữa hình ảnh
-        alignItems: 'center', // Căn giữa hình ảnh
-        backgroundColor: '#fff', // Màu nền của khung (có thể thay đổi)
-    },
-    logo: {
-        width: '110%', // Đảm bảo logo chiếm toàn bộ khung
-        height: '100%', // Đảm bảo logo chiếm toàn bộ khung
-        resizeMode: 'contain', // Giữ tỷ lệ hình ảnh
-    },
+    width: 60,
+    height: 60, 
+    borderRadius: 30,
+    overflow: 'hidden', 
+    justifyContent: 'center', 
+    alignItems: 'center', 
+    backgroundColor: '#fff', 
+  },
+  logo: {
+    width: '110%', 
+    height: '100%', 
+    resizeMode: 'contain', 
+  },
   searchBox: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -398,17 +390,17 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginTop: 4,
   },
- adContainer: {
-    width: '100%', // Để ảnh chiếm toàn bộ chiều rộng của màn hình
-    alignItems: 'center', // Căn giữa ảnh
-    marginTop: 1, // Khoảng cách từ trên xuống
-    marginBottom: 1, // Khoảng cách từ dưới lên
+  adContainer: {
+    width: '100%', 
+    alignItems: 'center',
+    marginTop: 1, 
+    marginBottom: 1, 
   },
   adImage: {
-    width: '100%', // Kích thước ảnh sẽ là 100% chiều rộng của màn hình
-    height: undefined, // Để chiều cao tự động theo tỷ lệ
-    aspectRatio: 1.77, // Tỷ lệ khung hình cho ảnh (ví dụ: 16:9)
-    marginTop: -10, // Dịch ảnh lên trên
+    width: '100%', 
+    height: undefined, 
+    aspectRatio: 1.77, 
+    marginTop: -10,
   },
   categoryGrid: {
     flexDirection: 'row',
@@ -454,7 +446,6 @@ const styles = StyleSheet.create({
     color: 'white',
     textAlign: 'center',
   },
-
   card: {
     borderWidth: 1,
     borderColor: '#ccc',
@@ -544,40 +535,38 @@ const styles = StyleSheet.create({
   ratingTitle:{
     fontSize: 20,
   },
- userReviewsContainer: {
-  marginTop: 24,
-  padding: 16,
-  backgroundColor: '#fff0f5',
-  borderRadius: 12,
-  borderWidth: 1,
-  borderColor: '#f5c6da',
-},
-reviewItem: {
-  flexDirection: 'row',
-  marginBottom: 16,
-},
-reviewAvatar: {
-  width: 40,
-  height: 40,
-  borderRadius: 20,
-  marginRight: 12,
-},
-reviewContent: {
-  flex: 1,
-},
-reviewerName: {
-  fontWeight: 'bold',
-  fontSize: 14,
-},
-reviewText: {
-  fontSize: 13,
-  marginTop: 4,
-  color: '#333',
-},
-starsRow: {
-  flexDirection: 'row',
-  marginTop: 2,
-},
-
-
+  userReviewsContainer: {
+    marginTop: 24,
+    padding: 16,
+    backgroundColor: '#fff0f5',
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: '#f5c6da',
+  },
+  reviewItem: {
+    flexDirection: 'row',
+    marginBottom: 16,
+  },
+  reviewAvatar: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    marginRight: 12,
+  },
+  reviewContent: {
+    flex: 1,
+  },
+  reviewerName: {
+    fontWeight: 'bold',
+    fontSize: 14,
+  },
+  reviewText: {
+    fontSize: 13,
+    marginTop: 4,
+    color: '#333',
+  },
+  starsRow: {
+    flexDirection: 'row',
+    marginTop: 2,
+  },
 });

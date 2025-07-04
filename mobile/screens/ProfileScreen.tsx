@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -12,13 +12,36 @@ import {
 import { FontAwesome } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import NavigationBar from '../components/NavigationBar';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { BASE_URL } from '@/constants';
 
 export default function ProfileScreen() {
+  const [userInfo, setUserInfo] = useState<{ fullName: string } | null>(null);
   const router = useRouter();
 
-  const handleTabPress = (label: string) => {
-    router.push(`/${label}`);
-  };
+  // const handleTabPress = (label: string) => {
+  //   router.push(`/${label}`);
+  // };
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const userId = await AsyncStorage.getItem('user_id');
+        if (!userId) return;
+
+        const response = await fetch(`${BASE_URL}/api/user/${userId}`);
+        const data = await response.json();
+
+        setUserInfo({
+          fullName: data.full_name || 'Người dùng',
+        });
+      } catch (error) {
+        console.error('Lỗi khi tải user info:', error);
+      }
+    };
+
+    fetchUser();
+  }, []);
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -33,7 +56,7 @@ export default function ProfileScreen() {
         <TouchableOpacity style={styles.profileSection}>
           <Image source={require('../assets/images/avatar.png')} style={styles.avatar} />
           <View>
-            <Text style={styles.name}>Sam</Text>
+           <Text style={styles.name}>{userInfo?.fullName || 'Đang tải...'}</Text>
           </View>
           <FontAwesome name="angle-right" size={24} color="gray" style={{ marginLeft: 'auto' }} />
         </TouchableOpacity>
@@ -71,9 +94,6 @@ export default function ProfileScreen() {
         {/* Khoảng trống để tránh che mất bởi NavigationBar */}
         <View style={{ height: 100 }} />
       </ScrollView>
-
-      {/* Thanh điều hướng dưới */}
-      <NavigationBar />
     </SafeAreaView>
   );
 }

@@ -39,9 +39,6 @@ export default function YeuThichScreen() {
           <Text style={{ fontWeight: 'bold' }}>Khám phá</Text> các sản phẩm ~
         </Text>
       </View>
-
-      {/* Bottom tab bar */}
-      <NavigationBar />
     </View>
   );
 }

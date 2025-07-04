@@ -11,6 +11,7 @@ class UserOut(BaseModel):
     user_id: int
     username: str
     email: str
+    password_hash: str
     full_name: str | None
     phone_number: str | None
     address: str | None

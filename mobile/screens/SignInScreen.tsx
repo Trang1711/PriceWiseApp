@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -16,9 +16,23 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function SignInScreen() {
   const [passwordVisible, setPasswordVisible] = useState(false);
+  const [rememberMe, setRememberMe] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const router = useRouter();
+
+  useEffect(() => {
+    const loadRemembered = async () => {
+      const savedEmail = await AsyncStorage.getItem('remember_email');
+      const savedPassword = await AsyncStorage.getItem('remember_password');
+      if (savedEmail && savedPassword) {
+        setEmail(savedEmail);
+        setPassword(savedPassword);
+        setRememberMe(true);
+      }
+    };
+    loadRemembered();
+  }, []);
 
   const handleSignIn = async () => {
     if (!email || !password) {
@@ -27,7 +41,7 @@ export default function SignInScreen() {
     }
 
     try {
-      const response = await fetch(`${BASE_URL}/login`, { 
+      const response = await fetch(`${BASE_URL}/login`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
@@ -42,18 +56,39 @@ export default function SignInScreen() {
 
       const data = await response.json();
 
+      // if (data.success) {
+      //   await AsyncStorage.setItem('user_id', data.user.id.toString());
+        
+      //   if (rememberMe) {
+      //     await AsyncStorage.setItem('remember_email', email);
+      //   } else {
+      //     await AsyncStorage.removeItem('remember_email');
+      //   }
+
+      //   Alert.alert("Đăng nhập thành công", `Chào ${data.user.username}!`, [
+      //     {
+      //       text: "OK",
+      //       onPress: () => router.replace('/home'),
+      //     }
+      //   ]);
+      // } else {
+      //   Alert.alert("Lỗi", "Tên đăng nhập hoặc mật khẩu không đúng.");
+      // }
+
       if (data.success) {
         await AsyncStorage.setItem('user_id', data.user.id.toString());
-        console.log("user_id sau login:", data.user.id);
+
+        if (rememberMe) {
+          await AsyncStorage.setItem('remember_email', email);
+          await AsyncStorage.setItem('remember_password', password);
+        } else {
+          await AsyncStorage.removeItem('remember_email');
+          await AsyncStorage.removeItem('remember_password');
+        }
 
         Alert.alert("Đăng nhập thành công", `Chào ${data.user.username}!`, [
-          {
-            text: "OK",
-            onPress: () => router.replace('/home'),
-          }
+          { text: "OK", onPress: () => router.replace('/drawer/home') }
         ]);
-      } else {
-        Alert.alert("Lỗi", "Tên đăng nhập hoặc mật khẩu không đúng.");
       }
 
     } catch (err) {
@@ -101,12 +136,23 @@ export default function SignInScreen() {
         </TouchableOpacity>
       </View>
 
-      <TouchableOpacity
-        style={styles.forgotPassword}
-        onPress={() => router.push('/forgot')}
-      >
-        <Text style={styles.forgotText}>Quên mật khẩu?</Text>
+      {/* Remember Me */}
+     <View style={styles.rowContainer}>
+      <View style={styles.rememberMeGroup}>
+        <TouchableOpacity
+          onPress={() => setRememberMe(!rememberMe)}
+          style={styles.checkbox}
+        >
+          {rememberMe && <View style={styles.checked} />}
+        </TouchableOpacity>
+        <Text style={styles.optionText}>Ghi nhớ đăng nhập</Text>
+      </View>
+
+      <TouchableOpacity onPress={() => router.push('/forgot')}>
+        <Text style={styles.optionText}>Quên mật khẩu?</Text>
       </TouchableOpacity>
+    </View>
+
 
       <TouchableOpacity style={styles.button} onPress={handleSignIn}>
         <Text style={styles.buttonText}>Sign In</Text>
@@ -135,18 +181,20 @@ const styles = StyleSheet.create({
   container: { 
     flex: 1, 
     backgroundColor: '#fff',
-     padding: 20, 
-     alignItems: 'center',
+    padding: 20, 
+    alignItems: 'center',
     paddingTop: 90,
-     },
-  logo: 
-  { width: 100, 
+  },
+  logo: { 
+    width: 100, 
     height: 100,
-     marginBottom: 20 },
-  title: 
-  { fontSize: 24,
-     fontWeight: 'bold', 
-     marginBottom: 30 },
+    marginBottom: 20 
+  },
+  title: { 
+    fontSize: 24,
+    fontWeight: 'bold', 
+    marginBottom: 30 
+  },
   input: {
     width: '100%', 
     height: 50, 
@@ -159,41 +207,39 @@ const styles = StyleSheet.create({
   },
   passwordContainer: { 
     width: '100%',
-     position: 'relative' },
+    position: 'relative' 
+  },
   icon: {
-     position: 'absolute',
-      right: 15, 
-      top: 15 },
-  forgotPassword: {
-     alignSelf: 'flex-end',
-      marginBottom: 20 },
-  forgotText: { 
-    fontSize: 14, 
-    color: '#D17842', 
-    fontWeight: '600' },
+    position: 'absolute',
+    right: 15, 
+    top: 15 
+  },
   button: {
     backgroundColor: '#D17842',
-     paddingVertical: 12,
-      paddingHorizontal: 30,
+    paddingVertical: 12,
+    paddingHorizontal: 30,
     borderRadius: 10, 
     width: '100%', 
     alignItems: 'center', 
     marginVertical: 10,
   },
   buttonText: {
-     color: '#fff', 
-     fontWeight: 'bold',
-      fontSize: 16 },
+    color: '#fff', 
+    fontWeight: 'bold',
+    fontSize: 16 
+  },
   socialText: {
-     marginTop: 15,
-      fontSize: 14, 
-      color: '#444', 
-      textAlign: 'center' },
+    marginTop: 15,
+    fontSize: 14, 
+    color: '#444', 
+    textAlign: 'center' 
+  },
   separator: { 
     height: 1, 
     width: '100%', 
     backgroundColor: '#ccc',
-     marginVertical: 10 },
+    marginVertical: 10 
+  },
   socialButtons: {
     flexDirection: 'row', 
     marginTop: 10, 
@@ -202,6 +248,38 @@ const styles = StyleSheet.create({
   },
   socialButton: { 
     flex: 1,
-     alignItems: 'center',
-      marginHorizontal: 5 },
+    alignItems: 'center',
+    marginHorizontal: 5 
+  },
+  rowContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 16,
+    width: '100%',
+  },
+  rememberMeGroup: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  checkbox: {
+    width: 20,
+    height: 20,
+    borderWidth: 1,
+    borderColor: '#888',
+    marginRight: 8,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  checked: {
+    width: 12,
+    height: 12,
+    backgroundColor: '#007BFF',
+  },
+  optionText: {
+    fontSize: 14,
+    color: '#D17842',
+    fontWeight: 'bold',
+  },
 });
+
