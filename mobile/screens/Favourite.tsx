@@ -43,16 +43,13 @@ export default function YeuThichScreen() {
           Hiện tại chưa có sản phẩm, hãy cùng{' '}
           <Text
             style={{ fontWeight: 'bold', textDecorationLine: 'underline', color: 'black' }}
-            onPress={() => router.push('/explore')}
+            onPress={() => router.push('/drawer/explore')}
           >
             Khám phá
           </Text>
           {' '}các sản phẩm 
         </Text>
       </View>
-
-      {/* Bottom tab bar */}
-      <NavigationBar />
     </View>
   );
 }

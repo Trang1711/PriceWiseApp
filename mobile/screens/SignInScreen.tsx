@@ -87,7 +87,7 @@ export default function SignInScreen() {
         }
 
         Alert.alert("Đăng nhập thành công", `Chào ${data.user.username}!`, [
-          { text: "OK", onPress: () => router.replace('/home') }
+          { text: "OK", onPress: () => router.replace('/drawer/home') }
         ]);
       }
 
@@ -211,7 +211,7 @@ const styles = StyleSheet.create({
   },
   icon: {
     position: 'absolute',
-right: 15, 
+    right: 15, 
     top: 15 
   },
   button: {

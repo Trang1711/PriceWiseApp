@@ -8,21 +8,26 @@ export default function NavigationBar() {
   const pathname = usePathname()
 
   const tabs = [
-    { icon: 'home', label: 'Trang chủ', route: '/home' },
-    { icon: 'search', label: 'Khám phá', route: '/explore' },
-    { icon: 'heart', label: 'Yêu thích', route: '/favorites' },
-    { icon: 'user', label: 'Cá nhân', route: '/profile' },
+    { icon: 'home', label: 'Trang chủ', route: '/drawer/home' },
+    { icon: 'search', label: 'Khám phá', route: '/drawer/explore' },
+    { icon: 'heart', label: 'Yêu thích', route: '/drawer/favorites' },
+    { icon: 'user', label: 'Cá nhân', route: '/drawer/profile' },
   ]
 
   return (
     <BlurView intensity={100} tint="light" style={styles.bottomTab}>
       {tabs.map((tab, index) => {
         const isActive = pathname === tab.route
+        console.log('Current pathname:', pathname);
         return (
-          <TouchableOpacity
+         <TouchableOpacity
             key={index}
             style={styles.tab}
-            onPress={() => router.push(tab.route)}
+            onPress={() => {
+              if (pathname !== tab.route) {
+                router.push(tab.route);
+              }
+            }}
             activeOpacity={0.8}
           >
             <View style={{ position: 'relative', alignItems: 'center' }}>
@@ -33,7 +38,7 @@ export default function NavigationBar() {
                 style={{ fontWeight: isActive ? 'bold' : 'normal' }}
               />
             </View>
-            <Text style={[styles.tabText,isActive && styles.tabTextActive,]}>
+            <Text style={[styles.tabText, isActive && styles.tabTextActive]}>
               {tab.label}
             </Text>
           </TouchableOpacity>

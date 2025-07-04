@@ -1,52 +1,76 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   View,
   Text,
   StyleSheet,
   Image,
-  TouchableOpacity
+  TouchableOpacity,
+  ScrollView,
+  SafeAreaView
 } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import NavigationBar from '../components/NavigationBar';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { BASE_URL } from '@/constants';
 
 export default function ProfileScreen() {
+  const [userInfo, setUserInfo] = useState<{ fullName: string } | null>(null);
   const router = useRouter();
 
-  const handleTabPress = (label: string) => {
-    router.push(`/${label}`);
-  };
+  // const handleTabPress = (label: string) => {
+  //   router.push(`/${label}`);
+  // };
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const userId = await AsyncStorage.getItem('user_id');
+        if (!userId) return;
+
+        const response = await fetch(`${BASE_URL}/api/user/${userId}`);
+        const data = await response.json();
+
+        setUserInfo({
+          fullName: data.full_name || 'Người dùng',
+        });
+      } catch (error) {
+        console.error('Lỗi khi tải user info:', error);
+      }
+    };
+
+    fetchUser();
+  }, []);
 
   return (
-    <View style={styles.container}>
-      <View style={styles.header}>
-        <Text style={styles.headerTitle}>Profile</Text>
-        <Image source={require('../assets/images/logo.png')} style={styles.logo} />
-      </View>
-
-      <TouchableOpacity style={styles.profileSection}>
-        <Image
-          source={require('../assets/images/avatar.png')}
-          style={styles.avatar}
-        />
-        <View>
-          <Text style={styles.name}>Sam</Text>
-          <Text style={styles.subtitle}>Show profile</Text>
+    <SafeAreaView style={styles.safeArea}>
+      <ScrollView contentContainerStyle={styles.container} showsVerticalScrollIndicator={false}>
+        {/* Header */}
+        <View style={styles.header}>
+          <Text style={styles.headerTitle}>Hồ sơ</Text>
+          <Image source={require('../assets/images/logo.png')} style={styles.logo} />
         </View>
-        <FontAwesome name="angle-right" size={20} color="gray" style={{ marginLeft: 'auto' }} />
-      </TouchableOpacity>
 
-      <Text style={styles.settingsTitle}>Cài đặt</Text>
+        {/* Thông tin người dùng */}
+        <TouchableOpacity style={styles.profileSection}>
+          <Image source={require('../assets/images/avatar.png')} style={styles.avatar} />
+          <View>
+           <Text style={styles.name}>{userInfo?.fullName || 'Đang tải...'}</Text>
+          </View>
+          <FontAwesome name="angle-right" size={24} color="gray" style={{ marginLeft: 'auto' }} />
+        </TouchableOpacity>
 
-      {/* Các nút điều hướng đến màn hình chi tiết */}
-      <TouchableOpacity
-        style={styles.item}
-        onPress={() => router.push('/profile/thongtincanhan')}
-      >
-        <FontAwesome name="user" size={20} color="#333" style={styles.icon} />
-        <Text style={styles.itemText}>Thông tin cá nhân</Text>
-        <FontAwesome name="angle-right" size={20} color="gray" style={{ marginLeft: 'auto' }} />
-      </TouchableOpacity>
+        <Text style={styles.settingsTitle}>Cài đặt tài khoản</Text>
+
+        {/* Các mục cài đặt */}
+        <TouchableOpacity
+          style={styles.item}
+          onPress={() => router.push('/profile/thongtincanhan')}
+        >
+          <FontAwesome name="user" size={22} color="#333" style={styles.icon} />
+          <Text style={styles.itemText}>Thông tin cá nhân</Text>
+          <FontAwesome name="angle-right" size={22} color="gray" style={{ marginLeft: 'auto' }} />
+        </TouchableOpacity>
 
       <TouchableOpacity
         style={styles.item}
@@ -66,10 +90,10 @@ export default function ProfileScreen() {
         <FontAwesome name="angle-right" size={20} color="gray" style={{ marginLeft: 'auto' }} />
       </TouchableOpacity>
 
-      
-
-        <NavigationBar />
-    </View>
+        {/* Khoảng trống để tránh che mất bởi NavigationBar */}
+        <View style={{ height: 100 }} />
+      </ScrollView>
+    </SafeAreaView>
   );
 }
 
@@ -85,6 +109,10 @@ const styles = StyleSheet.create({
     padding: 12,
     borderRadius: 10,
     marginBottom: 20
+  },
+  safeArea: {
+    flex: 1,
+    backgroundColor: '#fff',
   },
   avatar: { width: 50, height: 50, borderRadius: 25, marginRight: 12 },
   name: { fontSize: 16, fontWeight: '600' },

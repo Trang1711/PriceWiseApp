@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from 'react';
 import {
   ActivityIndicator,
@@ -249,7 +250,7 @@ export default function HomeScreen() {
       <View style={styles.sectionSpacing} />
 
       {/* Thanh điều hướng dưới cùng */}
-      <NavigationBar />
+
     </View>
   );
 }
@@ -273,13 +274,13 @@ const styles = StyleSheet.create({
     marginRight: 10,
   },
   logoContainer: {
-        width: 60, 
-        height: 60, 
-        borderRadius: 30,
-        overflow: 'hidden', 
-        justifyContent: 'center', 
-        alignItems: 'center', 
-        backgroundColor: '#fff', 
+        width: 60, // Chiều rộng của khung
+        height: 60, // Chiều cao của khung
+        borderRadius: 30, // Bán kính để tạo hình tròn
+        overflow: 'hidden', // Ẩn phần hình ảnh ra ngoài khung
+        justifyContent: 'center', // Căn giữa hình ảnh
+        alignItems: 'center', // Căn giữa hình ảnh
+        backgroundColor: '#fff', // Màu nền của khung (có thể thay đổi)
     },
     logo: {
         width: '110%', 

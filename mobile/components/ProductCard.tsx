@@ -53,8 +53,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
         <Text>Phí VC: {shippingFee}</Text>
         <Text>Tổng: {totalPrice}</Text>
         <Text style={styles.status}>
-          Trạng thái:{' '}
-          <Text style={[styles.statusValue, { color: isAvailable ? 'green' : 'red' }]}>
+          Trạng thái: <Text style={[styles.statusValue, { color: isAvailable ? 'green' : 'red' }]}>
             {isAvailable ? 'Còn hàng' : 'Hết hàng'}
           </Text>
         </Text>

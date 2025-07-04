@@ -36,9 +36,9 @@ export default function Explore() {
     { id: 'stationery', label: ' Đồ dùng học tập' },
   ];
 
-  const handleTabPress = (label) => {
-    navigation.navigate(label);
-  };
+  // const handleTabPress = (label) => {
+  //   navigation.navigate(label);
+  // };
 
   return (
     <View style={styles.container}>
@@ -136,8 +136,6 @@ export default function Explore() {
         ))}
         </View>
       </ScrollView>
-
-      <NavigationBar />
     </View>
   );
 }
@@ -148,7 +146,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     paddingTop: 60,
     paddingHorizontal: 16,
-
   },
   pageTitle: {
     fontSize: 18,
