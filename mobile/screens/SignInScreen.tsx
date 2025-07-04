@@ -105,7 +105,7 @@ export default function SignInScreen() {
         resizeMode="contain"
       />
 
-      <Text style={styles.title}>Sign In</Text>
+      <Text style={styles.title}>Đăng Nhập</Text>
 
       <TextInput
         style={styles.input}
@@ -171,6 +171,15 @@ export default function SignInScreen() {
         </TouchableOpacity>
         <TouchableOpacity style={styles.socialButton}>
           <FontAwesome name="facebook" size={40} color="#3b5998" />
+        </TouchableOpacity>
+      </View>
+
+      <View style={styles.signupContainer}>
+        <Text style={styles.signupText}>Bạn chưa có tài khoản? </Text>
+        <TouchableOpacity onPress={() => router.push('/signup')}>
+          <Text style={[styles.signupText, { fontWeight: 'bold', color: '#007BFF' }]}>
+            Đăng ký ngay
+          </Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -280,6 +289,16 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#D17842',
     fontWeight: 'bold',
+  },
+  signupContainer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 20,
+  },
+  signupText: {
+    fontSize: 14,
+    color: '#333',
   },
 });
 

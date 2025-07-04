@@ -15,6 +15,7 @@ import { useLocalSearchParams } from 'expo-router';
 import { useEffect, useState } from 'react';
 import Slider from '@react-native-community/slider';
 import { router } from 'expo-router';
+import { BASE_URL } from '@/constants';
 
 interface ProductItem {
   logo_url?: string;
@@ -60,7 +61,7 @@ export default function Explore() {
       label: categoryName || '',
     });
 
-    fetch(`http://192.168.1.138:8000/products/by-category/${categoryId}`)
+    fetch(`${BASE_URL}/products/by-category/${categoryId}`)
       .then((res) => res.json())
       .then((data) => {
         console.log("Fetched products:", data);

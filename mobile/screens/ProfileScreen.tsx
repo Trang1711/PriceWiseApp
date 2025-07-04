@@ -8,6 +8,7 @@ import {
   ScrollView,
   SafeAreaView,
   Dimensions,
+  Alert,
 } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
@@ -58,7 +59,7 @@ export default function ProfileScreen() {
           <View>
            <Text style={styles.name}>{userInfo?.fullName || 'Đang tải...'}</Text>
           </View>
-          <FontAwesome name="angle-right" size={24} color="gray" style={{ marginLeft: 'auto' }} />
+          {/* <FontAwesome name="angle-right" size={24} color="gray" style={{ marginLeft: 'auto' }} /> */}
         </TouchableOpacity>
 
         <Text style={styles.settingsTitle}>Cài đặt tài khoản</Text>
@@ -66,7 +67,7 @@ export default function ProfileScreen() {
         {/* Các mục cài đặt */}
         <TouchableOpacity
           style={styles.item}
-          onPress={() => router.push('/profile/thongtincanhan')}
+          onPress={() => router.push('/profile/information')}
         >
           <FontAwesome name="user" size={22} color="#333" style={styles.icon} />
           <Text style={styles.itemText}>Thông tin cá nhân</Text>
@@ -75,7 +76,7 @@ export default function ProfileScreen() {
 
         <TouchableOpacity
           style={styles.item}
-          onPress={() => router.push('/profile/lichsu')}
+          onPress={() => router.push('/profile/history')}
         >
           <FontAwesome name="history" size={22} color="#333" style={styles.icon} />
           <Text style={styles.itemText}>Lịch sử hoạt động</Text>
@@ -84,11 +85,24 @@ export default function ProfileScreen() {
 
         <TouchableOpacity
           style={styles.item}
-          onPress={() => router.push('/profile/yeuthich')}
+          onPress={() => router.push('/drawer/favorites')}
         >
           <FontAwesome name="heart" size={22} color="#333" style={styles.icon} />
           <Text style={styles.itemText}>Danh sách yêu thích</Text>
           <FontAwesome name="angle-right" size={22} color="gray" style={{ marginLeft: 'auto' }} />
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={styles.item}
+          onPress={async () => {
+            await AsyncStorage.clear(); 
+            router.replace('/signin'); 
+            Alert.alert('Đăng xuất thành công!');
+          }}
+        >
+          <FontAwesome name="sign-out" size={22} color="#333" style={styles.icon1} />
+          <Text style={styles.itemText1}>Đăng xuất</Text>
+          {/* <FontAwesome name="angle-right" size={22} color="gray" style={{ marginLeft: 'auto' }} /> */}
         </TouchableOpacity>
 
         {/* Khoảng trống để tránh che mất bởi NavigationBar */}
@@ -162,5 +176,13 @@ const styles = StyleSheet.create({
   itemText: {
     fontSize: 20,
     color: '#333',
+  },
+   itemText1: {
+    fontSize: 20,
+    color: 'red',
+  },
+  icon1: {
+    marginRight: 14,
+    color: 'red',
   },
 });

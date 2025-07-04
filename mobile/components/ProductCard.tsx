@@ -279,7 +279,6 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     width: '100%',
     marginBottom: 10,
-    
   },
   logo1: {
     width: 30,

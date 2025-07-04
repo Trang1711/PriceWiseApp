@@ -1,6 +1,7 @@
 # routers/user_router.py
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
+from backend.schemas.schemas import UserUpdate
 from database.db import get_db
 from models.user import User
 from pydantic import BaseModel
@@ -25,3 +26,17 @@ def get_user(user_id: int, db: Session = Depends(get_db)):
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
     return user
+
+@router.put("/api/user/{user_id}")
+def update_user(user_id: int, user: UserUpdate, db: Session = Depends(get_db)):
+    db_user = db.query(User).filter(User.user_id == user_id).first()
+    if not db_user:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    for key, value in user.dict(exclude_unset=True).items():
+        setattr(db_user, key, value)
+    
+    db.commit()
+    db.refresh(db_user)
+    return db_user
+

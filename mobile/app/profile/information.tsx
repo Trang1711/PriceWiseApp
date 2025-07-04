@@ -7,6 +7,7 @@ import {
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { BASE_URL } from '@/constants';
 import { FontAwesome } from '@expo/vector-icons';
+import { router } from 'expo-router';
 
 export default function ThongTinCaNhan() {
   const [userInfo, setUserInfo] = useState<any>(null);
@@ -18,8 +19,6 @@ export default function ThongTinCaNhan() {
     const fetchUser = async () => {
       try {
         const userId = await AsyncStorage.getItem('user_id');
-        console.log("Fetched user_id from storage:", userId);
-
         if (!userId) {
           Alert.alert("Lỗi", "Không tìm thấy user_id trong bộ nhớ.");
           return;
@@ -29,8 +28,6 @@ export default function ThongTinCaNhan() {
         if (!response.ok) throw new Error("Lỗi khi gọi API");
 
         const data = await response.json();
-        console.log("Fetched user info:", data);
-
         setUserInfo({
           username: data.username,
           email: data.email,
@@ -40,22 +37,49 @@ export default function ThongTinCaNhan() {
           address: data.address || '',
         });
       } catch (err) {
-        console.error("Error fetching user info:", err);
         Alert.alert("Lỗi", "Không thể tải thông tin người dùng");
       }
     };
-    
     fetchUser();
   }, []);
+
+  const handleChange = (field: string, value: string) => {
+    setUserInfo(prev => ({ ...prev, [field]: value }));
+  };
 
   const handleEdit = (field: string, value: string) => {
     setEditingField(field);
     setTempValue(value);
   };
 
-  const handleSave = () => {
-    setUserInfo({ ...userInfo, [editingField!]: tempValue });
-    setEditingField(null);
+  const handleUpdateAll = async () => {
+    try {
+      const userId = await AsyncStorage.getItem('user_id');
+
+      const updatedPayload = {
+        username: userInfo.username,
+        email: userInfo.email,
+        password_hash: userInfo.password,
+        full_name: userInfo.fullName,
+        phone_number: userInfo.phone,
+        address: userInfo.address,
+      };
+
+      const response = await fetch(`${BASE_URL}/api/user/${userId}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json; charset=utf-8',
+        },
+        body: JSON.stringify(updatedPayload),
+      });
+
+      if (!response.ok) throw new Error("Lỗi cập nhật");
+
+      Alert.alert("Thành công", "Thông tin đã được cập nhật.");
+      router.push('/drawer/profile');
+    } catch (err) {
+      Alert.alert("Lỗi", "Không thể cập nhật thông tin");
+    }
   };
 
   if (!userInfo) {
@@ -72,50 +96,27 @@ export default function ThongTinCaNhan() {
       <Text style={styles.title}>Thông Tin Cá Nhân</Text>
 
       {Object.entries(userInfo).map(([field, value]) => (
-        <TouchableOpacity
-          key={field}
-          style={styles.infoBox}
-          onPress={() => handleEdit(field, String(value))}
-          activeOpacity={field === 'password' ? 1 : 0.7}
-        >
+        <View key={field} style={styles.infoBox}>
           <Text style={styles.label}>{getLabel(field)}</Text>
-
-          {editingField === field ? (
-            <View style={styles.inputWrapper}>
-              <TextInput
-                style={styles.input}
-                value={tempValue}
-                onChangeText={setTempValue}
-                onSubmitEditing={handleSave}
-                autoFocus
-                secureTextEntry={field === 'password' && !showPassword}
-              />
-              {field === 'password' && (
-                <TouchableOpacity
-                  onPress={() => setShowPassword(!showPassword)}
-                  style={styles.eyeIcon}
-                >
-                  <FontAwesome name={showPassword ? 'eye-slash' : 'eye'} size={20} color="#555" />
-                </TouchableOpacity>
-              )}
-            </View>
-          ) : (
-            <View style={styles.inputWrapper}>
-              <Text style={styles.value}>
-                {field === 'password' && !showPassword ? '********' : String(value)}
-              </Text>
-              {field === 'password' && (
-                <TouchableOpacity
-                  onPress={() => setShowPassword(!showPassword)}
-                  style={styles.eyeIcon}
-                >
-                  <FontAwesome name={showPassword ? 'eye-slash' : 'eye'} size={20} color="#555" />
-                </TouchableOpacity>
-              )}
-            </View>
-          )}
-        </TouchableOpacity>
+          <View style={styles.inputWrapper}>
+            <TextInput
+              style={styles.input}
+              value={String(value)}
+              onChangeText={text => handleChange(field, text)}
+              secureTextEntry={field === 'password' && !showPassword}
+            />
+            {field === 'password' && (
+              <TouchableOpacity onPress={() => setShowPassword(!showPassword)} style={styles.eyeIcon}>
+                <FontAwesome name={showPassword ? 'eye-slash' : 'eye'} size={20} color="#555" />
+              </TouchableOpacity>
+            )}
+          </View>
+        </View>
       ))}
+
+      <TouchableOpacity style={styles.updateButton} onPress={handleUpdateAll}>
+        <Text style={styles.updateButtonText}>Cập nhật</Text>
+      </TouchableOpacity>
     </ScrollView>
   );
 }
@@ -193,5 +194,24 @@ const styles = StyleSheet.create({
     right: 10,
     top: '50%',
     transform: [{ translateY: -10 }],
+  },
+  saveBtn: {
+    backgroundColor: '#007BFF',
+    padding: 8,
+    borderRadius: 5,
+    marginLeft: 8,
+  },
+  updateButton: {
+    backgroundColor: '#007BFF',
+    paddingVertical: 12,
+    borderRadius: 8,
+    marginTop: 20,
+    alignItems: 'center',
+    marginHorizontal: 20,
+  },
+  updateButtonText: {
+    color: 'white',
+    fontSize: 16,
+    fontWeight: 'bold',
   },
 });

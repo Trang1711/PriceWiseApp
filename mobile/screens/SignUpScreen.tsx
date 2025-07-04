@@ -59,7 +59,7 @@ export default function SignUpScreen() {
   return (
     <SafeAreaView style={styles.container}>
       <Image source={require('../assets/images/logo.png')} style={styles.logo} resizeMode="contain" />
-      <Text style={styles.title}>Sign Up</Text>
+      <Text style={styles.title}>Đăng Ký</Text>
 
       <TextInput
         style={styles.input}
@@ -122,6 +122,15 @@ export default function SignUpScreen() {
           <FontAwesome name="facebook" size={40} color="#3b5998" />
         </TouchableOpacity>
       </View>
+
+      <View style={styles.signupContainer}>
+        <Text style={styles.signupText}>Bạn đã có tài khoản? </Text>
+        <TouchableOpacity onPress={() => router.push('/signin')}>
+          <Text style={[styles.signupText, { fontWeight: 'bold', color: '#007BFF' }]}>
+            Đăng nhập ngay
+          </Text>
+        </TouchableOpacity>
+      </View>
     </SafeAreaView>
   );
 }
@@ -163,4 +172,14 @@ const styles = StyleSheet.create({
   separator: { height: 1, width: '100%', backgroundColor: '#ccc', marginVertical: 10 },
   socialButtons: { flexDirection: 'row', marginTop: 10, width: '100%', justifyContent: 'space-between' },
   socialButton: { flex: 1, alignItems: 'center', marginHorizontal: 5 },
+  signupContainer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 20,
+  },
+  signupText: {
+    fontSize: 14,
+    color: '#333',
+  },
 });
