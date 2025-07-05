@@ -9,13 +9,17 @@ import {
   Modal,
   Button,
   ActivityIndicator,
+  Alert,
 } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
 import { useLocalSearchParams } from 'expo-router';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import Slider from '@react-native-community/slider';
 import { router } from 'expo-router';
-import { BASE_URL } from '@/constants';
+import { BASE_URL, search, addToFavorites, removeFromFavorites } from '@/constants';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import RefreshWrapper from '@/components/RefreshWrapper';
+import axios from 'axios';
 
 interface ProductItem {
   logo_url?: string;
@@ -27,11 +31,26 @@ interface ProductItem {
   platform: string;
 }
 
+type ResultItem = {
+  product_id: string | number;
+  platform_id: string | number;
+  price: number;
+  shipping_fee: number;
+  product_url: string;
+  product: {
+    image_url: string;
+  };
+  platform: {
+    name: string;
+  };
+};
+
 export default function Explore() {
   const { categoryId, categoryName } = useLocalSearchParams<{
     categoryId?: string;
     categoryName?: string;
   }>();
+
   const [products, setProducts] = useState<ProductItem[]>([]);
   const [showPriceFilter, setShowPriceFilter] = useState(false);
   const [minPrice, setMinPrice] = useState(0);
@@ -39,6 +58,10 @@ export default function Explore() {
   const [selectedCategory, setSelectedCategory] = useState<{ id: string, label: string } | null>(null);
   const [showCategoryFilter, setShowCategoryFilter] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [searchText, setSearchText] = useState('');
+  const [results, setResults] = useState<ResultItem[]>([]);
+  const [favoriteIds, setFavoriteIds] = useState<Set<number>>(new Set());
+  const [refreshing, setRefreshing] = useState(false);
 
   const categories = [
     { id: '1', label: ' Thời trang & phụ kiện' },
@@ -50,9 +73,7 @@ export default function Explore() {
   ];
 
   useEffect(() => {
-    if (!categoryId) {
-      return;
-    }
+    if (!categoryId) return;
 
     setLoading(true);
 
@@ -64,17 +85,177 @@ export default function Explore() {
     fetch(`${BASE_URL}/products/by-category/${categoryId}`)
       .then((res) => res.json())
       .then((data) => {
-        console.log("Fetched products:", data);
-        setProducts(data);
+        setProducts(data || []);
+        setResults([]);
       })
       .catch((err) => {
         console.error("Fetch error:", err);
         setProducts([]);
       })
-      .finally(() => {
-        setLoading(false);
-      });
+      .finally(() => setLoading(false));
   }, [categoryId, categoryName]);
+
+  useEffect(() => {
+    const fetchFavorites = async () => {
+      try {
+        const userIdStr = await AsyncStorage.getItem('user_id');
+        if (!userIdStr) return;
+
+        const userId = parseInt(userIdStr);
+        const res = await axios.get(`${BASE_URL}/favorites/user/${userId}`);
+        const data = res.data;
+
+        const favIds = new Set(data.map((f: any) => f.product.product_id));
+        setFavoriteIds(favIds);
+      } catch (error) {
+        console.error('Lỗi khi tải sản phẩm yêu thích:', error);
+      }
+    };
+
+    fetchFavorites();
+  }, []);
+
+  const toggleFavorite = async (productId: number) => {
+    const userIdStr = await AsyncStorage.getItem('user_id');
+    if (!userIdStr) {
+      Alert.alert("Thông báo", "Vui lòng đăng nhập để sử dụng chức năng yêu thích.");
+      return;
+    }
+
+    const userId = parseInt(userIdStr);
+    const isFav = favoriteIds.has(productId);
+
+    try {
+      if (isFav) {
+        await removeFromFavorites(productId, userId);
+        setFavoriteIds((prev) => {
+          const updated = new Set(prev);
+          updated.delete(productId);
+          return updated;
+        });
+        Alert.alert("Đã xoá khỏi yêu thích");
+      } else {
+        await addToFavorites(productId, userId);
+        setFavoriteIds((prev) => new Set(prev).add(productId));
+        Alert.alert("Đã thêm vào yêu thích");
+      }
+    } catch (error) {
+      console.error("Lỗi khi xử lý yêu thích:", error);
+      Alert.alert("Lỗi", "Không thể xử lý yêu thích.");
+    }
+  };
+
+  const handleSearch = async () => {
+    try {
+      const res = await search(searchText);
+      const data = res.data || [];
+
+      const allCards: ResultItem[] = data.flatMap((product) => {
+        if (!product.platforms || product.platforms.length === 0) return [];
+
+        return product.platforms.map((pf) => ({
+          product_id: product.product_id,
+          platform_id: pf.platform.platform_id,
+          price: pf.price,
+          shipping_fee: pf.shipping_fee,
+          product_url: pf.product_url,
+          product: {
+            image_url: product.image_url || '',
+          },
+          platform: {
+            name: pf.platform.name || '',
+          },
+        }));
+      });
+
+      const filtered = allCards.filter(
+        (item) => item.price >= minPrice && item.price <= maxPrice
+      );
+
+      setResults(filtered);
+    } catch (error) {
+      console.error('Search error:', error);
+    }
+  };
+
+  const handleRefreshExplore = async () => {
+    if (!categoryId) return;
+
+    setLoading(true);
+
+    try {
+      const res = await fetch(`${BASE_URL}/products/by-category/${categoryId}`);
+      const data = await res.json();
+      setProducts(data || []);
+      setResults([]);
+    } catch (err) {
+      console.error("Refresh error:", err);
+      setProducts([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const renderProductCard = (
+    productId: number,
+    imageUrl: string,
+    name: string,
+    price: number,
+    platformName?: string
+  ) => (
+    <View key={`product-${productId}-${platformName || ''}`} style={styles.card}>
+     <TouchableOpacity
+        onPress={() => toggleFavorite(productId)}
+        style={{ position: 'absolute', top: 8, right: 8, zIndex: 10 }}
+      >
+        <FontAwesome
+          name={favoriteIds.has(productId) ? 'heart' : 'heart-o'}
+          size={20}
+          color={favoriteIds.has(productId) ? 'red' : 'gray'}
+        />
+      </TouchableOpacity>
+
+      <Image source={{ uri: imageUrl }} style={styles.productImage} />
+      <Text style={styles.price}>{price.toLocaleString()} đ</Text>
+      <Text style={styles.seller}>{platformName || name}</Text>
+
+      <TouchableOpacity
+        style={styles.buyButton}
+        onPress={() =>
+          router.push({
+            pathname: '/compare',
+            params: {
+              productId: productId.toString(),
+            },
+          })
+        }
+      >
+        <Text style={styles.buyButtonText}>So sánh</Text>
+      </TouchableOpacity>
+    </View>
+  );
+
+  const displayProducts = results.length > 0
+    ? results.map((item) =>
+        renderProductCard(
+          Number(item.product_id),
+          item.product.image_url,
+          '',
+          item.price,
+          item.platform.name
+        )
+      )
+    : products
+        .filter((p) => p.price >= minPrice && p.price <= maxPrice)
+        .map((p) =>
+          renderProductCard(
+            p.product_id,
+            p.image_url,
+            p.name,
+            p.price,
+            p.platform
+          )
+        );
 
   if (loading) {
     return (
@@ -89,14 +270,21 @@ export default function Explore() {
     <View style={styles.container}>
       <Text style={styles.pageTitle}>Danh mục: {categoryName}</Text>
 
+      {/* Search input */}
       <View style={styles.searchContainer}>
-        <TextInput placeholder="Tìm kiếm..." style={styles.searchInput} />
-        <TouchableOpacity>
-          <Text style={styles.cancelText}>Huỷ</Text>
+        <TextInput
+          placeholder="Tìm sản phẩm..."
+          style={styles.searchInput}
+          value={searchText}
+          onChangeText={setSearchText}
+          onSubmitEditing={handleSearch}
+        />
+       <TouchableOpacity onPress={handleSearch}>
+          <FontAwesome name="search" size={20} color="#333" style={{ marginLeft: 8, color: '#007BFF'}} />
         </TouchableOpacity>
       </View>
-      
 
+      {/* Filter options */}
       <View style={styles.filterRow}>
         <TouchableOpacity style={styles.filterBox} onPress={() => setShowPriceFilter(true)}>
           <FontAwesome name="filter" size={16} color="#333" />
@@ -113,47 +301,32 @@ export default function Explore() {
         </TouchableOpacity>
       </View>
 
-      <Modal visible={showPriceFilter} animationType="slide" transparent={true}>
+      {/* Price Filter Modal */}
+      <Modal visible={showPriceFilter} animationType="slide" transparent>
         <View style={styles.modalContainer}>
           <View style={styles.modalContent}>
             <Text style={styles.modalTitle}>Chọn khoảng giá</Text>
             <Text>Giá từ: {minPrice.toLocaleString()} đ</Text>
-            <Slider
-              minimumValue={0}
-              maximumValue={50000000}
-              step={1000000}
-              value={minPrice}
-              onValueChange={setMinPrice}
-            />
+            <Slider minimumValue={0} maximumValue={50000000} step={1000000} value={minPrice} onValueChange={setMinPrice} />
             <Text>Đến: {maxPrice.toLocaleString()} đ</Text>
-            <Slider
-              minimumValue={0}
-              maximumValue={50000000}
-              step={1000000}
-              value={maxPrice}
-              onValueChange={setMaxPrice}
-            />
+            <Slider minimumValue={0} maximumValue={50000000} step={1000000} value={maxPrice} onValueChange={setMaxPrice} />
             <Button title="Áp dụng" onPress={() => setShowPriceFilter(false)} />
           </View>
         </View>
       </Modal>
 
-      <Modal visible={showCategoryFilter} animationType="slide" transparent={true}>
+      {/* Category Filter Modal */}
+      <Modal visible={showCategoryFilter} animationType="slide" transparent>
         <View style={styles.modalContainer}>
           <View style={styles.modalContent}>
             <Text style={styles.modalTitle}>Chọn danh mục</Text>
-
             {categories.map((cat) => (
               <TouchableOpacity
                 key={cat.id}
-                style={[
-                  styles.categoryOption,
-                  selectedCategory?.id === cat.id && styles.selectedCategory,
-                ]}
+                style={[styles.categoryOption, selectedCategory?.id === cat.id && styles.selectedCategory]}
                 onPress={() => {
                   setSelectedCategory(cat);
                   setShowCategoryFilter(false);
-
                   router.push({
                     pathname: "/drawer/explore",
                     params: {
@@ -163,50 +336,23 @@ export default function Explore() {
                   });
                 }}
               >
-                <Text
-                  style={[
-                    styles.categoryText,
-                    selectedCategory?.id === cat.id && styles.selectedText,
-                  ]}
-                >
+                <Text style={[styles.categoryText, selectedCategory?.id === cat.id && styles.selectedText]}>
                   {cat.label}
                 </Text>
               </TouchableOpacity>
             ))}
-
             <Button title="Đóng" onPress={() => setShowCategoryFilter(false)} />
           </View>
         </View>
       </Modal>
-        
-      <ScrollView>
-        <View style={styles.productRow}>
-          {Array.isArray(products) &&
-            products
-              .filter((p) => p.price >= minPrice && p.price <= maxPrice)
-              .map((p) => (
-                <View key={`product-${p.product_platform_id}`} style={styles.card}>
-                  <Image source={{ uri: p.logo_url }} style={styles.logo} />
-                  <Image source={{ uri: p.image_url }} style={styles.productImage} />
-                  <Text style={styles.price}>{p.price?.toLocaleString()} đ</Text>
-                  <Text style={styles.seller}>{p.name}</Text>
-                  <TouchableOpacity
-                    style={styles.buyButton}
-                     onPress={() =>
-                      router.push({
-                        pathname: '/compare',
-                        params: {
-                          productId: p.product_id.toString(),
-                        },
-                      })
-                    }
-                  >
-                    <Text style={styles.buyButtonText}>So sánh</Text>
-                  </TouchableOpacity>
-                </View>
-              ))}
-        </View>
-      </ScrollView>
+
+      {/* Results */}
+      <RefreshWrapper onRefresh={handleRefreshExplore} style={{ paddingBottom: 20 }}>
+        {searchText ? (
+          <Text style={styles.resultsText}>{results.length} kết quả cho "{searchText}"</Text>
+        ) : null}
+        <View style={styles.productRow}>{displayProducts}</View>
+      </RefreshWrapper>
     </View>
   );
 }

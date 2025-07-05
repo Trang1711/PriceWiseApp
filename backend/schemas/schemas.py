@@ -1,5 +1,7 @@
 from pydantic import BaseModel, EmailStr
-from typing import Optional
+from datetime import datetime
+from pydantic import BaseModel, EmailStr, Field
+from typing import List, Optional
 from datetime import datetime
 
 
@@ -112,3 +114,49 @@ class FavoriteProductResponse(BaseModel):
     class Config:
         orm_mode = True
 
+from datetime import datetime
+from typing import List, Optional
+from pydantic import BaseModel, Field
+
+class PlatformOut(BaseModel):
+    platform_id: int
+    name: str
+    website_url: Optional[str] = None
+
+    class Config:
+        from_attributes = True
+
+class ProductPlatformOut(BaseModel):
+    platform: PlatformOut
+    price: float
+    discount: Optional[float] = None
+    discount_percentage: Optional[float] = None
+    rating: Optional[float] = None
+    review_count: Optional[int] = None
+    product_url: str
+    shipping_fee: float
+    estimated_delivery_time: Optional[str] = None
+    is_official: Optional[bool] = None
+
+    class Config:
+        from_attributes = True
+
+class ProductOut(BaseModel):
+    product_id: int
+    name: str
+    category_id: Optional[int] = None
+    description: Optional[str] = None
+    image_url: Optional[str] = None
+    created_at: datetime
+    updated_at: Optional[datetime] = None
+    platforms: List[ProductPlatformOut] = Field(default_factory=list)
+
+    class Config:
+        from_attributes = True
+
+
+from pydantic import BaseModel
+
+class FavoriteCreate(BaseModel):
+    user_id: int
+    product_id: int

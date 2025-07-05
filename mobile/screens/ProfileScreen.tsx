@@ -17,7 +17,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { BASE_URL } from '@/constants';
 
 export default function ProfileScreen() {
-  const [userInfo, setUserInfo] = useState<{ fullName: string } | null>(null);
+  const [userInfo, setUserInfo] = useState<{ fullName: string , email: string} | null>(null);
   const router = useRouter();
 
   // const handleTabPress = (label: string) => {
@@ -35,6 +35,7 @@ export default function ProfileScreen() {
 
         setUserInfo({
           fullName: data.full_name || 'Người dùng',
+          email: data.email || 'Email',
         });
       } catch (error) {
         console.error('Lỗi khi tải user info:', error);
@@ -57,7 +58,8 @@ export default function ProfileScreen() {
         <TouchableOpacity style={styles.profileSection}>
           <Image source={require('../assets/images/avatar.png')} style={styles.avatar} />
           <View>
-           <Text style={styles.name}>{userInfo?.fullName || 'Đang tải...'}</Text>
+            <Text style={styles.name}>{userInfo?.fullName || 'Đang tải...'}</Text>
+            <Text>{userInfo?.email || 'Đang tải...'}</Text>
           </View>
           {/* <FontAwesome name="angle-right" size={24} color="gray" style={{ marginLeft: 'auto' }} /> */}
         </TouchableOpacity>
@@ -89,6 +91,15 @@ export default function ProfileScreen() {
         >
           <FontAwesome name="heart" size={22} color="#333" style={styles.icon} />
           <Text style={styles.itemText}>Danh sách yêu thích</Text>
+          <FontAwesome name="angle-right" size={22} color="gray" style={{ marginLeft: 'auto' }} />
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={styles.item}
+          onPress={() => router.push('/profile/about_us')}
+        >
+          <FontAwesome name="users" size={22} color="#333" style={styles.icon} />
+          <Text style={styles.itemText}>Về Chúng Tôi</Text>
           <FontAwesome name="angle-right" size={22} color="gray" style={{ marginLeft: 'auto' }} />
         </TouchableOpacity>
 

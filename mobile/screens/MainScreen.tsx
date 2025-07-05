@@ -1,7 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import {
   ActivityIndicator,
   Image,
+  RefreshControl,
   SafeAreaView,
   ScrollView,
   StyleSheet,
@@ -25,6 +26,15 @@ export default function HomeScreen() {
   const navigation = useNavigation();
   const [products, setProducts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
+
+  const onRefresh = useCallback(() => {
+    setRefreshing(true);
+    // Gọi API hoặc load lại dữ liệu ở đây
+    setTimeout(() => {
+      setRefreshing(false); // Kết thúc refresh
+    }, 2000);
+  }, []);
 
   useEffect(() => {
     axios.get(`${BASE_URL}/api/products`)
@@ -77,7 +87,11 @@ export default function HomeScreen() {
 
   return (
     <View style={{ flex: 1 }}>
-      <ScrollView contentContainerStyle={{ paddingBottom: 120 }} style={[styles.container, { marginTop: 20 }]}>
+      <ScrollView contentContainerStyle={{ paddingBottom: 120 }} 
+      style={[styles.container, { marginTop: 20 }]} 
+      refreshControl={
+        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+      }>
         {/* Thanh tìm kiếm */}
         <View style={styles.headerContainer}>
 

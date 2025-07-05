@@ -4,6 +4,13 @@ from sqlalchemy.orm import Session
 from models.category import Category
 from database.db import get_db
 from models.product import Product, ProductPlatform
+from sqlalchemy.orm import joinedload
+import models.product
+import models, schemas
+from typing import List
+from sqlalchemy import func
+
+import schemas.schemas
 
 router = APIRouter()
 
@@ -60,3 +67,13 @@ def compare_product(product_id: int, db: Session = Depends(get_db)):
         }
         for product, platform in results
     ]
+
+@router.get("/search", response_model=List[schemas.schemas.ProductOut])
+def search_products(keyword: str, db: Session = Depends(get_db)):
+    keywords = keyword.strip().lower().split()
+    query = db.query(Product) 
+
+    for kw in keywords:
+        query = query.filter(func.lower(Product.name).like(f"%{kw}%"))
+
+    return query.all()

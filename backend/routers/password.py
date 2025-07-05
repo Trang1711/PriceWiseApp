@@ -3,6 +3,7 @@ from fastapi import APIRouter, Depends, Form, HTTPException
 from fastapi.responses import HTMLResponse, RedirectResponse
 from sqlalchemy.orm import Session
 from pydantic import BaseModel, EmailStr
+from backend.core.config import BASE_URL
 from backend.models.user import User
 from database.session import get_db
 from services.email_service import send_email
@@ -18,7 +19,7 @@ def forgot_password(data: ForgotPasswordRequest, db: Session = Depends(get_db)):
     if not user:
         raise HTTPException(status_code=404, detail="Email không tồn tại")
 
-    reset_link = f"http://192.168.23.138:8000/open-app/reset-password/{user.user_id}"
+    reset_link = f"${BASE_URL}/open-app/reset-password/{user.user_id}"
 
     body = f"""
     <p>Xin chào {user.username},</p>

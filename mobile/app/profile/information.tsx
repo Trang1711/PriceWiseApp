@@ -2,7 +2,11 @@ import React, { useState, useEffect } from 'react';
 import {
   View, Text, StyleSheet, ScrollView,
   TouchableOpacity, TextInput, Alert,
-  ActivityIndicator
+  ActivityIndicator, Image,
+  KeyboardAvoidingView,
+  Platform,
+  TouchableWithoutFeedback,
+  Keyboard
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { BASE_URL } from '@/constants';
@@ -32,9 +36,9 @@ export default function ThongTinCaNhan() {
           username: data.username,
           email: data.email,
           password: data.password_hash,
-          fullName: data.full_name || '',
-          phone: data.phone_number || '',
-          address: data.address || '',
+          fullName: data.full_name || 'Chưa cập nhật',
+          phone: data.phone_number || 'Chưa cập nhật',
+          address: data.address || 'Chưa cập nhật',
         });
       } catch (err) {
         Alert.alert("Lỗi", "Không thể tải thông tin người dùng");
@@ -92,32 +96,48 @@ export default function ThongTinCaNhan() {
   }
 
   return (
-    <ScrollView contentContainerStyle={styles.container}>
-      <Text style={styles.title}>Thông Tin Cá Nhân</Text>
-
-      {Object.entries(userInfo).map(([field, value]) => (
-        <View key={field} style={styles.infoBox}>
-          <Text style={styles.label}>{getLabel(field)}</Text>
-          <View style={styles.inputWrapper}>
-            <TextInput
-              style={styles.input}
-              value={String(value)}
-              onChangeText={text => handleChange(field, text)}
-              secureTextEntry={field === 'password' && !showPassword}
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+      <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={{ flex: 1 }}>
+        <ScrollView contentContainerStyle={styles.container} keyboardShouldPersistTaps="handled">
+        <TouchableOpacity style={styles.profileSection}>
+            <Image
+              source={require('../../assets/images/avatar.png')}
+              style={styles.avatar}
             />
-            {field === 'password' && (
-              <TouchableOpacity onPress={() => setShowPassword(!showPassword)} style={styles.eyeIcon}>
-                <FontAwesome name={showPassword ? 'eye-slash' : 'eye'} size={20} color="#555" />
-              </TouchableOpacity>
-            )}
-          </View>
-        </View>
-      ))}
+            <Text style={styles.name}>
+              {userInfo?.fullName || 'Đang tải...'}
+            </Text>
 
-      <TouchableOpacity style={styles.updateButton} onPress={handleUpdateAll}>
-        <Text style={styles.updateButtonText}>Cập nhật</Text>
-      </TouchableOpacity>
-    </ScrollView>
+            <Text style={styles.email}>
+              {userInfo?.email || 'Đang tải...'}
+            </Text>
+          </TouchableOpacity>
+
+          {Object.entries(userInfo).map(([field, value]) => (
+            <View key={field} style={styles.infoBox}>
+              <Text style={styles.label}>{getLabel(field)}</Text>
+              <View style={styles.inputWrapper}>
+                <TextInput
+                  style={styles.input}
+                  value={String(value)}
+                  onChangeText={text => handleChange(field, text)}
+                  secureTextEntry={field === 'password' && !showPassword}
+                />
+                {field === 'password' && (
+                  <TouchableOpacity onPress={() => setShowPassword(!showPassword)} style={styles.eyeIcon}>
+                    <FontAwesome name={showPassword ? 'eye-slash' : 'eye'} size={20} color="#555" />
+                  </TouchableOpacity>
+                )}
+              </View>
+            </View>
+          ))}
+
+          <TouchableOpacity style={styles.updateButton} onPress={handleUpdateAll}>
+            <Text style={styles.updateButtonText}>Cập nhật</Text>
+          </TouchableOpacity>
+        </ScrollView>
+      </KeyboardAvoidingView>
+    </TouchableWithoutFeedback>
   );
 }
 
@@ -171,7 +191,7 @@ const styles = StyleSheet.create({
     color: '#000',
     borderBottomWidth: 1,
     borderBottomColor: '#D17842',
-    paddingVertical: 4,
+    paddingVertical: 1,
   },
   saveButton: {
     backgroundColor: '#D17842',
@@ -197,7 +217,7 @@ const styles = StyleSheet.create({
   },
   saveBtn: {
     backgroundColor: '#007BFF',
-    padding: 8,
+    padding: 10,
     borderRadius: 5,
     marginLeft: 8,
   },
@@ -205,13 +225,33 @@ const styles = StyleSheet.create({
     backgroundColor: '#007BFF',
     paddingVertical: 12,
     borderRadius: 8,
-    marginTop: 20,
     alignItems: 'center',
-    marginHorizontal: 20,
   },
   updateButtonText: {
     color: 'white',
     fontSize: 16,
     fontWeight: 'bold',
   },
+    profileSection: {
+    flexDirection: 'column',
+    alignItems: 'center',
+    padding: 14,
+    borderRadius: 14,
+  },
+  avatar: {
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    marginBottom: 10,
+  },
+  name: {
+    fontSize: 25,
+    fontWeight: '600',
+    textAlign: 'center', 
+    color: '#000'
+  },
+  email: {
+    fontSize: 15,
+    color: '#000',
+  }
 });
