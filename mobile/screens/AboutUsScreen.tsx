@@ -55,7 +55,7 @@ const teamMembers = [
     instagram: 'https://instagram.com/dieupvn',
     skills: ['node-js', 'python', 'database'],
     color: 'rgb(68, 164, 242)',
-    avatar: require('../assets/images/avatar.png'),
+    avatar: require('../assets/images/Sam.jpg'),
   },
   {
     id: 4,
@@ -107,7 +107,7 @@ const AboutUsScreen = () => {
   const playSound = async () => {
     const sound = new Audio.Sound();
     try {
-      await sound.loadAsync(require('../assets/sounds/wait.mp3'));
+      await sound.loadAsync(require('../assets/sounds/hub.mp3'));
       await sound.playAsync();
     } catch (error) {
       console.error('Lỗi phát âm thanh:', error);
@@ -162,10 +162,10 @@ const AboutUsScreen = () => {
             <View style={styles.info}>
               <Text style={styles.name}>{member.name}</Text>
               <Text style={styles.role}>{member.role}</Text>
-              <View style={styles.emailRow}>
+              {/* <View style={styles.emailRow}>
                 <FontAwesome name="envelope" size={16} color={isDark ? '#ccc' : member.color} style={{ marginRight: 6 }} />
                 <Text style={[styles.email, { color: member.color }]}>{member.email}</Text>
-              </View>
+              </View> */}
             </View>
           </TouchableOpacity>
         </Animatable.View>
