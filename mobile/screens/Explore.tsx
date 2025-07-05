@@ -1,4 +1,3 @@
-import React, { useState } from 'react';
 import {
   View,
   Text,
@@ -8,48 +7,111 @@ import {
   TouchableOpacity,
   ScrollView,
   Modal,
-  Button
+  Button,
+  ActivityIndicator,
 } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
-import { useNavigation } from '@react-navigation/native';
+import { useLocalSearchParams } from 'expo-router';
+import { useEffect, useState } from 'react';
 import Slider from '@react-native-community/slider';
-import NavigationBar from '../components/NavigationBar';
+import { router } from 'expo-router';
+
+interface ProductItem {
+  logo_url?: string;
+  product_platform_id: number;
+  product_id: number;
+  name: string;
+  image_url: string;
+  price: number;
+  platform: string;
+}
 
 export default function Explore() {
-  const navigation = useNavigation();
+  const { categoryId, categoryName } = useLocalSearchParams<{
+    categoryId?: string;
+    categoryName?: string;
+  }>();
+  const [products, setProducts] = useState<ProductItem[]>([]);
   const [showPriceFilter, setShowPriceFilter] = useState(false);
   const [minPrice, setMinPrice] = useState(0);
   const [maxPrice, setMaxPrice] = useState(50000000);
+  const [selectedCategory, setSelectedCategory] = useState<{ id: string, label: string } | null>(null);
+  const [showCategoryFilter, setShowCategoryFilter] = useState(false);
+  const [loading, setLoading] = useState(false);
 
-  const handleTabPress = (label) => {
-    navigation.navigate(label);
-  };
+  const categories = [
+    { id: '1', label: ' Thời trang & phụ kiện' },
+    { id: '2', label: ' Mỹ phẩm & làm đẹp' },
+    { id: '3', label: ' Điện thoại di động' },
+    { id: '4', label: ' Laptop & máy tính bảng' },
+    { id: '5', label: ' Thiết bị thể thao' },
+    { id: '6', label: ' Đồ dùng học tập' },
+  ];
+
+  useEffect(() => {
+    if (!categoryId) {
+      return;
+    }
+
+    setLoading(true);
+
+    setSelectedCategory({
+      id: String(categoryId),
+      label: categoryName || '',
+    });
+
+    fetch(`http://192.168.1.138:8000/products/by-category/${categoryId}`)
+      .then((res) => res.json())
+      .then((data) => {
+        console.log("Fetched products:", data);
+        setProducts(data);
+      })
+      .catch((err) => {
+        console.error("Fetch error:", err);
+        setProducts([]);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  }, [categoryId, categoryName]);
+
+  if (loading) {
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <ActivityIndicator size="large" color="#007BFF" />
+        <Text style={{ marginTop: 10 }}>Đang tải dữ liệu...</Text>
+      </View>
+    );
+  }
 
   return (
     <View style={styles.container}>
-      {/* Header */}
-      <Text style={styles.pageTitle}>Finding page</Text>
+      <Text style={styles.pageTitle}>Danh mục: {categoryName}</Text>
 
-      {/* Search Bar */}
       <View style={styles.searchContainer}>
-        <TextInput
-          placeholder="iPhone 15 Pro Max"
-          style={styles.searchInput}
-        />
+        <TextInput placeholder="Tìm kiếm..." style={styles.searchInput} />
         <TouchableOpacity>
           <Text style={styles.cancelText}>Huỷ</Text>
         </TouchableOpacity>
       </View>
+      
 
-      {/* Filters */}
       <View style={styles.filterRow}>
         <TouchableOpacity style={styles.filterBox} onPress={() => setShowPriceFilter(true)}>
           <FontAwesome name="filter" size={16} color="#333" />
-          <Text style={styles.filterText}> Giá từ {minPrice.toLocaleString()}đ đến {maxPrice.toLocaleString()}đ</Text>
+          <Text style={styles.filterText}>
+            Giá từ {minPrice.toLocaleString()}đ đến {maxPrice.toLocaleString()}đ
+          </Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity style={styles.filterBox} onPress={() => setShowCategoryFilter(true)}>
+          <FontAwesome name="tags" size={16} color="#333" />
+          <Text style={styles.filterText}>
+            Danh mục: {selectedCategory ? selectedCategory.label : 'Chọn'}
+          </Text>
         </TouchableOpacity>
       </View>
 
-      {/* Modal Filter */}
       <Modal visible={showPriceFilter} animationType="slide" transparent={true}>
         <View style={styles.modalContainer}>
           <View style={styles.modalContent}>
@@ -60,7 +122,7 @@ export default function Explore() {
               maximumValue={50000000}
               step={1000000}
               value={minPrice}
-              onValueChange={value => setMinPrice(value)}
+              onValueChange={setMinPrice}
             />
             <Text>Đến: {maxPrice.toLocaleString()} đ</Text>
             <Slider
@@ -68,37 +130,82 @@ export default function Explore() {
               maximumValue={50000000}
               step={1000000}
               value={maxPrice}
-              onValueChange={value => setMaxPrice(value)}
+              onValueChange={setMaxPrice}
             />
             <Button title="Áp dụng" onPress={() => setShowPriceFilter(false)} />
           </View>
         </View>
       </Modal>
 
-      <ScrollView>
-        {/* Results Summary */}
-        <Text style={styles.resultsText}>4 kết quả cho "iPhone 15 Pro Max"</Text>
+      <Modal visible={showCategoryFilter} animationType="slide" transparent={true}>
+        <View style={styles.modalContainer}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalTitle}>Chọn danh mục</Text>
 
-        {/* Product Row */}
-        <View style={styles.productRow}>
-          {[1, 2].map((item) => (
-            <View key={item} style={styles.card}>
-              <Image
-                source={require('../assets/images/IP15.jpg')}
-                style={styles.productImage}
-              />
-              <Text style={styles.price}>32.990.000 đ</Text>
-              <Text style={styles.seller}>Ming Store</Text>
-              <Text style={styles.ship}>Miễn phí vận chuyển</Text>
-              <TouchableOpacity style={styles.buyButton}>
-                <Text style={styles.buyButtonText}>Tới nơi bán</Text>
+            {categories.map((cat) => (
+              <TouchableOpacity
+                key={cat.id}
+                style={[
+                  styles.categoryOption,
+                  selectedCategory?.id === cat.id && styles.selectedCategory,
+                ]}
+                onPress={() => {
+                  setSelectedCategory(cat);
+                  setShowCategoryFilter(false);
+
+                  router.push({
+                    pathname: "/drawer/explore",
+                    params: {
+                      categoryId: cat.id,
+                      categoryName: cat.label,
+                    },
+                  });
+                }}
+              >
+                <Text
+                  style={[
+                    styles.categoryText,
+                    selectedCategory?.id === cat.id && styles.selectedText,
+                  ]}
+                >
+                  {cat.label}
+                </Text>
               </TouchableOpacity>
-            </View>
-          ))}
+            ))}
+
+            <Button title="Đóng" onPress={() => setShowCategoryFilter(false)} />
+          </View>
+        </View>
+      </Modal>
+        
+      <ScrollView>
+        <View style={styles.productRow}>
+          {Array.isArray(products) &&
+            products
+              .filter((p) => p.price >= minPrice && p.price <= maxPrice)
+              .map((p) => (
+                <View key={`product-${p.product_platform_id}`} style={styles.card}>
+                  <Image source={{ uri: p.logo_url }} style={styles.logo} />
+                  <Image source={{ uri: p.image_url }} style={styles.productImage} />
+                  <Text style={styles.price}>{p.price?.toLocaleString()} đ</Text>
+                  <Text style={styles.seller}>{p.name}</Text>
+                  <TouchableOpacity
+                    style={styles.buyButton}
+                     onPress={() =>
+                      router.push({
+                        pathname: '/compare',
+                        params: {
+                          productId: p.product_id.toString(),
+                        },
+                      })
+                    }
+                  >
+                    <Text style={styles.buyButtonText}>So sánh</Text>
+                  </TouchableOpacity>
+                </View>
+              ))}
         </View>
       </ScrollView>
-
-      <NavigationBar />
     </View>
   );
 }
@@ -107,7 +214,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
-    paddingTop: 40,
+    paddingTop: 60,
     paddingHorizontal: 16,
   },
   pageTitle: {
@@ -133,14 +240,17 @@ const styles = StyleSheet.create({
   },
   filterRow: {
     flexDirection: 'row',
+    justifyContent: 'space-between',
+    gap: 10,
     marginBottom: 10,
   },
   filterBox: {
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: '#ddd',
-    padding: 8,
+    padding: 10,
     borderRadius: 10,
+    flex: 1,
   },
   filterText: {
     marginLeft: 5,
@@ -153,16 +263,20 @@ const styles = StyleSheet.create({
   },
   productRow: {
     flexDirection: 'row',
-    justifyContent: 'space-around',
-    gap: 10,
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
+    paddingHorizontal: 10,
   },
   card: {
-    width: '45%',
+    width: '47%',
+    marginBottom: 16,
     borderWidth: 1,
     borderColor: '#ccc',
     padding: 10,
     borderRadius: 8,
     alignItems: 'center',
+    position: 'relative',
+    backgroundColor: '#fff',
   },
   productImage: {
     width: 100,
@@ -210,5 +324,33 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
     marginBottom: 10,
-  }
+  },
+  categoryOption: {
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 8,
+    marginBottom: 10,
+  },
+  categoryText: {
+    fontSize: 14,
+    color: '#333',
+  },
+  selectedCategory: {
+    backgroundColor: '#D17842',
+    borderColor: '#D17842',
+  },
+  selectedText: {
+    color: 'white',
+    fontWeight: 'bold',
+  },
+  logo: {
+    width: 24,
+    height: 24,
+    resizeMode: 'contain',
+    position: 'absolute',
+    top: 8,
+    right: 8,
+  },
 });

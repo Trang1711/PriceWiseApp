@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -7,23 +7,94 @@ import {
   TouchableOpacity,
   Image,
   Alert,
+  SafeAreaView,
 } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
+import { BASE_URL } from '@/constants';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function SignInScreen() {
   const [passwordVisible, setPasswordVisible] = useState(false);
+  const [rememberMe, setRememberMe] = useState(false);
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const router = useRouter();
 
-  const handleSignIn = () => {
-    Alert.alert("Thông báo", "Đăng nhập thành công!", [
-      {
-        text: "OK",
-        onPress: () => {
-          router.replace('/home'); // Trang Home ở app
+  useEffect(() => {
+    const loadRemembered = async () => {
+      const savedEmail = await AsyncStorage.getItem('remember_email');
+      const savedPassword = await AsyncStorage.getItem('remember_password');
+      if (savedEmail && savedPassword) {
+        setEmail(savedEmail);
+        setPassword(savedPassword);
+        setRememberMe(true);
+      }
+    };
+    loadRemembered();
+  }, []);
+
+  const handleSignIn = async () => {
+    if (!email || !password) {
+      Alert.alert("Lỗi", "Vui lòng nhập đầy đủ email và mật khẩu.");
+      return;
+    }
+
+    try {
+      const response = await fetch(`${BASE_URL}/login`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
         },
-      },
-    ]);
+        body: JSON.stringify({ email, password })
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.detail || "Lỗi đăng nhập");
+      }
+
+      const data = await response.json();
+
+      // if (data.success) {
+      //   await AsyncStorage.setItem('user_id', data.user.id.toString());
+        
+      //   if (rememberMe) {
+      //     await AsyncStorage.setItem('remember_email', email);
+      //   } else {
+      //     await AsyncStorage.removeItem('remember_email');
+      //   }
+
+      //   Alert.alert("Đăng nhập thành công", `Chào ${data.user.username}!`, [
+      //     {
+      //       text: "OK",
+      //       onPress: () => router.replace('/home'),
+      //     }
+      //   ]);
+      // } else {
+      //   Alert.alert("Lỗi", "Tên đăng nhập hoặc mật khẩu không đúng.");
+      // }
+
+      if (data.success) {
+        await AsyncStorage.setItem('user_id', data.user.id.toString());
+
+        if (rememberMe) {
+          await AsyncStorage.setItem('remember_email', email);
+          await AsyncStorage.setItem('remember_password', password);
+        } else {
+          await AsyncStorage.removeItem('remember_email');
+          await AsyncStorage.removeItem('remember_password');
+        }
+
+        Alert.alert("Đăng nhập thành công", `Chào ${data.user.username}!`, [
+          { text: "OK", onPress: () => router.replace('/drawer/home') }
+        ]);
+      }
+
+    } catch (err) {
+      const error = err as Error;
+      Alert.alert("Lỗi", error.message);
+    }
   };
 
   return (
@@ -41,6 +112,8 @@ export default function SignInScreen() {
         placeholder="E-mail address"
         keyboardType="email-address"
         autoCapitalize="none"
+        value={email}
+        onChangeText={setEmail}
       />
 
       <View style={styles.passwordContainer}>
@@ -48,6 +121,8 @@ export default function SignInScreen() {
           style={styles.input}
           placeholder="Password"
           secureTextEntry={!passwordVisible}
+          value={password}
+          onChangeText={setPassword}
         />
         <TouchableOpacity
           onPress={() => setPasswordVisible(!passwordVisible)}
@@ -61,12 +136,23 @@ export default function SignInScreen() {
         </TouchableOpacity>
       </View>
 
-      <TouchableOpacity
-        style={styles.forgotPassword}
-        onPress={() => router.push('/forgot')}
-      >
-        <Text style={styles.forgotText}>Quên mật khẩu?</Text>
+      {/* Remember Me */}
+     <View style={styles.rowContainer}>
+      <View style={styles.rememberMeGroup}>
+        <TouchableOpacity
+          onPress={() => setRememberMe(!rememberMe)}
+          style={styles.checkbox}
+        >
+          {rememberMe && <View style={styles.checked} />}
+        </TouchableOpacity>
+        <Text style={styles.optionText}>Ghi nhớ đăng nhập</Text>
+      </View>
+
+      <TouchableOpacity onPress={() => router.push('/forgot')}>
+        <Text style={styles.optionText}>Quên mật khẩu?</Text>
       </TouchableOpacity>
+    </View>
+
 
       <TouchableOpacity style={styles.button} onPress={handleSignIn}>
         <Text style={styles.buttonText}>Sign In</Text>
@@ -92,27 +178,107 @@ export default function SignInScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#fff', padding: 20, alignItems: 'center' },
-  logo: { width: 100, height: 100, marginBottom: 20 },
-  title: { fontSize: 24, fontWeight: 'bold', marginBottom: 30 },
+  container: { 
+    flex: 1, 
+    backgroundColor: '#fff',
+    padding: 20, 
+    alignItems: 'center',
+    paddingTop: 90,
+  },
+  logo: { 
+    width: 100, 
+    height: 100,
+    marginBottom: 20 
+  },
+  title: { 
+    fontSize: 24,
+    fontWeight: 'bold', 
+    marginBottom: 30 
+  },
   input: {
-    width: '100%', height: 50, backgroundColor: '#f0f0f0',
-    borderRadius: 10, marginBottom: 20, paddingHorizontal: 15,
-    borderWidth: 1, borderColor: '#aaa',
+    width: '100%', 
+    height: 50, 
+    backgroundColor: '#f0f0f0',
+    borderRadius: 10, 
+    marginBottom: 20, 
+    paddingHorizontal: 15,
+    borderWidth: 1, 
+    borderColor: '#aaa',
   },
-  passwordContainer: { width: '100%', position: 'relative' },
-  icon: { position: 'absolute', right: 15, top: 15 },
-  forgotPassword: { alignSelf: 'flex-end', marginBottom: 20 },
-  forgotText: { fontSize: 14, color: '#D17842', fontWeight: '600' },
+  passwordContainer: { 
+    width: '100%',
+    position: 'relative' 
+  },
+  icon: {
+    position: 'absolute',
+    right: 15, 
+    top: 15 
+  },
   button: {
-    backgroundColor: '#D17842', paddingVertical: 12, paddingHorizontal: 30,
-    borderRadius: 10, width: '100%', alignItems: 'center', marginVertical: 10,
+    backgroundColor: '#D17842',
+    paddingVertical: 12,
+    paddingHorizontal: 30,
+    borderRadius: 10, 
+    width: '100%', 
+    alignItems: 'center', 
+    marginVertical: 10,
   },
-  buttonText: { color: '#fff', fontWeight: 'bold', fontSize: 16 },
-  socialText: { marginTop: 15, fontSize: 14, color: '#444', textAlign: 'center' },
-  separator: { height: 1, width: '100%', backgroundColor: '#ccc', marginVertical: 10 },
+  buttonText: {
+    color: '#fff', 
+    fontWeight: 'bold',
+    fontSize: 16 
+  },
+  socialText: {
+    marginTop: 15,
+    fontSize: 14, 
+    color: '#444', 
+    textAlign: 'center' 
+  },
+  separator: { 
+    height: 1, 
+    width: '100%', 
+    backgroundColor: '#ccc',
+    marginVertical: 10 
+  },
   socialButtons: {
-    flexDirection: 'row', marginTop: 10, width: '100%', justifyContent: 'space-between',
+    flexDirection: 'row', 
+    marginTop: 10, 
+    width: '100%', 
+    justifyContent: 'space-between',
   },
-  socialButton: { flex: 1, alignItems: 'center', marginHorizontal: 5 },
+  socialButton: { 
+    flex: 1,
+    alignItems: 'center',
+    marginHorizontal: 5 
+  },
+  rowContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 16,
+    width: '100%',
+  },
+  rememberMeGroup: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  checkbox: {
+    width: 20,
+    height: 20,
+    borderWidth: 1,
+    borderColor: '#888',
+    marginRight: 8,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  checked: {
+    width: 12,
+    height: 12,
+    backgroundColor: '#007BFF',
+  },
+  optionText: {
+    fontSize: 14,
+    color: '#D17842',
+    fontWeight: 'bold',
+  },
 });

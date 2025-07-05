@@ -1,26 +1,53 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
-  View,
-  Text,
-  StyleSheet,
-  ScrollView,
-  TouchableOpacity,
-  TextInput,
-  Alert
+  View, Text, StyleSheet, ScrollView,
+  TouchableOpacity, TextInput, Alert,
+  ActivityIndicator
 } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { BASE_URL } from '@/constants';
+import { FontAwesome } from '@expo/vector-icons';
+import { router } from 'expo-router';
 
 export default function ThongTinCaNhan() {
-  const [userInfo, setUserInfo] = useState({
-    username: 'sam123',
-    email: 'sam@example.com',
-    password: '********',
-    fullName: 'Nguyễn Văn Sam',
-    phone: '0901234567',
-    address: '123 Đường Lê Lợi, Quận 1, TP.HCM',
-  });
+  const [userInfo, setUserInfo] = useState<any>(null);
+  const [editingField, setEditingField] = useState<string | null>(null);
+  const [tempValue, setTempValue] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
 
-  const [editingField, setEditingField] = useState(null); // field đang được sửa
-  const [tempValue, setTempValue] = useState(''); // giá trị nhập tạm thời
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const userId = await AsyncStorage.getItem('user_id');
+        console.log("Fetched user_id from storage:", userId);
+
+        if (!userId) {
+          Alert.alert("Lỗi", "Không tìm thấy user_id trong bộ nhớ.");
+          return;
+        }
+
+        const response = await fetch(`${BASE_URL}/api/user/${userId}`);
+        if (!response.ok) throw new Error("Lỗi khi gọi API");
+
+        const data = await response.json();
+        console.log("Fetched user info:", data);
+
+        setUserInfo({
+          username: data.username,
+          email: data.email,
+          password: data.password_hash,
+          fullName: data.full_name || '',
+          phone: data.phone_number || '',
+          address: data.address || '',
+        });
+      } catch (err) {
+        console.error("Error fetching user info:", err);
+        Alert.alert("Lỗi", "Không thể tải thông tin người dùng");
+      }
+    };
+    
+    fetchUser();
+  }, []);
 
   const handleEdit = (field: string, value: string) => {
     setEditingField(field);
@@ -28,9 +55,18 @@ export default function ThongTinCaNhan() {
   };
 
   const handleSave = () => {
-    setUserInfo({ ...userInfo, [editingField]: tempValue });
+    setUserInfo({ ...userInfo, [editingField!]: tempValue });
     setEditingField(null);
   };
+
+  if (!userInfo) {
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <ActivityIndicator size="large" color="#007BFF" />
+        <Text style={{ marginTop: 10 }}>Đang tải dữ liệu...</Text>
+      </View>
+    );
+  }
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
@@ -40,29 +76,61 @@ export default function ThongTinCaNhan() {
         <TouchableOpacity
           key={field}
           style={styles.infoBox}
-          onPress={() => handleEdit(field, value)}
+          onPress={() => handleEdit(field, String(value))}
+          activeOpacity={field === 'password' ? 1 : 0.7}
         >
           <Text style={styles.label}>{getLabel(field)}</Text>
+
           {editingField === field ? (
-            <TextInput
-              style={styles.input}
-              value={tempValue}
-              onChangeText={setTempValue}
-              onSubmitEditing={handleSave}
-              autoFocus
-            />
+            <View style={styles.inputWrapper}>
+              <TextInput
+                style={styles.input}
+                value={tempValue}
+                onChangeText={setTempValue}
+                onSubmitEditing={handleSave}
+                autoFocus
+                secureTextEntry={field === 'password' && !showPassword}
+              />
+              {field === 'password' && (
+                <TouchableOpacity
+                  onPress={() => setShowPassword(!showPassword)}
+                  style={styles.eyeIcon}
+                >
+                  <FontAwesome name={showPassword ? 'eye-slash' : 'eye'} size={20} color="#555" />
+                </TouchableOpacity>
+              )}
+            </View>
           ) : (
-            <Text style={styles.value}>{value}</Text>
+            <View style={styles.inputWrapper}>
+              <Text style={styles.value}>
+                {field === 'password' && !showPassword ? '********' : String(value)}
+              </Text>
+              {field === 'password' && (
+                <TouchableOpacity
+                  onPress={() => setShowPassword(!showPassword)}
+                  style={styles.eyeIcon}
+                >
+                  <FontAwesome name={showPassword ? 'eye-slash' : 'eye'} size={20} color="#555" />
+                </TouchableOpacity>
+              )}
+            </View>
           )}
         </TouchableOpacity>
+      
+
       ))}
 
-      {editingField && (
-        <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
-          <Text style={styles.saveText}>Lưu thay đổi</Text>
+      <View style={styles.logoutContainer}>
+        <TouchableOpacity
+          style={styles.logoutButton}
+          onPress={() => router.push('/')}
+          activeOpacity={0.8}
+        >
+          <FontAwesome name="sign-out" size={20} color="#fff" style={styles.logoutIcon} />
+          <Text style={styles.logoutText}>Đăng xuất</Text>
         </TouchableOpacity>
-      )}
-    </ScrollView>
+      </View>
+  </ScrollView>
   );
 }
 
@@ -80,7 +148,7 @@ const getLabel = (field: string) => {
 
 const styles = StyleSheet.create({
   container: {
-    paddingVertical: 30,
+    paddingVertical: 100,
     paddingHorizontal: 20,
     backgroundColor: '#FAFAFA',
   },
@@ -129,5 +197,40 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 16,
     fontWeight: '600',
-  }
+  },
+  inputWrapper: {
+    position: 'relative',
+    justifyContent: 'center',
+  },
+  eyeIcon: {
+    position: 'absolute',
+    right: 10,
+    top: '50%',
+    transform: [{ translateY: -10 }],
+  },
+
+  logoutContainer: {
+    alignItems: 'center',
+    marginTop: 30,
+    marginBottom: 20,
+  },
+  logoutButton: {
+    backgroundColor: '#FF3B30',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 10,
+    paddingHorizontal: 95,
+    borderRadius: 15,
+    elevation: 5,
+    minWidth: 200,
+  },
+  logoutIcon: {
+    marginRight: 10,
+  },
+  logoutText: {
+    color: '#fff',
+    fontSize: 18,
+    fontWeight: 'bold',
+  },
 });
