@@ -97,7 +97,7 @@ export default function YeuThichScreen() {
     //   </View>
     // </View>
 
-    <SafeAreaView style={[styles.container, favorites.length > 0 && styles.whiteBackground]}>
+    <View style={[styles.container, favorites.length > 0 && styles.whiteBackground]}>
       {favorites.length === 0 && (
         <Image
           source={require('../assets/images/background.jpg')}
@@ -108,12 +108,23 @@ export default function YeuThichScreen() {
       <View style={styles.overlay}>
         {favorites.length === 0 ? (
           <>
-            <View style={styles.heartBox}>
-              <FontAwesome name="heart" size={40} color="#fff" />
+            <View style={styles.heartIcon}>
+              <Image
+                source={require('../assets/images/heart_icon.jpg')}
+                style={{ width: 70, height: 70, resizeMode: 'contain' }}
+              />
               <Text style={styles.heartText}>Sản phẩm yêu thích</Text>
             </View>
+
             <Text style={styles.messageText}>
-              Hiện tại chưa có sản phẩm, hãy cùng <Text style={{ fontWeight: 'bold' }}>Khám phá</Text> các sản phẩm ~
+              Hiện tại chưa có sản phẩm, hãy cùng{' '}
+              <Text
+                style={{ fontWeight: 'bold', textDecorationLine: 'underline', color: 'black' }}
+                onPress={() => router.push('/drawer/explore')}
+              >
+                Khám phá
+              </Text>
+              {' '}các sản phẩm 
             </Text>
           </>
         ) : (
@@ -176,7 +187,7 @@ export default function YeuThichScreen() {
           </ScrollView>
         )}
       </View>
-    </SafeAreaView>
+    </View>
   );
 }
 
@@ -192,26 +203,39 @@ const styles = StyleSheet.create({
   },
   overlay: {
     flex: 1,
-    justifyContent: 'center',
+    marginTop: '42%',
     alignItems: 'center',
   },
   heartBox: {
     backgroundColor: '#EAAE99',
-    padding: 20,
+    padding: 50,
     borderRadius: 20,
     alignItems: 'center',
-    marginBottom: 20,
+    marginBottom: '22%',
   },
   heartText: {
     marginTop: 10,
-    color: '#fff',
+    color: '#333',
     fontSize: 18,
     fontWeight: 'bold',
   },
+
+  heartIcon: {
+    width: 80,
+    height: 80,
+    borderRadius: 15,
+    backgroundColor: '#fff',
+    justifyContent: 'center',
+    alignItems: 'center',
+    elevation: 4,
+    marginBottom: 10,
+  },
+  
   messageText: {
     textAlign: 'center',
     fontSize: 16,
     color: '#333',
+ 
   },
   bottomTab: {
     flexDirection: 'row',

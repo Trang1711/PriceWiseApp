@@ -16,7 +16,7 @@ import { useNavigation, DrawerActions } from '@react-navigation/native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import HomeSlider from '../components/HomeSlider';
-import { router } from 'expo-router'; 
+import { router, useLocalSearchParams } from 'expo-router'; 
 import ProductCard from '../components/ProductCard';
 import axios from 'axios';
 import { BASE_URL } from '@/constants';
@@ -26,6 +26,9 @@ export default function HomeScreen() {
   const navigation = useNavigation();
   const [products, setProducts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [favoriteStates, setFavoriteStates] = useState(products.map(() => false));
+  const params = useLocalSearchParams();
+  const selectedCategory = params.category;
   const [refreshing, setRefreshing] = useState(false);
 
   const onRefresh = useCallback(() => {
@@ -47,6 +50,10 @@ export default function HomeScreen() {
         setLoading(false);
       });
   }, []);
+
+  // if (loading) {
+  //   return <ActivityIndicator size="large" color="#000" />;
+  // }
 
   if (loading) {
     return (
@@ -85,6 +92,14 @@ export default function HomeScreen() {
     // Có thể mở link hoặc navigate đến trang chi tiết
   };
 
+  const handleToggleFavorite = (index) => {
+    setFavoriteStates((prev) => {
+      const updated = [...prev];
+      updated[index] = !updated[index];
+      return updated;
+    });
+  };
+
   return (
     <View style={{ flex: 1 }}>
       <ScrollView contentContainerStyle={{ paddingBottom: 120 }} 
@@ -121,66 +136,6 @@ export default function HomeScreen() {
         />
 
         <Text style={styles.sectionTitle}>Danh mục phổ biến</Text>
-
-        {/* Grid Categories */}
-        {/* <View style={styles.categoryGrid}>
-          {[
-            { 
-              img: require('../assets/images/category.png'), 
-              label: 'Thời trang & Phụ kiện',
-              link: '',
-              id: 1
-            },
-            { 
-              img: require('../assets/images/comestic.png'), 
-              label: 'Mỹ phẩm & Làm đẹp',
-              link: '',
-              id: 2
-            },
-            { 
-              img: require('../assets/images/laptopmaytinhbang.png'), 
-              label: 'Laptop & Tablet',
-              link: '',
-              id: 4
-            },
-            { 
-              img: require('../assets/images/thietbithethao.png'), 
-              label: 'Thiết bị thể thao',
-              link: '',
-              id: 5
-            },
-              { 
-              img: require('../assets/images/dienthoaididong.jpg'), 
-              label: 'Điện thoại di động',
-              link: '', 
-              id: 3
-            },
-              { 
-              img: require('../assets/images/dodunghoctap.png'), 
-              label: 'Đồ dùng học tập',
-              link: '',
-              id: 6
-            },
-          ].map((cat, index) => (
-            <TouchableOpacity 
-              key={index} 
-              style={styles.categoryGridItem}
-              onPress={() => {
-                router.push({ pathname: "/drawer/explore", params: { categoryId: index + 1 } });
-              }}
-            >
-              <View style={styles.categoryGridInner}>
-                <View style={styles.categoryGridImage}>
-                  <Image source={cat.img} style={styles.categoryGridImageContent} />
-                </View>
-                <View style={styles.categoryGridTitle}>
-                  <Text style={styles.categoryGridTitleText}>{cat.label}</Text>
-                </View>
-              </View>
-            </TouchableOpacity>
-          ))}
-        </View> */}
-
        <View style={styles.categoryGrid}>
           {[
             { 
@@ -258,6 +213,8 @@ export default function HomeScreen() {
                 isAvailable={item.isAvailable}
                 rating={item.rating}
                 productUrl={item.productUrl}
+                isFavorite={favoriteStates[index]}
+                onToggleFavorite={() => handleToggleFavorite(index)}
               />
             ))}
           </View>
@@ -318,15 +275,22 @@ export default function HomeScreen() {
 
       {/* Khoảng cách giữa các section */}
       <View style={styles.sectionSpacing} />
+
+      {/* Thanh điều hướng dưới cùng */}
+
     </View>
   );
 }
 
 const styles = StyleSheet.create({
+
+  //HEADER
+
   container: {
     flex: 1,
     padding: 20,
     paddingTop: 40,
+   
   },
   headerContainer: {
     flexDirection: 'row',
@@ -337,19 +301,19 @@ const styles = StyleSheet.create({
     marginRight: 10,
   },
   logoContainer: {
-    width: 60,
-    height: 60, 
-    borderRadius: 30,
-    overflow: 'hidden', 
-    justifyContent: 'center', 
-    alignItems: 'center', 
-    backgroundColor: '#fff', 
-  },
-  logo: {
-    width: '110%', 
-    height: '100%', 
-    resizeMode: 'contain', 
-  },
+        width: 60, // Chiều rộng của khung
+        height: 60, // Chiều cao của khung
+        borderRadius: 30, // Bán kính để tạo hình tròn
+        overflow: 'hidden', // Ẩn phần hình ảnh ra ngoài khung
+        justifyContent: 'center', // Căn giữa hình ảnh
+        alignItems: 'center', // Căn giữa hình ảnh
+        backgroundColor: '#fff', // Màu nền của khung (có thể thay đổi)
+    },
+    logo: {
+        width: '110%', 
+        height: '100%', 
+        resizeMode: 'contain', 
+    },
   searchBox: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -370,6 +334,10 @@ const styles = StyleSheet.create({
     flex: 1,
     height: '100%',
   },
+
+
+  //BANNER
+
   adBanner: {
     backgroundColor: '#FF0000',
     borderRadius: 10,
@@ -382,6 +350,22 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     height:100,
   },
+
+ adContainer: {
+    width: '100%', 
+    alignItems: 'center', 
+    marginTop: 1, 
+    marginBottom: 1, 
+  },
+  adImage: {
+    width: '100%', 
+    height: undefined,
+    aspectRatio: 1.77, 
+    marginTop: -10, 
+  },
+
+  //DANH MỤC
+
   sectionTitle: {
     fontSize: 20,
     fontWeight: 'bold',
@@ -467,18 +451,6 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginTop: 4,
   },
-  adContainer: {
-    width: '100%', 
-    alignItems: 'center',
-    marginTop: 1, 
-    marginBottom: 1, 
-  },
-  adImage: {
-    width: '100%', 
-    height: undefined, 
-    aspectRatio: 1.77, 
-    marginTop: -10,
-  },
   categoryGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
@@ -523,7 +495,10 @@ const styles = StyleSheet.create({
     color: 'white',
     textAlign: 'center',
   },
-  card: {
+
+ //SẢN PHẨM
+
+    card: {
     borderWidth: 1,
     borderColor: '#ccc',
     borderRadius: 8,
@@ -533,12 +508,12 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
     marginLeft: 0,
     marginRight:10,
-    // Drop shadow for iOS
+
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.15,
     shadowRadius: 4,
-    // Drop shadow for Android
+
     elevation: 6,
   },
   topIcons: {
@@ -612,38 +587,39 @@ const styles = StyleSheet.create({
   ratingTitle:{
     fontSize: 20,
   },
-  userReviewsContainer: {
-    marginTop: 24,
-    padding: 16,
-    backgroundColor: '#fff0f5',
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: '#f5c6da',
-  },
-  reviewItem: {
-    flexDirection: 'row',
-    marginBottom: 16,
-  },
-  reviewAvatar: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    marginRight: 12,
-  },
-  reviewContent: {
-    flex: 1,
-  },
-  reviewerName: {
-    fontWeight: 'bold',
-    fontSize: 14,
-  },
-  reviewText: {
-    fontSize: 13,
-    marginTop: 4,
-    color: '#333',
-  },
-  starsRow: {
-    flexDirection: 'row',
-    marginTop: 2,
-  },
+ userReviewsContainer: {
+  marginTop: 24,
+  padding: 16,
+  backgroundColor: '#fff0f5',
+  borderRadius: 12,
+  borderWidth: 1,
+  borderColor: '#f5c6da',
+},
+reviewItem: {
+  flexDirection: 'row',
+  marginBottom: 16,
+},
+reviewAvatar: {
+  width: 40,
+  height: 40,
+  borderRadius: 20,
+  marginRight: 12,
+},
+reviewContent: {
+  flex: 1,
+},
+reviewerName: {
+  fontWeight: 'bold',
+  fontSize: 14,
+},
+reviewText: {
+  fontSize: 13,
+  marginTop: 4,
+  color: '#333',
+},
+starsRow: {
+  flexDirection: 'row',
+  marginTop: 2,
+},
+
 });

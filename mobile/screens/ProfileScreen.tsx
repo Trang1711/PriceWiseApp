@@ -123,73 +123,43 @@ export default function ProfileScreen() {
   );
 }
 
-const { width } = Dimensions.get('window');
-
 const styles = StyleSheet.create({
+  container: { flex: 1, backgroundColor: '#fff', paddingHorizontal: 16, paddingTop: 40 },
+  header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 },
+  headerTitle: { fontSize: 20, fontWeight: 'bold' },
+  logo: { width: 40, height: 40 },
+  profileSection: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#eee',
+    padding: 12,
+    borderRadius: 10,
+    marginBottom: 20
+  },
   safeArea: {
     flex: 1,
     backgroundColor: '#fff',
   },
-  container: {
-    paddingHorizontal: 20,
-    paddingTop: 40,
-    paddingBottom: 20,
-  },
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 24,
-  },
-  headerTitle: {
-    fontSize: 28,
-    fontWeight: 'bold',
-    color: '#333',
-  },
-  logo: {
-    width: 40,
-    height: 40,
-  },
-  profileSection: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#f3f3f3',
-    padding: 14,
-    borderRadius: 14,
-    marginBottom: 24,
-  },
-  avatar: {
-    width: 60,
-    height: 60,
-    borderRadius: 30,
-    marginRight: 16,
-  },
-  name: {
-    fontSize: 25,
-    fontWeight: '600',
-  },
-  settingsTitle: {
-    fontSize: 25,
-    fontWeight: 'bold',
-    marginBottom: 16,
-    color: '#555',
-  },
+  avatar: { width: 50, height: 50, borderRadius: 25, marginRight: 12 },
+  name: { fontSize: 16, fontWeight: '600' },
+  subtitle: { fontSize: 12, color: '#666' },
+  settingsTitle: { fontSize: 16, fontWeight: 'bold', marginBottom: 10 },
   item: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: 18,
+    paddingVertical: 12,
     borderBottomWidth: 1,
-    borderColor: '#eee',
+    borderColor: '#ddd',
   },
-  icon: {
-    marginRight: 14,
+  icon: { marginRight: 10 },
+  itemText: { fontSize: 14, color: '#333' },
+  bottomTabContainer: {
+    position: 'absolute',
+    bottom: 0,
+    width: '100%',
   },
-  itemText: {
-    fontSize: 20,
-    color: '#333',
-  },
-   itemText1: {
-    fontSize: 20,
+  itemText1: {
+    fontSize: 15,
     color: 'red',
   },
   icon1: {
