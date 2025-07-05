@@ -53,3 +53,16 @@ class ProductCardOut(BaseModel):
     class Config:
         orm_mode = True
 
+from pydantic import BaseModel
+from datetime import datetime
+
+class FavoriteProductSchema(BaseModel):
+    favorite_id: int
+    user_id: int
+    product_id: int
+    added_at: datetime
+
+    class Config:
+        orm_mode = True
+
+

@@ -98,7 +98,7 @@ export default function SignInScreen() {
   };
 
   return (
-<View style={styles.container}>
+    <View style={styles.container}>
       <Image
         source={require('../assets/images/logo.png')}
         style={styles.logo}

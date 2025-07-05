@@ -10,14 +10,28 @@ class Platform(Base):
     url = Column(String(500))
     logo_url = Column(String(500))
 
+# class Product(Base):
+#     __tablename__ = "Product"
+#     product_id = Column(Integer, primary_key=True, index=True)
+#     name = Column(String(255), nullable=False)
+#     description = Column(String)
+#     image_url = Column(String(255))
+#     created_at = Column(DateTime, server_default=func.now())
+#     updated_at = Column(DateTime, onupdate=func.now())
+
 class Product(Base):
     __tablename__ = "Product"
     product_id = Column(Integer, primary_key=True, index=True)
     name = Column(String(255), nullable=False)
     description = Column(String)
     image_url = Column(String(255))
+    category_id = Column(Integer, ForeignKey('Category.category_id'), nullable=True)
+
     created_at = Column(DateTime, server_default=func.now())
     updated_at = Column(DateTime, onupdate=func.now())
+
+    category_id = Column(Integer, ForeignKey('Category.category_id'), nullable=True)
+    category = relationship("Category", backref="products")
 
 class ProductPlatform(Base):
     __tablename__ = "Product_Platform"

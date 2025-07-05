@@ -2,6 +2,8 @@
 import React from 'react';
 import { View, Text, Image, StyleSheet, TouchableOpacity, Linking } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import { Ionicons } from '@expo/vector-icons'; // hoặc react-native-vector-icons/Ionicons
+
 
 interface ProductCardProps {
   platformLogo: string;
@@ -14,6 +16,8 @@ interface ProductCardProps {
   isAvailable: boolean;
   rating: string;
   productUrl: string;
+  isFavorite: boolean;
+  onToggleFavorite: () => void;
 }
 
 const ProductCard: React.FC<ProductCardProps> = ({
@@ -27,15 +31,14 @@ const ProductCard: React.FC<ProductCardProps> = ({
   isAvailable,
   rating,
   productUrl,
+  isFavorite,
+  onToggleFavorite,
 }) => {
   return (
     <View style={styles.card}>
       {/* Top Icons */}
       <View style={styles.topIcons}>
         <Image source={{ uri: platformLogo }} style={styles.logo1} />
-        <TouchableOpacity>
-          {/* <Icon name="favorite-border" size={24} color="#FF2D55" /> */}
-        </TouchableOpacity>
       </View>
 
       {/* Image Section */}
@@ -60,11 +63,22 @@ const ProductCard: React.FC<ProductCardProps> = ({
         <Text style={styles.rating}>⭐ {rating}</Text>
       </View>
 
-      {/* Buy Button */}
-      <TouchableOpacity style={styles.buyButton} onPress={() => Linking.openURL(productUrl)}>
-        <Icon name="shopping-cart" size={18} color="white" style={styles.cartIcon} />
-        <Text style={styles.buyButtonText}>Tới nơi bán</Text>
-      </TouchableOpacity>
+      {/* Nút mua và nút yêu thích */}
+      <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: 8 }}>
+        <TouchableOpacity style={styles.buyButton} onPress={() => Linking.openURL(productUrl)}>
+          <Icon name="shopping-cart" size={18} color="white" style={styles.cartIcon} />
+          <Text style={styles.buyButtonText}>Tới nơi bán</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity onPress={onToggleFavorite} style={styles.favouriteButton}>
+          <Ionicons
+          style={{color:'white'}}
+            name={isFavorite ? 'heart' : 'heart-outline'}
+            size={28}
+            color={isFavorite ? 'red' : 'gray'}
+          />
+        </TouchableOpacity>
+      </View>
     </View>
   );
 };
@@ -260,7 +274,7 @@ const styles = StyleSheet.create({
     borderColor: '#ccc',
     borderRadius: 8,
     padding: 10,
-    width: 180,
+    width: 205,
     alignItems: 'center',
     backgroundColor: 'white',
     marginLeft: 0,
@@ -278,7 +292,6 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     width: '100%',
     marginBottom: 10,
-    
   },
   logo1: {
     width: 30,
@@ -319,16 +332,29 @@ const styles = StyleSheet.create({
     backgroundColor: 'red',
     padding: 10,
     borderRadius: 5,
-    width: '100%',
+    width: '5%',
     alignItems: 'center',
     flexDirection: 'row',
     justifyContent: 'center',
+    flex: 1, 
+    marginRight:9,
   },
   buyButtonText: {
     color: 'white',
     fontWeight: 'bold',
     marginLeft: 5,
   },
+
+  favouriteButton:{
+    color: 'white',
+    fontWeight: 'bold',
+    marginRight: 2,
+    backgroundColor:'red',
+    padding: 5,
+    borderRadius: 5,
+    
+  },
+
   cartIcon: {
     marginRight: 5,
   },

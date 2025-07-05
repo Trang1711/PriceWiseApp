@@ -1,89 +1,91 @@
-import NavigationBar from '@/components/NavigationBar';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   View,
   Text,
-  StyleSheet,
   ScrollView,
   Image,
   TouchableOpacity,
   Linking,
+  StyleSheet,
   SafeAreaView,
 } from 'react-native';
+import { useLocalSearchParams } from 'expo-router';
+import NavigationBar from '@/components/NavigationBar';
 
-const productData = [
-  {
-    platform: 'Shopee',
-    logo: require('../assets/images/shopee.png'),
-    price: 32990000,
-    discount: 2000000,
-    discount_percentage: 5.7,
-    rating: 4.8,
-    review_count: 520,
-    shipping_fee: 0,
-    estimated_delivery_time: '2-4 ngày',
-    is_official: true,
-    product_url: 'https://shopee.vn/product-link',
-    color: '#fff0f3',
-  },
-  {
-    platform: 'Tiki',
-    logo: require('../assets/images/tiki.png'),
-    price: 33190000,
-    discount: 1500000,
-    discount_percentage: 4.3,
-    rating: 4.6,
-    review_count: 300,
-    shipping_fee: 15000,
-    estimated_delivery_time: '3-5 ngày',
-    is_official: false,
-    product_url: 'https://tiki.vn/product-link',
-    color: '#e0f7ff',
-  },
-  {
-    platform: 'Lazada',
-    logo: require('../assets/images/Lazada.jpg'),
-    price: 32800000,
-    discount: 2200000,
-    discount_percentage: 6.2,
-    rating: 4.7,
-    review_count: 450,
-    shipping_fee: 10000,
-    estimated_delivery_time: '1-3 ngày',
-    is_official: true,
-    product_url: 'https://lazada.vn/product-link',
-    color: '#f3f0ff',
-  },
-];
+interface PlatformData {
+  platform: string;
+  logo_url: string;
+  price: number;
+  discount: number;
+  discount_percentage: number;
+  rating: number;
+  review_count: number;
+  shipping_fee: number;
+  estimated_delivery_time: string;
+  is_official: boolean;
+  product_url: string;
+  image_url: string;
+  color?: string;
+}
 
 export default function CompareProductScreen() {
+  const [productData, setProductData] = useState<PlatformData[]>([]);
+  const { productId } = useLocalSearchParams<{ productId?: string }>();
+
+  useEffect(() => {
+    if (!productId) return;
+
+    fetch(`http://192.168.1.138:8000/products/${productId}/compare`)
+      .then(res => res.json())
+      .then(data => {
+        console.log("Received product comparison data:", data);
+        const colors = ['#fff0f3', '#e0f7ff', '#f3f0ff'];
+        const coloredData = data.map((item: PlatformData, index: number) => ({
+          ...item,
+          color: colors[index % colors.length],
+        }));
+
+        setProductData(coloredData);
+      })
+      .catch(err => {
+        console.error('Fetch error:', err);
+        setProductData([]);
+      });
+  }, [productId]);
+
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: '#fff8fc' }}>
       <ScrollView style={styles.container}>
-        <Text style={styles.title}>🎀 So sánh iPhone 15 Pro Max trên các sàn</Text>
+        <Text style={styles.title}>🎀 So sánh sản phẩm trên các sàn</Text>
 
-        {/* Thẻ sản phẩm */}
         <View style={styles.cardContainer}>
           {productData.map((item, index) => (
             <View key={index} style={[styles.productCard, { backgroundColor: item.color }]}>
               <Text style={styles.platformBadge}>{item.platform}</Text>
-              <Image source={require('../assets/images/IP15.jpg')} style={styles.productImage} />
-              <Image source={item.logo} style={styles.platformLogo} />
+              <Image
+                source={{ uri: item.image_url }}
+                style={styles.productImage}
+              />
+              {item.logo_url ? (
+                <Image source={{ uri: item.logo_url }} style={styles.platformLogo} />
+              ) : (
+                <Text>No Logo</Text>
+              )}
               <Text style={styles.price}>{item.price.toLocaleString()} đ</Text>
               <TouchableOpacity
                 style={styles.buyButton}
                 onPress={() => Linking.openURL(item.product_url)}
               >
-                <Text style={styles.buyButtonText}>🛒 Xem ngay</Text>
+              <Text style={styles.buyButtonText}>🛒 Xem ngay</Text>
               </TouchableOpacity>
             </View>
           ))}
         </View>
 
         {/* Bảng so sánh */}
-        <Text style={styles.sectionTitle}>Bảng so sánh </Text>
+        <Text style={styles.sectionTitle}>Bảng so sánh</Text>
         <View style={styles.table}>
-          {/* Hàng tên sàn */}
+          {/* Header */}
           <View style={[styles.tableRow, styles.tableHeader]}>
             <Text style={styles.labelCell}>Tiêu chí</Text>
             {productData.map((item, i) => (
@@ -91,30 +93,27 @@ export default function CompareProductScreen() {
             ))}
           </View>
 
-          {/* Các dòng nội dung */}
+          {/* Các dòng so sánh */}
           {[
-            [' Giá bán', item => `${item.price.toLocaleString()} đ`],
-            ['Số tiền giảm giá', item => `${item.discount.toLocaleString()} đ`],
-            ['Tỷ lệ % khuyến mãi', item => `${item.discount_percentage}%`],
-            ['Đánh giá', item => `${item.rating}`],
-            ['Tổng lượt đánh giá', item => `${item.review_count}`],
-            ['Phí vận chuyển', item => item.shipping_fee === 0 ? 'Miễn phí' : `${item.shipping_fee.toLocaleString()} đ`],
-            ['Thời gian giao hàng', item => item.estimated_delivery_time],
-            ['Gian hàng chính hãng', item => item.is_official ? '✅' : '❌'],
+            ['Giá bán', (item: PlatformData) => `${item.price.toLocaleString()} đ`],
+            ['Giảm giá', (item: PlatformData) => `${item.discount.toLocaleString()} đ`],
+            ['% KM', (item: PlatformData) => `${item.discount_percentage}%`],
+            ['Đánh giá', (item: PlatformData) => `${item.rating}`],
+            ['Lượt đánh giá', (item: PlatformData) => `${item.review_count}`],
+            ['Phí ship', (item: PlatformData) => item.shipping_fee === 0 ? 'Miễn phí' : `${item.shipping_fee.toLocaleString()} đ`],
+            ['Giao hàng', (item: PlatformData) => item.estimated_delivery_time],
+            ['Chính hãng', (item: PlatformData) => item.is_official ? '✅' : '❌'],
           ].map(([label, getValue], idx) => (
             <View key={idx} style={styles.tableRow}>
               <Text style={styles.labelCell}>{label}</Text>
               {productData.map((item, i) => (
-                <Text key={i} style={styles.valueCell}>
-                  {getValue(item)}
-                </Text>
+                <Text key={i} style={styles.valueCell}>{getValue(item)}</Text>
               ))}
             </View>
           ))}
         </View>
       </ScrollView>
-      
-      {/* Bottom tab bar */}
+
       <NavigationBar />
     </SafeAreaView>
   );

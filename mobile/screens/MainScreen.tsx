@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import {
   ActivityIndicator,
@@ -26,6 +25,7 @@ export default function HomeScreen() {
   const navigation = useNavigation();
   const [products, setProducts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [favoriteStates, setFavoriteStates] = useState(products.map(() => false));
 
   const params = useLocalSearchParams();
   const selectedCategory = params.category;
@@ -83,6 +83,14 @@ export default function HomeScreen() {
     // Có thể mở link hoặc navigate đến trang chi tiết
   };
 
+  const handleToggleFavorite = (index) => {
+    setFavoriteStates((prev) => {
+      const updated = [...prev];
+      updated[index] = !updated[index];
+      return updated;
+    });
+  };
+
   return (
     <View style={{ flex: 1 }}>
       <ScrollView contentContainerStyle={{ paddingBottom: 120 }} style={[styles.container, { marginTop: 20 }]}>
@@ -115,46 +123,50 @@ export default function HomeScreen() {
         />
 
         <Text style={styles.sectionTitle}>Danh mục phổ biến</Text>
-
-        {/* Grid Categories */}
-        <View style={styles.categoryGrid}>
+       <View style={styles.categoryGrid}>
           {[
             { 
               img: require('../assets/images/category.png'), 
               label: 'Thời trang & Phụ kiện',
-              link: ''
+              id: 1
             },
             { 
               img: require('../assets/images/comestic.png'), 
               label: 'Mỹ phẩm & Làm đẹp',
-              link: ''
+              id: 2
             },
             { 
               img: require('../assets/images/laptopmaytinhbang.png'), 
               label: 'Laptop & Tablet',
-              link: ''
+              id: 4
             },
             { 
               img: require('../assets/images/thietbithethao.png'), 
               label: 'Thiết bị thể thao',
-              link: ''
+              id: 5
             },
-              { 
+            { 
               img: require('../assets/images/dienthoaididong.jpg'), 
               label: 'Điện thoại di động',
-              link: ''
+              id: 3
             },
-              { 
+            { 
               img: require('../assets/images/dodunghoctap.png'), 
               label: 'Đồ dùng học tập',
-              link: ''
+              id: 6
             },
-          ].map((cat, index) => (
-            <TouchableOpacity 
-              key={index} 
+          ].map((cat) => (
+            <TouchableOpacity
+              key={`category-${cat.id}`}
               style={styles.categoryGridItem}
               onPress={() => {
-                router.push({ pathname: '/explore', params: { category: cat.label } });
+                router.push({
+                  pathname: "/drawer/explore",
+                  params: { 
+                    categoryId: cat.id.toString(), 
+                    categoryName: cat.label 
+                  }
+                });
               }}
             >
               <View style={styles.categoryGridInner}>
@@ -188,6 +200,8 @@ export default function HomeScreen() {
                 isAvailable={item.isAvailable}
                 rating={item.rating}
                 productUrl={item.productUrl}
+                isFavorite={favoriteStates[index]}
+                onToggleFavorite={() => handleToggleFavorite(index)}
               />
             ))}
           </View>

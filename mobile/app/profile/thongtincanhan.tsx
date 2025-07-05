@@ -7,6 +7,7 @@ import {
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { BASE_URL } from '@/constants';
 import { FontAwesome } from '@expo/vector-icons';
+import { router } from 'expo-router';
 
 export default function ThongTinCaNhan() {
   const [userInfo, setUserInfo] = useState<any>(null);
@@ -115,8 +116,21 @@ export default function ThongTinCaNhan() {
             </View>
           )}
         </TouchableOpacity>
+      
+
       ))}
-    </ScrollView>
+
+      <View style={styles.logoutContainer}>
+        <TouchableOpacity
+          style={styles.logoutButton}
+          onPress={() => router.push('/')}
+          activeOpacity={0.8}
+        >
+          <FontAwesome name="sign-out" size={20} color="#fff" style={styles.logoutIcon} />
+          <Text style={styles.logoutText}>Đăng xuất</Text>
+        </TouchableOpacity>
+      </View>
+  </ScrollView>
   );
 }
 
@@ -134,7 +148,7 @@ const getLabel = (field: string) => {
 
 const styles = StyleSheet.create({
   container: {
-    paddingVertical: 30,
+    paddingVertical: 100,
     paddingHorizontal: 20,
     backgroundColor: '#FAFAFA',
   },
@@ -193,5 +207,30 @@ const styles = StyleSheet.create({
     right: 10,
     top: '50%',
     transform: [{ translateY: -10 }],
+  },
+
+  logoutContainer: {
+    alignItems: 'center',
+    marginTop: 30,
+    marginBottom: 20,
+  },
+  logoutButton: {
+    backgroundColor: '#FF3B30',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 10,
+    paddingHorizontal: 95,
+    borderRadius: 15,
+    elevation: 5,
+    minWidth: 200,
+  },
+  logoutIcon: {
+    marginRight: 10,
+  },
+  logoutText: {
+    color: '#fff',
+    fontSize: 18,
+    fontWeight: 'bold',
   },
 });
