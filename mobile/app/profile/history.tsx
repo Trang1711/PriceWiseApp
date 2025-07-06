@@ -1,84 +1,71 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {
-  View,
-  Text,
-  StyleSheet,
-  ScrollView,
-  Image,
-  TouchableOpacity,
-  Dimensions
+  View, Text, StyleSheet, ScrollView, Image,
+  TouchableOpacity, Dimensions, ActivityIndicator
 } from 'react-native';
-import { FontAwesome } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import NavigationBar from '@/components/NavigationBar';
+import axios from 'axios';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { BASE_URL } from '@/constants';
 
-const screenWidth = Dimensions.get('window').width;
-
-const productData = [
-  {
-    id: 1,
-    image: require('../../assets/images/IP15.jpg'),
-    price: '32.990.000 đ',
-    store: 'tiki',
-    status: 'Chưa đánh giá',
-  },
-  {
-    id: 2,
-    image: require('../../assets/images/IP15.jpg'),
-    price: '32.990.000 đ',
-    store: 'lazada',
-    status: 'Chưa đánh giá',
-  },
-  {
-    id: 3,
-    image: require('../../assets/images/IP15.jpg'),
-    price: '32.990.000 đ',
-    store: 'tiki',
-    status: 'Chưa đánh giá',
-  },
-  {
-    id: 4,
-    image: require('../../assets/images/IP15.jpg'),
-    price: '32.990.000 đ',
-    store: 'lazada',
-    status: 'Chưa đánh giá',
-  },
-];
+type SearchHistoryItem = {
+  search_id: number;
+  user_id: number;
+  query: string;
+  search_time: string;
+};
 
 export default function LichSuDaXemScreen() {
-  const router = useRouter();
+  const [history, setHistory] = useState<SearchHistoryItem[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [userId, setUserId] = useState<number | null>(null);
 
-  const handleTabPress = (label: string) => {
-    router.push(`/${label}`);
-  };
+  useEffect(() => {
+    const fetchUserId = async () => {
+      const id = await AsyncStorage.getItem('user_id');
+      if (id) setUserId(parseInt(id));
+    };
+    fetchUserId();
+  }, []);
+
+  useEffect(() => {
+    if (userId !== null) {
+      axios.get(`${BASE_URL}/search-history/user/${userId}`)
+        .then(res => setHistory(res.data))
+        .catch(console.error)
+        .finally(() => setLoading(false));
+    }
+  }, [userId]);
 
   return (
     <View style={styles.container}>
-      <Text style={styles.header}>Lịch sử đã xem</Text>
+      <Text style={styles.header}>Lịch sử tìm kiếm</Text>
 
-      <ScrollView contentContainerStyle={styles.scrollContent}>
-        <View style={styles.grid}>
-          {productData.map((item) => (
-            <View key={item.id} style={styles.card}>
-              <Image source={item.image} style={styles.image} />
-              <Text style={styles.price}>{item.price}</Text>
-              <Text style={styles.store}>Ming Store</Text>
-              <Text style={styles.status}>{item.status}</Text>
-              <TouchableOpacity style={styles.button}>
-                <Text style={styles.buttonText}>Tới nơi bán</Text>
-              </TouchableOpacity>
+      {loading ? (
+        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+          <ActivityIndicator size="large" color="#007BFF" />
+          <Text style={{ marginTop: 10 }}>Đang tải dữ liệu...</Text>
+        </View>
+      ) : history.length === 0 ? (
+        <View style={styles.emptyContainer}>
+          <Text style={styles.emptyText}>Chưa có lịch sử tìm kiếm</Text>
+        </View>
+      ) : (
+        <ScrollView contentContainerStyle={styles.scrollContent}>
+          {history.map((item) => (
+            <View key={item.search_id} style={styles.historyItem}>
+              <Text style={styles.queryText}>Đã tìm kiếm: {item.query}</Text>
+              <Text style={styles.timeText}>
+                {new Date(item.search_time).toLocaleString()}
+              </Text>
             </View>
           ))}
-        </View>
-      </ScrollView>
-
-      {/* Bottom tab bar */}
-      <NavigationBar />
+        </ScrollView>
+      )}
     </View>
   );
 }
-
-const cardWidth = (screenWidth - 40) / 2;
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#fff' },
@@ -98,7 +85,6 @@ const styles = StyleSheet.create({
     padding: 10,
   },
   card: {
-    width: cardWidth,
     backgroundColor: '#fff',
     marginBottom: 16,
     borderRadius: 10,
@@ -154,5 +140,31 @@ const styles = StyleSheet.create({
   tabText: {
     fontSize: 12,
     marginTop: 2,
+  },
+  historyItem: {
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    borderBottomWidth: 1,
+    borderColor: '#eee',
+  },
+
+  queryText: {
+    fontSize: 16,
+    fontWeight: '500',
+    color: '#333',
+  },
+  timeText: {
+    fontSize: 13,
+    color: '#666',
+    marginTop: 4,
+  },
+  emptyContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  emptyText: {
+    fontSize: 16,
+    color: '#888',
   },
 });

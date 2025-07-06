@@ -160,3 +160,17 @@ from pydantic import BaseModel
 class FavoriteCreate(BaseModel):
     user_id: int
     product_id: int
+
+class SearchHistoryBase(BaseModel):
+    query: str
+    user_id: int
+
+class SearchHistoryCreate(SearchHistoryBase):
+    pass
+
+class SearchHistoryOut(SearchHistoryBase):
+    search_id: int
+    search_time: datetime
+
+    class Config:
+        orm_mode = True

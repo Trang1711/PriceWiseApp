@@ -73,6 +73,12 @@ export default function Explore() {
   ];
 
   useEffect(() => {
+    if (searchText.trim()) {
+      handleSearch();
+    }
+  }, [minPrice, maxPrice]);
+
+  useEffect(() => {
     if (!categoryId) return;
 
     setLoading(true);
@@ -147,9 +153,25 @@ export default function Explore() {
 
   const handleSearch = async () => {
     try {
+      const userIdStr = await AsyncStorage.getItem('user_id');
+      if (!userIdStr) {
+        Alert.alert("Thông báo", "Vui lòng đăng nhập để sử dụng chức năng tìm kiếm.");
+        return;
+      }
+
+      const userId = parseInt(userIdStr);
+
+      // 🔹 Gọi API tìm kiếm
       const res = await search(searchText);
       const data = res.data || [];
 
+      // 🔹 Gửi từ khóa vào Search History
+      await axios.post(`${BASE_URL}/search-history/`, {
+        query: searchText,
+        user_id: userId,
+      });
+
+      // 🔹 Hiển thị kết quả
       const allCards: ResultItem[] = data.flatMap((product) => {
         if (!product.platforms || product.platforms.length === 0) return [];
 
@@ -175,6 +197,7 @@ export default function Explore() {
       setResults(filtered);
     } catch (error) {
       console.error('Search error:', error);
+      Alert.alert("Lỗi", "Không thể tìm kiếm sản phẩm.");
     }
   };
 
@@ -310,7 +333,20 @@ export default function Explore() {
             <Slider minimumValue={0} maximumValue={50000000} step={1000000} value={minPrice} onValueChange={setMinPrice} />
             <Text>Đến: {maxPrice.toLocaleString()} đ</Text>
             <Slider minimumValue={0} maximumValue={50000000} step={1000000} value={maxPrice} onValueChange={setMaxPrice} />
-            <Button title="Áp dụng" onPress={() => setShowPriceFilter(false)} />
+            <Text style={styles.filterText}>
+              {minPrice.toLocaleString()}đ - {maxPrice.toLocaleString()}đ
+            </Text>
+           <Button
+              title="Áp dụng"
+              onPress={() => {
+                setShowPriceFilter(false);
+
+                // Nếu đang có tìm kiếm thì áp dụng lọc cho kết quả tìm kiếm
+                if (searchText.trim()) {
+                  handleSearch();
+                }
+              }}
+            />
           </View>
         </View>
       </Modal>

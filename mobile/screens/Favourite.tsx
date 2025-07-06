@@ -203,7 +203,6 @@ const styles = StyleSheet.create({
   },
   overlay: {
     flex: 1,
-    marginTop: '42%',
     alignItems: 'center',
   },
   heartBox: {
