@@ -8,6 +8,7 @@ import NavigationBar from '@/components/NavigationBar';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { BASE_URL } from '@/constants';
+import TripleRingLoader from '@/components/TripleRingLoader';
 
 type SearchHistoryItem = {
   search_id: number;
@@ -43,8 +44,8 @@ export default function LichSuDaXemScreen() {
       <Text style={styles.header}>Lịch sử tìm kiếm</Text>
 
       {loading ? (
-        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-          <ActivityIndicator size="large" color="#007BFF" />
+         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+          <TripleRingLoader />
           <Text style={{ marginTop: 10 }}>Đang tải dữ liệu...</Text>
         </View>
       ) : history.length === 0 ? (

@@ -12,12 +12,14 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { BASE_URL } from '@/constants';
 import { FontAwesome } from '@expo/vector-icons';
 import { router } from 'expo-router';
+import TripleRingLoader from '@/components/TripleRingLoader';
 
 export default function ThongTinCaNhan() {
   const [userInfo, setUserInfo] = useState<any>(null);
   const [editingField, setEditingField] = useState<string | null>(null);
   const [tempValue, setTempValue] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -36,16 +38,26 @@ export default function ThongTinCaNhan() {
           username: data.username,
           email: data.email,
           password: data.password_hash,
-          fullName: data.full_name || 'Chưa cập nhật',
+          fullName: data.full_name,
           phone: data.phone_number || 'Chưa cập nhật',
           address: data.address || 'Chưa cập nhật',
         });
+        setLoading(false);
       } catch (err) {
         Alert.alert("Lỗi", "Không thể tải thông tin người dùng");
       }
     };
     fetchUser();
   }, []);
+
+    if (loading) {
+      return (
+        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+          <TripleRingLoader />
+          <Text style={{ marginTop: 10 }}>Đang tải dữ liệu...</Text>
+        </View>
+      );
+    }
 
   const handleChange = (field: string, value: string) => {
     setUserInfo(prev => ({ ...prev, [field]: value }));

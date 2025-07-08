@@ -20,6 +20,7 @@ import { BASE_URL, search, addToFavorites, removeFromFavorites } from '@/constan
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import RefreshWrapper from '@/components/RefreshWrapper';
 import axios from 'axios';
+import TripleRingLoader from '@/components/TripleRingLoader';
 
 interface ProductItem {
   logo_url?: string;
@@ -32,8 +33,9 @@ interface ProductItem {
 }
 
 type ResultItem = {
-  product_id: string | number;
-  platform_id: string | number;
+  product_id: number;
+  product_platform_id: number;
+  platform_id: number;
   price: number;
   shipping_fee: number;
   product_url: string;
@@ -111,8 +113,9 @@ export default function Explore() {
         const res = await axios.get(`${BASE_URL}/favorites/user/${userId}`);
         const data = res.data;
 
-        const favIds = new Set(data.map((f: any) => f.product.product_id));
+        const favIds = new Set(data.map((f: any) => f.product_platform_id)); 
         setFavoriteIds(favIds);
+
       } catch (error) {
         console.error('Lỗi khi tải sản phẩm yêu thích:', error);
       }
@@ -121,7 +124,37 @@ export default function Explore() {
     fetchFavorites();
   }, []);
 
-  const toggleFavorite = async (productId: number) => {
+  // const toggleFavorite = async (productId: number) => {
+  //   const userIdStr = await AsyncStorage.getItem('user_id');
+  //   if (!userIdStr) {
+  //     Alert.alert("Thông báo", "Vui lòng đăng nhập để sử dụng chức năng yêu thích.");
+  //     return;
+  //   }
+
+  //   const userId = parseInt(userIdStr);
+  //   const isFav = favoriteIds.has(productId);
+
+  //   try {
+  //     if (isFav) {
+  //       await removeFromFavorites(productId, userId);
+  //       setFavoriteIds((prev) => {
+  //         const updated = new Set(prev);
+  //         updated.delete(productId);
+  //         return updated;
+  //       });
+  //       Alert.alert("Đã xoá khỏi yêu thích");
+  //     } else {
+  //       await addToFavorites(productId, userId);
+  //       setFavoriteIds((prev) => new Set(prev).add(productId));
+  //       Alert.alert("Đã thêm vào yêu thích");
+  //     }
+  //   } catch (error) {
+  //     console.error("Lỗi khi xử lý yêu thích:", error);
+  //     Alert.alert("Lỗi", "Không thể xử lý yêu thích.");
+  //   }
+  // };
+
+  const toggleFavorite = async (productId: number, productPlatformId: number) => {
     const userIdStr = await AsyncStorage.getItem('user_id');
     if (!userIdStr) {
       Alert.alert("Thông báo", "Vui lòng đăng nhập để sử dụng chức năng yêu thích.");
@@ -129,20 +162,20 @@ export default function Explore() {
     }
 
     const userId = parseInt(userIdStr);
-    const isFav = favoriteIds.has(productId);
+    const isFav = favoriteIds.has(productPlatformId);
 
     try {
       if (isFav) {
-        await removeFromFavorites(productId, userId);
+        await removeFromFavorites(productId, userId, productPlatformId);
         setFavoriteIds((prev) => {
           const updated = new Set(prev);
-          updated.delete(productId);
+          updated.delete(productPlatformId);
           return updated;
         });
         Alert.alert("Đã xoá khỏi yêu thích");
       } else {
-        await addToFavorites(productId, userId);
-        setFavoriteIds((prev) => new Set(prev).add(productId));
+        await addToFavorites(productId, userId, productPlatformId);
+        setFavoriteIds((prev) => new Set(prev).add(productPlatformId));
         Alert.alert("Đã thêm vào yêu thích");
       }
     } catch (error) {
@@ -161,22 +194,25 @@ export default function Explore() {
 
       const userId = parseInt(userIdStr);
 
-      // 🔹 Gọi API tìm kiếm
+      setLoading(true); 
+
+      // Gọi API tìm kiếm
       const res = await search(searchText);
       const data = res.data || [];
 
-      // 🔹 Gửi từ khóa vào Search History
+      // Gửi từ khóa vào Search History
       await axios.post(`${BASE_URL}/search-history/`, {
         query: searchText,
         user_id: userId,
       });
 
-      // 🔹 Hiển thị kết quả
+      // Hiển thị kết quả
       const allCards: ResultItem[] = data.flatMap((product) => {
         if (!product.platforms || product.platforms.length === 0) return [];
 
         return product.platforms.map((pf) => ({
           product_id: product.product_id,
+          product_platform_id: pf.product_platform_id,
           platform_id: pf.platform.platform_id,
           price: pf.price,
           shipping_fee: pf.shipping_fee,
@@ -198,9 +234,11 @@ export default function Explore() {
     } catch (error) {
       console.error('Search error:', error);
       Alert.alert("Lỗi", "Không thể tìm kiếm sản phẩm.");
+    } finally {
+      setLoading(false); 
     }
   };
-
+  
   const handleRefreshExplore = async () => {
     if (!categoryId) return;
 
@@ -221,69 +259,87 @@ export default function Explore() {
 
   const renderProductCard = (
     productId: number,
+    productPlatformId: number,
     imageUrl: string,
     name: string,
     price: number,
     platformName?: string
   ) => (
-    <View key={`product-${productId}-${platformName || ''}`} style={styles.card}>
-     <TouchableOpacity
-        onPress={() => toggleFavorite(productId)}
-        style={{ position: 'absolute', top: 8, right: 8, zIndex: 10 }}
+    <View key={`product-${productPlatformId}`} style={styles.card}>
+      {/* <TouchableOpacity
+        onPress={() => toggleFavorite(productId, productPlatformId)}
+        style={styles.heartButton}
       >
         <FontAwesome
-          name={favoriteIds.has(productId) ? 'heart' : 'heart-o'}
+          name={favoriteIds.has(productPlatformId) ? 'heart' : 'heart-o'}
           size={20}
-          color={favoriteIds.has(productId) ? 'red' : 'gray'}
+          color={favoriteIds.has(productPlatformId) ? 'red' : 'gray'}
         />
-      </TouchableOpacity>
+      </TouchableOpacity> */}
 
       <Image source={{ uri: imageUrl }} style={styles.productImage} />
+      <Text style={styles.productName}>{name}</Text>
       <Text style={styles.price}>{price.toLocaleString()} đ</Text>
       <Text style={styles.seller}>{platformName || name}</Text>
 
-      <TouchableOpacity
-        style={styles.buyButton}
-        onPress={() =>
-          router.push({
-            pathname: '/compare',
-            params: {
-              productId: productId.toString(),
-            },
-          })
-        }
-      >
-        <Text style={styles.buyButtonText}>So sánh</Text>
-      </TouchableOpacity>
+      <View style={styles.cardFooter}>
+        <TouchableOpacity
+          style={styles.compareButton}
+          onPress={() =>
+            router.push({
+              pathname: '/compare',
+              params: {
+                productId: productId.toString(),
+              },
+            })
+          }
+        >
+          <FontAwesome name="exchange" size={14} color="#fff" />
+          <Text style={styles.compareButtonText}>So sánh</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          onPress={() => toggleFavorite(productId, productPlatformId)}
+          style={styles.favoriteButton}
+        >
+          <FontAwesome
+            name={favoriteIds.has(productPlatformId) ? 'heart' : 'heart-o'}
+            size={16}
+            color={favoriteIds.has(productPlatformId) ? 'red' : '#333'}
+          />
+        </TouchableOpacity>
+      </View>
     </View>
   );
 
   const displayProducts = results.length > 0
-    ? results.map((item) =>
-        renderProductCard(
-          Number(item.product_id),
-          item.product.image_url,
-          '',
-          item.price,
-          item.platform.name
-        )
+  ? results.map((item) =>
+      renderProductCard(
+        Number(item.product_id),
+        Number(item.product_platform_id),
+        item.product.image_url,
+        '',
+        item.price,
+        item.platform.name
       )
-    : products
-        .filter((p) => p.price >= minPrice && p.price <= maxPrice)
-        .map((p) =>
-          renderProductCard(
-            p.product_id,
-            p.image_url,
-            p.name,
-            p.price,
-            p.platform
-          )
-        );
+    )
+  : products
+      .filter((p) => p.price >= minPrice && p.price <= maxPrice)
+      .map((p) =>
+        renderProductCard(
+          p.product_id,
+          p.product_platform_id, 
+          p.image_url,
+          p.name,
+          p.price,
+          p.platform
+        )
+      );
 
   if (loading) {
     return (
       <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-        <ActivityIndicator size="large" color="#007BFF" />
+        <TripleRingLoader />
         <Text style={{ marginTop: 10 }}>Đang tải dữ liệu...</Text>
       </View>
     );
@@ -451,21 +507,37 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
   },
   card: {
-    width: '47%',
-    marginBottom: 16,
+    width: '45%',
     borderWidth: 1,
     borderColor: '#ccc',
-    padding: 10,
     borderRadius: 8,
+    padding: 10,
+    backgroundColor: 'white',
+    marginBottom: 16,
+    marginHorizontal: 1,
     alignItems: 'center',
-    position: 'relative',
-    backgroundColor: '#fff',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.15,
+    shadowRadius: 4,
+    elevation: 6,
+  },
+  heartButton: {
+    padding: 5,
+    backgroundColor: '#f0f0f0',
+    borderRadius: 5,
   },
   productImage: {
     width: 100,
     height: 100,
     resizeMode: 'contain',
     marginBottom: 8,
+  },
+  productName: {
+    fontSize: 14,
+    fontWeight: 'bold',
+    marginBottom: 4,
+    textAlign: 'center',
   },
   price: {
     color: '#E53935',
@@ -535,5 +607,31 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: 8,
     right: 8,
+  },
+  cardFooter: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    alignItems: 'center',
+    marginTop: 10,
+    width: '100%',
+  },
+  compareButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#007BFF',
+    paddingVertical: 6,
+    paddingHorizontal: 10,
+    borderRadius: 6,
+  },
+  compareButtonText: {
+    color: '#fff',
+    marginLeft: 5,
+    fontSize: 12,
+    fontWeight: '600',
+  },
+  favoriteButton: {
+    padding: 6,
+    backgroundColor: '#eee',
+    borderRadius: 6,
   },
 });

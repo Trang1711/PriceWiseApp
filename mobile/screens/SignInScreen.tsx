@@ -109,7 +109,8 @@ export default function SignInScreen() {
 
       <TextInput
         style={styles.input}
-        placeholder="E-mail address"
+        placeholder="Địa chỉ Email"
+        placeholderTextColor="#333"
         keyboardType="email-address"
         autoCapitalize="none"
         value={email}
@@ -119,7 +120,8 @@ export default function SignInScreen() {
       <View style={styles.passwordContainer}>
         <TextInput
           style={styles.input}
-          placeholder="Password"
+          placeholder="Mật khẩu"
+          placeholderTextColor="#333"
           secureTextEntry={!passwordVisible}
           value={password}
           onChangeText={setPassword}
@@ -137,25 +139,23 @@ export default function SignInScreen() {
       </View>
 
       {/* Remember Me */}
-     <View style={styles.rowContainer}>
-      <View style={styles.rememberMeGroup}>
-        <TouchableOpacity
-          onPress={() => setRememberMe(!rememberMe)}
-          style={styles.checkbox}
-        >
-          {rememberMe && <View style={styles.checked} />}
+      <View style={styles.rowContainer}>
+        <TouchableOpacity style={styles.rememberMeGroup} onPress={() => setRememberMe(!rememberMe)}>
+          <FontAwesome
+            name={rememberMe ? 'check-square' : 'square-o'}
+            size={20}
+            style={styles.checkbox}
+          />
+          <Text style={styles.optionText}>Ghi nhớ đăng nhập</Text>
         </TouchableOpacity>
-        <Text style={styles.optionText}>Ghi nhớ đăng nhập</Text>
+
+        <TouchableOpacity onPress={() => router.push('/forgot')}>
+          <Text style={styles.optionText}>Quên mật khẩu?</Text>
+        </TouchableOpacity>
       </View>
 
-      <TouchableOpacity onPress={() => router.push('/forgot')}>
-        <Text style={styles.optionText}>Quên mật khẩu?</Text>
-      </TouchableOpacity>
-    </View>
-
-
       <TouchableOpacity style={styles.button} onPress={handleSignIn}>
-        <Text style={styles.buttonText}>Sign In</Text>
+        <Text style={styles.buttonText}>Đăng Nhập</Text>
       </TouchableOpacity>
 
       <Text style={styles.socialText}>hoặc bạn có thể đăng nhập bằng</Text>
@@ -267,18 +267,14 @@ const styles = StyleSheet.create({
     marginBottom: 16,
     width: '100%',
   },
+  checkbox: { 
+    marginRight: 5, 
+    color: '#D17842' 
+  },
   rememberMeGroup: {
     flexDirection: 'row',
     alignItems: 'center',
-  },
-  checkbox: {
-    width: 20,
-    height: 20,
-    borderWidth: 1,
-    borderColor: '#888',
-    marginRight: 8,
-    justifyContent: 'center',
-    alignItems: 'center',
+    marginVertical: 10,
   },
   checked: {
     width: 12,

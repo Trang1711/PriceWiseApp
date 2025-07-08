@@ -6,6 +6,8 @@ import { Ionicons } from '@expo/vector-icons'; // hoặc react-native-vector-ico
 
 
 interface ProductCardProps {
+  productId: number;
+  productPlatformId: number;
   platformLogo: string;
   productImage: string;
   currentPrice: string;
@@ -21,6 +23,8 @@ interface ProductCardProps {
 }
 
 const ProductCard: React.FC<ProductCardProps> = ({
+  productId,
+  productPlatformId,
   platformLogo,
   productImage,
   currentPrice,
@@ -70,9 +74,8 @@ const ProductCard: React.FC<ProductCardProps> = ({
           <Text style={styles.buyButtonText}>Tới nơi bán</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity onPress={onToggleFavorite} style={styles.favouriteButton}>
+        <TouchableOpacity onPress={onToggleFavorite} style={styles.favoriteButton}>
           <Ionicons
-          style={{color:'white'}}
             name={isFavorite ? 'heart' : 'heart-outline'}
             size={28}
             color={isFavorite ? 'red' : 'gray'}
@@ -201,7 +204,7 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: '#000',
   },
-    productName: {
+  productName: {
     fontSize: 14,
     fontWeight: '500',
     marginTop: 6,
@@ -344,15 +347,13 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginLeft: 5,
   },
-
-  favouriteButton:{
+  favoriteButton:{
+    backgroundColor: '#f0f0f0',
     color: 'white',
     fontWeight: 'bold',
     marginRight: 2,
-    backgroundColor:'red',
     padding: 5,
     borderRadius: 5,
-    
   },
 
   cartIcon: {

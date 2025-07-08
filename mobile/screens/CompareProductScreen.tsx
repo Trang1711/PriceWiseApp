@@ -11,6 +11,7 @@ import {
 } from 'react-native';
 import { useLocalSearchParams } from 'expo-router';
 import NavigationBar from '@/components/NavigationBar';
+import { BASE_URL } from '@/constants';
 
 interface PlatformData {
   platform: string;
@@ -35,10 +36,9 @@ export default function CompareProductScreen() {
   useEffect(() => {
     if (!productId) return;
 
-    fetch(`http://192.168.1.138:8000/products/${productId}/compare`)
+    fetch(`${BASE_URL}/products/${productId}/compare`)
       .then(res => res.json())
       .then(data => {
-        console.log("Received product comparison data:", data);
         const colors = ['#fff0f3', '#e0f7ff', '#f3f0ff'];
         const coloredData = data.map((item: PlatformData, index: number) => ({
           ...item,

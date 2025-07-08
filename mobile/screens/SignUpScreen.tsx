@@ -6,6 +6,7 @@ import { BASE_URL } from '@/constants';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function SignUpScreen() {
+  const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirm, setConfirm] = useState('');
@@ -32,6 +33,7 @@ export default function SignUpScreen() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
+          full_name: fullName,    
           email: email,
           username: email.split('@')[0],
           password_hash: password
@@ -61,9 +63,19 @@ export default function SignUpScreen() {
       <Image source={require('../assets/images/logo.png')} style={styles.logo} resizeMode="contain" />
       <Text style={styles.title}>Đăng Ký</Text>
 
+     <TextInput
+        style={styles.input}
+        placeholder="Họ và tên"
+        placeholderTextColor="#333"
+        keyboardType="default"
+        autoCapitalize="words"
+        value={fullName}
+        onChangeText={setFullName}
+      />
+
       <TextInput
         style={styles.input}
-        placeholder="E-mail address"
+        placeholder="Địa chỉ Email"
         placeholderTextColor="#333"
         keyboardType="email-address"
         autoCapitalize="none"
@@ -74,7 +86,7 @@ export default function SignUpScreen() {
       <View style={styles.passwordContainer}>
         <TextInput
           style={styles.input}
-          placeholder="Password"
+          placeholder="Mật khẩu"
           placeholderTextColor="#333"
           secureTextEntry={!passwordVisible}
           value={password}
@@ -88,7 +100,7 @@ export default function SignUpScreen() {
       <View style={styles.passwordContainer}>
         <TextInput
           style={styles.input}
-          placeholder="Confirm Password"
+          placeholder="Xác nhận mật khẩu"
           placeholderTextColor="#333"
           secureTextEntry={!confirmVisible}
           value={confirm}
@@ -109,7 +121,7 @@ export default function SignUpScreen() {
         disabled={!agreed}
         onPress={handleSignUp}
       >
-        <Text style={styles.buttonText}>Sign Up</Text>
+        <Text style={styles.buttonText}>Đăng Ký</Text>
       </TouchableOpacity>
 
       <Text style={styles.socialText}>hoặc bạn có thể đăng ký bằng</Text>
@@ -165,7 +177,7 @@ const styles = StyleSheet.create({
   icon: { position: 'absolute', right: 15, top: 12 },
   agreeContainer: { flexDirection: 'row', alignItems: 'center', marginTop: 10, marginBottom: 10, alignSelf: 'flex-start' },
   checkbox: { marginRight: 10, color: '#D17842' },
-  agreeText: { fontSize: 14 },
+  agreeText: { fontSize: 14, color: '#D17842', fontWeight: 'bold' },
   button: {
     backgroundColor: '#D17842', paddingVertical: 15, paddingHorizontal: 30,
     borderRadius: 10, width: '100%', alignItems: 'center', marginVertical: 10,

@@ -7,6 +7,6 @@ class SearchHistory(Base):
     __table_args__ = {'extend_existing': True}
 
     search_id = Column(Integer, primary_key=True, index=True)
-    user_id = Column(Integer, ForeignKey("User.user_id"))
+    user_id = Column(Integer, ForeignKey("User.user_id", ondelete="CASCADE"))
     query = Column(String, nullable=False)
     search_time = Column(DateTime, server_default=func.now())
