@@ -39,6 +39,15 @@ const ProductCard: React.FC<ProductCardProps> = ({
       {/* Top Icons */}
       <View style={styles.topIcons}>
         <Image source={{ uri: platformLogo }} style={styles.logo1} />
+
+        <TouchableOpacity onPress={onToggleFavorite} style={styles.favouriteButton}>
+          <Ionicons
+          style={{color:'red'}}
+            name={isFavorite ? 'heart' : 'heart-outline'}
+            size={28}
+            color={isFavorite ? 'red' : 'gray'}
+          />
+        </TouchableOpacity>
       </View>
 
       {/* Image Section */}
@@ -70,14 +79,6 @@ const ProductCard: React.FC<ProductCardProps> = ({
           <Text style={styles.buyButtonText}>Tới nơi bán</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity onPress={onToggleFavorite} style={styles.favouriteButton}>
-          <Ionicons
-          style={{color:'white'}}
-            name={isFavorite ? 'heart' : 'heart-outline'}
-            size={28}
-            color={isFavorite ? 'red' : 'gray'}
-          />
-        </TouchableOpacity>
       </View>
     </View>
   );
@@ -291,7 +292,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     width: '100%',
-    marginBottom: 10,
+    marginBottom: 3,
   },
   logo1: {
     width: 30,
@@ -300,8 +301,8 @@ const styles = StyleSheet.create({
     borderRadius: 8,
   },
   image: {
-    width: 140,
-    height: 160,
+    width: 150,
+    height: 170,
     resizeMode: 'contain',
     
   },
@@ -337,7 +338,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'center',
     flex: 1, 
-    marginRight:9,
   },
   buyButtonText: {
     color: 'white',
@@ -349,9 +349,9 @@ const styles = StyleSheet.create({
     color: 'white',
     fontWeight: 'bold',
     marginRight: 2,
-    backgroundColor:'red',
     padding: 5,
     borderRadius: 5,
+
     
   },
 

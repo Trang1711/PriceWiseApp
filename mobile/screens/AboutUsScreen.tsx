@@ -128,7 +128,7 @@ const AboutUsScreen = () => {
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <Animatable.View animation="fadeInDown">
-        <FontAwesome name="users" size={50} color="#333" style={{backgroundColor: '#ccc', padding: 15, borderRadius: 10, marginBottom: 20}} />
+        <FontAwesome name="users" size={50} color="#333" style={{backgroundColor: 'white', padding: 15, borderRadius: 10, marginBottom: 20, marginTop: 40,}} />
       </Animatable.View>
       <Animatable.Text animation="fadeInDown" style={styles.title}>
         🌟 Về Chúng Tôi 🌟
@@ -238,9 +238,10 @@ const AboutUsScreen = () => {
             </View>
         </Modal>
 
-        <TouchableOpacity onPress={() => router.push('/drawer/profile')}>
-            <Text style={styles.closeBtn}>Quay Lại</Text>
+        <TouchableOpacity onPress={() => router.push('/drawer/profile')} style={styles.closeBtn}>
+          <Text style={styles.closeBtnText}>Quay Lại</Text>
         </TouchableOpacity>
+
     </ScrollView>
   );
 };
@@ -248,15 +249,15 @@ const AboutUsScreen = () => {
 const createStyles = (isDark: boolean) =>
   StyleSheet.create({
     container: {
-      padding: 24,
+      padding: 26,
       backgroundColor: isDark ? '#121212' : '#fff',
       alignItems: 'center',
-      marginTop: 25
+      
     },
     title: {
       fontSize: 28,
       fontWeight: 'bold',
-      color: isDark ? '#fff' : '#0077cc',
+      color: isDark ? '#fff' : 'black',
       marginBottom: 12,
     },
     description: {
@@ -399,14 +400,31 @@ const createStyles = (isDark: boolean) =>
         marginVertical: 12,
     },
     closeBtn: {
-        backgroundColor: '#f0f',
-        paddingVertical: 15,
-        paddingHorizontal: 145,
-        borderRadius: 10,
-        marginTop: 16,
-        color: '#fff',
-        fontSize: 16,
-    }
+      backgroundColor: '#fff',
+      paddingVertical: 14,
+      paddingHorizontal: 50,
+      borderRadius: 30,
+      marginTop: 45,
+      alignSelf: 'center',
+    
+      // Shadow iOS
+      shadowColor: '#000',
+      shadowOffset: { width: 0, height: 6 },
+      shadowOpacity: 0.2,
+      shadowRadius: 10,
+    
+      // Shadow Android
+      elevation: 8,
+    },
+    
+    closeBtnText: {
+      fontSize: 18,
+      color: '#222',
+      textAlign: 'center',
+      fontWeight: '500',
+      letterSpacing: 1,
+    },
+    
   });
 
 export default AboutUsScreen;
