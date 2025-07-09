@@ -87,25 +87,16 @@ export default function ProfileScreen() {
 
         <TouchableOpacity
           style={styles.item}
-          onPress={() => router.push('/drawer/favorites')}
-        >
-          <FontAwesome name="heart" size={22} color="#333" style={styles.icon} />
-          <Text style={styles.itemText}>Danh sách yêu thích</Text>
-          <FontAwesome name="angle-right" size={22} color="gray" style={{ marginLeft: 'auto' }} />
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          style={styles.item}
           onPress={() => router.push('/profile/about_us')}
         >
           <FontAwesome name="users" size={22} color="#333" style={styles.icon} />
-          <Text style={styles.itemText}>Về Chúng Tôi</Text>
+          <Text style={styles.itemText}>Đội ngũ phát triển</Text>
           <FontAwesome name="angle-right" size={22} color="gray" style={{ marginLeft: 'auto' }} />
         </TouchableOpacity>
 
-        <TouchableOpacity
+       <TouchableOpacity
           style={styles.item}
-          onPress={async () => {
+          onPress={() => {
             Alert.alert(
               'Xác nhận',
               'Bạn có chắc chắn muốn đăng xuất không?',
@@ -118,9 +109,14 @@ export default function ProfileScreen() {
                   text: 'Đăng xuất',
                   style: 'destructive',
                   onPress: async () => {
-                    await AsyncStorage.clear();
-                    router.replace('/');
-                    Alert.alert('Đăng xuất thành công!');
+                    try {
+                      await AsyncStorage.multiRemove(['access_token', 'user_id', 'remember_email', 'remember_password']);
+                      router.replace('/');
+                      Alert.alert('Đăng xuất thành công!');
+                    } catch (err) {
+                      Alert.alert('Lỗi', 'Không thể đăng xuất. Vui lòng thử lại.');
+                      console.error('Logout error:', err);
+                    }
                   },
                 },
               ]
@@ -129,7 +125,6 @@ export default function ProfileScreen() {
         >
           <FontAwesome name="sign-out" size={22} color="#333" style={styles.icon1} />
           <Text style={styles.itemText1}>Đăng xuất</Text>
-          {/* <FontAwesome name="angle-right" size={22} color="gray" style={{ marginLeft: 'auto' }} /> */}
         </TouchableOpacity>
 
         <TouchableOpacity

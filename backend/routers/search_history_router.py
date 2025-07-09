@@ -17,3 +17,10 @@ def create_search_history(data: SearchHistoryCreate, db: Session = Depends(get_d
 @router.get("/user/{user_id}", response_model=list[SearchHistoryOut])
 def get_user_search_history(user_id: int, db: Session = Depends(get_db)):
     return db.query(SearchHistory).filter(SearchHistory.user_id == user_id).order_by(SearchHistory.search_time.desc()).all()
+
+@router.delete("/search-history/user/{user_id}")
+def delete_search_history(user_id: int, db: Session = Depends(get_db)):
+    db.query(SearchHistory).filter(SearchHistory.user_id == user_id).delete()
+    db.commit()
+    return {"message": "Đã xóa lịch sử tìm kiếm"}
+

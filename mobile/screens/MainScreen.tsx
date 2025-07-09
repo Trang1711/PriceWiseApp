@@ -189,6 +189,11 @@ export default function HomeScreen() {
           </View>
         </View> */}
 
+        <View style={styles.header}>
+          <Text style={styles.headerTitle}>Trang chủ</Text>
+          <Image source={require('../assets/images/logo.png')} style={styles.logoContainer} />
+        </View>
+
         {/* Home Slider */}
         <HomeSlider 
           data={sliderData}
@@ -266,6 +271,7 @@ export default function HomeScreen() {
                 key={`${item.productId}-${item.productPlatformId}`} 
                 productId={item.productId}
                 productPlatformId={item.productPlatformId}
+                productName={item.productName}
                 platformLogo={item.platformLogo}
                 productImage={item.productImage}
                 currentPrice={item.currentPrice}
@@ -352,8 +358,10 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 20,
     paddingTop: 40,
-   
+    backgroundColor: '#fff',
   },
+  header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 },
+  headerTitle: { fontSize: 20, fontWeight: 'bold' },
   headerContainer: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -363,19 +371,18 @@ const styles = StyleSheet.create({
     marginRight: 10,
   },
   logoContainer: {
-        width: 60, // Chiều rộng của khung
-        height: 60, // Chiều cao của khung
-        borderRadius: 30, // Bán kính để tạo hình tròn
-        overflow: 'hidden', // Ẩn phần hình ảnh ra ngoài khung
-        justifyContent: 'center', // Căn giữa hình ảnh
-        alignItems: 'center', // Căn giữa hình ảnh
-        backgroundColor: '#fff', // Màu nền của khung (có thể thay đổi)
+    width: 60, 
+    height: 50, 
+    overflow: 'hidden', 
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#fff',
     },
-    logo: {
-        width: '110%', 
-        height: '100%', 
-        resizeMode: 'contain', 
-    },
+  logo: {
+    width: '110%', 
+    height: '100%', 
+    resizeMode: 'contain', 
+  },
   searchBox: {
     flexDirection: 'row',
     alignItems: 'center',

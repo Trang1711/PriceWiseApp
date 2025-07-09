@@ -29,7 +29,7 @@ const teamMembers = [
     instagram: 'https://instagram.com/dieupvn',
     skills: ['github', 'trello'],
     color: 'rgb(46, 239, 171)',
-    avatar: require('../assets/images/avatar.png'),
+    avatar: require('../assets/images/Dieu.jpg'),
   },
   {
     id: 2,
@@ -42,7 +42,7 @@ const teamMembers = [
     instagram: 'https://instagram.com/dieupvn',
     skills: ['html5', 'css3', 'react'],
     color: 'rgb(248, 114, 208)',
-    avatar: require('../assets/images/avatar.png'),
+    avatar: require('../assets/images/Nhi.jpg'),
   },
   {
     id: 3,
@@ -81,7 +81,7 @@ const teamMembers = [
     instagram: 'https://instagram.com/dieupvn',
     skills: ['bug', 'jira', 'selenium'],
     color: 'rgb(253, 185, 58)',
-    avatar: require('../assets/images/avatar.png'),
+    avatar: require('../assets/images/Ngoc.png'),
   },
 ];
 
@@ -107,7 +107,7 @@ const AboutUsScreen = () => {
   const playSound = async () => {
     const sound = new Audio.Sound();
     try {
-      await sound.loadAsync(require('../assets/sounds/hub.mp3'));
+      await sound.loadAsync(require('../assets/sounds/let-me-know.mp3'));
       await sound.playAsync();
     } catch (error) {
       console.error('Lỗi phát âm thanh:', error);
@@ -237,6 +237,11 @@ const AboutUsScreen = () => {
                 </Animatable.View>
             </View>
         </Modal>
+        <Animatable.View animation="fadeInUp" delay={teamMembers.length * 150}>
+            <TouchableOpacity onPress={() => router.push('/drawer/profile')} style={styles.closeBtn}>
+                <Text style={{ color: '#fff', fontSize: 16 }}>Quay lại</Text>
+            </TouchableOpacity>
+        </Animatable.View>
     </ScrollView>
   );
 };
@@ -400,6 +405,7 @@ const createStyles = (isDark: boolean) =>
         paddingHorizontal: 145,
         borderRadius: 10,
         marginTop: 16,
+        marginBottom: 50,
         color: '#fff',
         fontSize: 16,
     }

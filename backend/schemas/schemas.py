@@ -236,12 +236,11 @@ class UserOut(BaseModel):
 
 # ===================== PLATFORM =====================
 class PlatformOut(BaseModel):
-    platform_id: Optional[int] = None  # Optional để dùng chung
+    platform_id: Optional[int] = None  
     name: str
     logo_url: Optional[str] = None
     website_url: Optional[str] = None
-    url: Optional[str] = None  # Nếu có platform.url trong Info schema
-
+    url: Optional[str] = None  
     class Config:
         orm_mode = True
         from_attributes = True
@@ -263,6 +262,25 @@ class ProductOut(BaseModel):
 class ProductSchema(ProductOut):
     pass  # Giữ để tương thích nếu bạn cần phân biệt
 
+class ProductCreate(BaseModel):
+    name: str
+    description: Optional[str] = None
+    image_url: Optional[str] = None
+    category_id: Optional[int] = None
+
+class ProductPlatformCreate(BaseModel):
+    product_id: int
+    platform_id: int
+    price: float
+    discount: Optional[float] = 0
+    discount_percentage: Optional[float] = 0
+    rating: Optional[float] = 0
+    review_count: Optional[int] = 0
+    product_url: str
+    shipping_fee: Optional[float] = 0
+    estimated_delivery_time: Optional[str] = None
+    is_official: Optional[bool] = False
+
 # ===================== PRODUCT PLATFORM =====================
 class ProductPlatformOut(BaseModel):
     product_platform_id: Optional[int] = None
@@ -283,7 +301,38 @@ class ProductPlatformOut(BaseModel):
         from_attributes = True
 
 # ===================== PRODUCT DETAIL WITH PLATFORMS =====================
+# class ProductPlatformInfo(BaseModel):
+#     price: float
+#     discount: Optional[float]
+#     discount_percentage: Optional[float]
+#     rating: Optional[float]
+#     review_count: Optional[int]
+#     product_url: Optional[str]
+#     shipping_fee: Optional[float]
+#     estimated_delivery_time: Optional[str]
+#     is_official: Optional[bool]
+#     platform: PlatformOut
+
+#     class Config:
+#         orm_mode = True
+
+# class ProductInfo(ProductOut):
+#     product_platforms: List[ProductPlatformInfo] = Field(default_factory=list)
+
+#     class Config:
+#         orm_mode = True
+
+class PlatformOut(BaseModel):
+    platform_id: int
+    name: str
+    url: Optional[str]
+    logo_url: Optional[str]
+
+    class Config:
+        from_attributes = True
+
 class ProductPlatformInfo(BaseModel):
+    product_platform_id: int
     price: float
     discount: Optional[float]
     discount_percentage: Optional[float]
@@ -296,10 +345,14 @@ class ProductPlatformInfo(BaseModel):
     platform: PlatformOut
 
     class Config:
-        orm_mode = True
+        from_attributes = True
+
 
 class ProductInfo(ProductOut):
-    platforms: List[ProductPlatformInfo] = Field(default_factory=list)
+    product_platforms: List[ProductPlatformInfo] = Field(default_factory=list)
+
+    class Config:
+        from_attributes = True
 
 # ===================== FAVORITES =====================
 class FavoriteCreate(BaseModel):

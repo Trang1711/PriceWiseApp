@@ -37,7 +37,7 @@ export default function ThongTinCaNhan() {
         setUserInfo({
           username: data.username,
           email: data.email,
-          password: data.password_hash,
+          password: '',
           fullName: data.full_name,
           phone: data.phone_number || 'Chưa cập nhật',
           address: data.address || 'Chưa cập nhật',
@@ -72,14 +72,17 @@ export default function ThongTinCaNhan() {
     try {
       const userId = await AsyncStorage.getItem('user_id');
 
-      const updatedPayload = {
+      const updatedPayload: any = {
         username: userInfo.username,
         email: userInfo.email,
-        password_hash: userInfo.password,
         full_name: userInfo.fullName,
         phone_number: userInfo.phone,
         address: userInfo.address,
       };
+
+      if (userInfo.password && userInfo.password.trim() !== '') {
+        updatedPayload.password = userInfo.password; 
+      }
 
       const response = await fetch(`${BASE_URL}/api/user/${userId}`, {
         method: 'PUT',
@@ -125,20 +128,29 @@ export default function ThongTinCaNhan() {
             </Text>
           </TouchableOpacity>
 
-          {Object.entries(userInfo).map(([field, value]) => (
+         {Object.entries(userInfo).map(([field, value]) => (
             <View key={field} style={styles.infoBox}>
               <Text style={styles.label}>{getLabel(field)}</Text>
               <View style={styles.inputWrapper}>
                 <TextInput
                   style={styles.input}
-                  value={String(value)}
-                  onChangeText={text => handleChange(field, text)}
+                  value={field === 'password' ? tempValue : String(value)}
+                  placeholder={field === 'password' ? '***********' : ''}
                   secureTextEntry={field === 'password' && !showPassword}
+                  keyboardType={field === 'phone' ? 'phone-pad' : 'default'}
+                  onChangeText={text => {
+                    if (field === 'password') {
+                      setTempValue(text);
+                      setUserInfo(prev => ({ ...prev, password: text }));
+                    } else {
+                      handleChange(field, text);
+                    }
+                  }}
                 />
                 {field === 'password' && (
-                  <TouchableOpacity onPress={() => setShowPassword(!showPassword)} style={styles.eyeIcon}>
-                    <FontAwesome name={showPassword ? 'eye-slash' : 'eye'} size={20} color="#555" />
-                  </TouchableOpacity>
+                  <Text style={{ fontStyle: 'italic', color: '#888', marginTop: 5 }}>
+                    Để trống nếu không muốn thay đổi mật khẩu
+                  </Text>
                 )}
               </View>
             </View>
@@ -146,6 +158,10 @@ export default function ThongTinCaNhan() {
 
           <TouchableOpacity style={styles.updateButton} onPress={handleUpdateAll}>
             <Text style={styles.updateButtonText}>Cập nhật</Text>
+          </TouchableOpacity>
+
+           <TouchableOpacity style={styles.backButton} onPress={() => router.push('/drawer/profile')}>
+            <Text style={styles.backButtonText}>Quay lại</Text>
           </TouchableOpacity>
         </ScrollView>
       </KeyboardAvoidingView>
@@ -244,7 +260,19 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
   },
-    profileSection: {
+  backButton: {
+    backgroundColor: '#D17842',
+    paddingVertical: 12,
+    borderRadius: 8,
+    alignItems: 'center',
+    marginTop: 10,
+  },
+  backButtonText: {
+    color: 'white',
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  profileSection: {
     flexDirection: 'column',
     alignItems: 'center',
     padding: 14,
