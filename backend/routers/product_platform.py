@@ -16,6 +16,8 @@ def get_product_cards(db: Session = Depends(get_db)):
         platform = item.platform
 
         product_cards.append(ProductCardOut(
+            productId=product.product_id,                    
+            productPlatformId=item.product_platform_id,                 
             platformLogo=platform.logo_url or "",
             productImage=product.image_url or "",
             currentPrice=f"{item.price:,.0f} đ",

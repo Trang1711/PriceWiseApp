@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import {
   ActivityIndicator,
+  Alert,
   Image,
   RefreshControl,
   SafeAreaView,
@@ -19,8 +20,11 @@ import HomeSlider from '../components/HomeSlider';
 import { router, useLocalSearchParams } from 'expo-router'; 
 import ProductCard from '../components/ProductCard';
 import axios from 'axios';
-import { BASE_URL } from '@/constants';
+import { addToFavorites, BASE_URL, removeFromFavorites } from '@/constants';
 import NavigationBar from '@/components/NavigationBar';
+import CustomLoading from '@/components/CustomLoading';
+import TripleRingLoader from '@/components/TripleRingLoader';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function HomeScreen() {
   const navigation = useNavigation();
@@ -30,6 +34,37 @@ export default function HomeScreen() {
   const params = useLocalSearchParams();
   const selectedCategory = params.category;
   const [refreshing, setRefreshing] = useState(false);
+  const [favoriteIds, setFavoriteIds] = useState<Set<number>>(new Set());
+  
+  const toggleFavorite = async (productId: number, productPlatformId: number) => {
+    const userIdStr = await AsyncStorage.getItem('user_id');
+    if (!userIdStr) {
+      Alert.alert("Thông báo", "Vui lòng đăng nhập để sử dụng chức năng yêu thích.");
+      return;
+    }
+
+    const userId = parseInt(userIdStr);
+    const isFav = favoriteIds.has(productPlatformId);
+
+    try {
+      if (isFav) {
+        await removeFromFavorites(productId, userId, productPlatformId);
+        setFavoriteIds((prev) => {
+          const updated = new Set(prev);
+          updated.delete(productPlatformId);
+          return updated;
+        });
+        Alert.alert("Đã xoá khỏi yêu thích");
+      } else {
+        await addToFavorites(productId, userId, productPlatformId);
+        setFavoriteIds((prev) => new Set(prev).add(productPlatformId));
+        Alert.alert("Đã thêm vào yêu thích");
+      }
+    } catch (error) {
+      console.error("Lỗi khi xử lý yêu thích:", error);
+      Alert.alert("Lỗi", "Không thể xử lý yêu thích.");
+    }
+  };
 
   const onRefresh = useCallback(() => {
     setRefreshing(true);
@@ -39,31 +74,58 @@ export default function HomeScreen() {
     }, 2000);
   }, []);
 
+  // useEffect(() => {
+  //   axios.get(`${BASE_URL}/api/products`)
+  //     .then((res) => {
+  //       setProducts(res.data);
+  //       setLoading(false);
+  //     })
+  //     .catch((err) => {
+  //       console.error('Error fetching data', err);
+  //       setLoading(false);
+  //     });
+  // }, []);
+
   useEffect(() => {
-    axios.get(`${BASE_URL}/api/products`)
-      .then((res) => {
-        setProducts(res.data);
-        setLoading(false);
-      })
-      .catch((err) => {
-        console.error('Error fetching data', err);
-        setLoading(false);
-      });
+    const fetchData = async () => {
+      const userId = await AsyncStorage.getItem("user_id");
+      if (!userId) return;
+
+      const resProduct = await axios.get(`${BASE_URL}/api/products`);
+      const resFav = await axios.get(`${BASE_URL}/favorites/user/${userId}`);
+
+      const favoriteIds = new Set(resFav.data.map((fav) => fav.product_platform_id));
+      setFavoriteIds(favoriteIds);
+      setProducts(resProduct.data);
+      setLoading(false);
+    };
+
+    fetchData();
   }, []);
+
 
   // if (loading) {
   //   return <ActivityIndicator size="large" color="#000" />;
   // }
 
+  // if (loading) {
+  //   return (
+  //     <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+  //       <ActivityIndicator size="large" color="#007BFF" />
+  //       <Text style={{ marginTop: 10 }}>Đang tải dữ liệu...</Text>
+  //     </View>
+  //   );
+  // }
+
   if (loading) {
     return (
       <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-        <ActivityIndicator size="large" color="#007BFF" />
+        <TripleRingLoader />
         <Text style={{ marginTop: 10 }}>Đang tải dữ liệu...</Text>
       </View>
     );
   }
-  
+
   // Dữ liệu slider
   const sliderData = [
     {
@@ -108,7 +170,7 @@ export default function HomeScreen() {
         <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
       }>
         {/* Thanh tìm kiếm */}
-        <View style={styles.headerContainer}>
+        {/* <View style={styles.headerContainer}>
 
           <View style={styles.searchBox}>
             <FontAwesome name="search" size={20} color="#D17842" style={styles.searchIcon} />
@@ -125,7 +187,7 @@ export default function HomeScreen() {
                 style={styles.logo}
             />
           </View>
-        </View>
+        </View> */}
 
         {/* Home Slider */}
         <HomeSlider 
@@ -197,12 +259,13 @@ export default function HomeScreen() {
         {/* Khoảng cách giữa các section */}
         <View style={styles.sectionSpacing} />
         <Text style={styles.sectionTitle}>Sản phẩm nổi bật</Text>
-
         <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginVertical: 16 }}>
           <View style={{ flexDirection: 'row' }}>
-            {products.map((item, index) => (
+          {products.map((item, index) => (
               <ProductCard
-                key={index}
+                key={`${item.productId}-${item.productPlatformId}`} 
+                productId={item.productId}
+                productPlatformId={item.productPlatformId}
                 platformLogo={item.platformLogo}
                 productImage={item.productImage}
                 currentPrice={item.currentPrice}
@@ -213,13 +276,12 @@ export default function HomeScreen() {
                 isAvailable={item.isAvailable}
                 rating={item.rating}
                 productUrl={item.productUrl}
-                isFavorite={favoriteStates[index]}
-                onToggleFavorite={() => handleToggleFavorite(index)}
+                isFavorite={favoriteIds.has(item.productPlatformId)}
+                onToggleFavorite={() => toggleFavorite(item.productId, item.productPlatformId)}
               />
             ))}
           </View>
         </ScrollView>
-
         {/* Khoảng cách giữa các section */}
         <View style={styles.userReviewsContainer}>
           <Text style={styles.ratingTitle}>Đánh giá từ người dùng</Text>

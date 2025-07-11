@@ -4,7 +4,9 @@ from sqlalchemy.orm import Session
 from backend.schemas.schemas import UserUpdate
 from database.db import get_db
 from models.user import User
-from pydantic import BaseModel
+from pydantic import BaseModel  
+from models.search_history import SearchHistory
+from models.favorite_product import FavoriteProduct
 
 router = APIRouter()
 
@@ -39,4 +41,20 @@ def update_user(user_id: int, user: UserUpdate, db: Session = Depends(get_db)):
     db.commit()
     db.refresh(db_user)
     return db_user
+
+@router.delete("/users/{user_id}")
+def delete_user(user_id: int, db: Session = Depends(get_db)):
+    # Xoá các bản ghi phụ thuộc trước
+    db.query(SearchHistory).filter(SearchHistory.user_id == user_id).delete()
+    db.query(FavoriteProduct).filter(FavoriteProduct.user_id == user_id).delete()
+
+    # Sau đó xoá user
+    user = db.query(User).filter(User.user_id == user_id).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    db.delete(user)
+    db.commit()
+    return {"message": "User deleted successfully"}
+
 

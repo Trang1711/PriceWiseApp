@@ -237,11 +237,6 @@ const AboutUsScreen = () => {
                 </Animatable.View>
             </View>
         </Modal>
-
-        <TouchableOpacity onPress={() => router.push('/drawer/profile')} style={styles.closeBtn}>
-          <Text style={styles.closeBtnText}>Quay Lại</Text>
-        </TouchableOpacity>
-
     </ScrollView>
   );
 };

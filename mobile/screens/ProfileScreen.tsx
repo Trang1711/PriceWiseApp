@@ -81,7 +81,7 @@ export default function ProfileScreen() {
           onPress={() => router.push('/profile/history')}
         >
           <FontAwesome name="history" size={22} color="#333" style={styles.icon} />
-          <Text style={styles.itemText}>Lịch sử hoạt động</Text>
+          <Text style={styles.itemText}>Lịch sử tìm kiếm</Text>
           <FontAwesome name="angle-right" size={22} color="gray" style={{ marginLeft: 'auto' }} />
         </TouchableOpacity>
 
@@ -106,14 +106,71 @@ export default function ProfileScreen() {
         <TouchableOpacity
           style={styles.item}
           onPress={async () => {
-            await AsyncStorage.clear(); 
-            router.replace('/signin'); 
-            Alert.alert('Đăng xuất thành công!');
+            Alert.alert(
+              'Xác nhận',
+              'Bạn có chắc chắn muốn đăng xuất không?',
+              [
+                {
+                  text: 'Huỷ',
+                  style: 'cancel',
+                },
+                {
+                  text: 'Đăng xuất',
+                  style: 'destructive',
+                  onPress: async () => {
+                    await AsyncStorage.clear();
+                    router.replace('/');
+                    Alert.alert('Đăng xuất thành công!');
+                  },
+                },
+              ]
+            );
           }}
         >
           <FontAwesome name="sign-out" size={22} color="#333" style={styles.icon1} />
           <Text style={styles.itemText1}>Đăng xuất</Text>
           {/* <FontAwesome name="angle-right" size={22} color="gray" style={{ marginLeft: 'auto' }} /> */}
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={styles.item}
+          onPress={() => {
+            Alert.alert(
+              "Xác nhận xoá",
+              "Bạn có chắc chắn muốn xoá tài khoản? Hành động này không thể hoàn tác.",
+              [
+                { text: "Huỷ", style: "cancel" },
+                {
+                  text: "Xoá",
+                  style: "destructive",
+                  onPress: async () => {
+                    try {
+                      const userId = await AsyncStorage.getItem('user_id');
+                      if (!userId) return;
+
+                      const res = await fetch(`${BASE_URL}/users/${userId}`, {
+                        method: "DELETE",
+                      });
+
+                      if (!res.ok) {
+                        const err = await res.json();
+                        throw new Error(err.detail || "Không thể xoá tài khoản.");
+                      }
+
+                      await AsyncStorage.clear();
+                      Alert.alert("Đã xoá tài khoản thành công.");
+                      router.replace('/');
+                    } catch (error: any) {
+                      Alert.alert("Lỗi", error.message || "Đã có lỗi xảy ra.");
+                    }
+                  },
+                },
+              ]
+            );
+          }}
+        >
+          <FontAwesome name="trash" size={22} color="red" style={styles.icon1} />
+          <Text style={[styles.itemText1, { color: 'red' }]}>Xoá tài khoản</Text>
         </TouchableOpacity>
 
         {/* Khoảng trống để tránh che mất bởi NavigationBar */}
