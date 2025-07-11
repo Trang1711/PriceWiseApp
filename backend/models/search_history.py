@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, DateTime, ForeignKey
+from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, Unicode
 from sqlalchemy.sql import func
 from database.db import Base
 
@@ -8,5 +8,5 @@ class SearchHistory(Base):
 
     search_id = Column(Integer, primary_key=True, index=True)
     user_id = Column(Integer, ForeignKey("User.user_id", ondelete="CASCADE"))
-    query = Column(String, nullable=False)
+    query = Column(Unicode(100), nullable=False)
     search_time = Column(DateTime, server_default=func.now())

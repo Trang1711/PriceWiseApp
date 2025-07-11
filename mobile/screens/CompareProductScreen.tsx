@@ -7,11 +7,10 @@ import {
   TouchableOpacity,
   Linking,
   StyleSheet,
-  SafeAreaView,
 } from 'react-native';
-import { useLocalSearchParams } from 'expo-router';
-import NavigationBar from '@/components/NavigationBar';
+import { router, useLocalSearchParams } from 'expo-router';
 import { BASE_URL } from '@/constants';
+import { SafeAreaView } from 'react-native-safe-area-context'; 
 
 interface PlatformData {
   platform: string;
@@ -56,7 +55,7 @@ export default function CompareProductScreen() {
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: '#fff8fc' }}>
       <ScrollView style={styles.container}>
-        <Text style={styles.title}>🎀 So sánh sản phẩm trên các sàn</Text>
+        <Text style={styles.title}>So sánh sản phẩm trên các sàn</Text>
 
         <View style={styles.cardContainer}>
           {productData.map((item, index) => (
@@ -112,9 +111,11 @@ export default function CompareProductScreen() {
             </View>
           ))}
         </View>
-      </ScrollView>
 
-      <NavigationBar />
+        <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
+          <Text style={styles.backButtonText}>Quay lại</Text>
+        </TouchableOpacity>
+      </ScrollView>
     </SafeAreaView>
   );
 }
@@ -224,5 +225,17 @@ const styles = StyleSheet.create({
     fontSize: 13,
     fontWeight: 'bold',
     color: '#d63384',
+  },
+  backButton: {
+    marginTop: 20,
+    padding: 10,
+    backgroundColor: '#f0f',
+    borderRadius: 8,
+    alignItems: 'center',
+  },
+  backButtonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: 'bold',
   },
 });

@@ -13,12 +13,15 @@ import { FontAwesome } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { BASE_URL } from '@/constants';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import TripleRingLoader from '@/components/TripleRingLoader';
+import CustomLoading from '@/components/CustomLoading';
 
 export default function SignInScreen() {
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
@@ -34,6 +37,16 @@ export default function SignInScreen() {
     loadRemembered();
   }, []);
 
+  useEffect(() => {
+    const checkLogin = async () => {
+      const token = await AsyncStorage.getItem('access_token');
+      if (token) {
+        router.replace('/drawer/home');
+      }
+    };
+    checkLogin();
+  }, []);
+
   const handleSignIn = async () => {
     if (!email || !password) {
       Alert.alert("Lỗi", "Vui lòng nhập đầy đủ email và mật khẩu.");
@@ -41,6 +54,8 @@ export default function SignInScreen() {
     }
 
     try {
+      setLoading(true);
+
       const response = await fetch(`${BASE_URL}/login`, {
         method: "POST",
         headers: {
@@ -56,26 +71,8 @@ export default function SignInScreen() {
 
       const data = await response.json();
 
-      // if (data.success) {
-      //   await AsyncStorage.setItem('user_id', data.user.id.toString());
-        
-      //   if (rememberMe) {
-      //     await AsyncStorage.setItem('remember_email', email);
-      //   } else {
-      //     await AsyncStorage.removeItem('remember_email');
-      //   }
-
-      //   Alert.alert("Đăng nhập thành công", `Chào ${data.user.username}!`, [
-      //     {
-      //       text: "OK",
-      //       onPress: () => router.replace('/home'),
-      //     }
-      //   ]);
-      // } else {
-      //   Alert.alert("Lỗi", "Tên đăng nhập hoặc mật khẩu không đúng.");
-      // }
-
       if (data.success) {
+        await AsyncStorage.setItem('access_token', data.access_token);
         await AsyncStorage.setItem('user_id', data.user.id.toString());
 
         if (rememberMe) {
@@ -94,8 +91,20 @@ export default function SignInScreen() {
     } catch (err) {
       const error = err as Error;
       Alert.alert("Lỗi", error.message);
+    } finally {
+      setLoading(false);
     }
   };
+
+  if (loading) {
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        {/* <TripleRingLoader /> */}
+        <CustomLoading />
+        <Text style={{ marginTop: 10 }}>Đang xác thực...</Text>
+      </View>
+    );
+  }
 
   return (
     <View style={styles.container}>

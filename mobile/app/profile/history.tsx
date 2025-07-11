@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import {
   View, Text, StyleSheet, ScrollView, Image,
-  TouchableOpacity, Dimensions, ActivityIndicator
+  TouchableOpacity, Dimensions, ActivityIndicator,
+  Alert
 } from 'react-native';
-import { useRouter } from 'expo-router';
+import { router, useRouter } from 'expo-router';
 import NavigationBar from '@/components/NavigationBar';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -39,18 +40,83 @@ export default function LichSuDaXemScreen() {
     }
   }, [userId]);
 
+  const handleClearHistory = async () => {
+    Alert.alert(
+      "Xác nhận",
+      "Bạn có chắc chắn muốn xóa toàn bộ lịch sử tìm kiếm?",
+      [
+        { text: "Hủy", style: "cancel" },
+        {
+          text: "Xóa",
+          style: "destructive",
+          onPress: async () => {
+            try {
+              if (!userId) return;
+              await axios.delete(`${BASE_URL}/search-history/search-history/user/${userId}`);
+              Alert.alert("Thành công", "Đã xóa lịch sử tìm kiếm");
+              setHistory([]);
+            } catch (err) {
+              console.error("Lỗi khi xoá lịch sử:", err);
+            }
+          },
+        },
+      ]
+    );
+  };
+
   return (
     <View style={styles.container}>
-      <Text style={styles.header}>Lịch sử tìm kiếm</Text>
+      <View style={styles.headerRow}>
+        <Text style={styles.header}>Lịch sử tìm kiếm</Text>
 
-      {loading ? (
-         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <View style={styles.buttonGroup}>
+          <TouchableOpacity onPress={() => router.push('/drawer/profile')}>
+            <Text style={styles.backButton}>Quay lại</Text>
+          </TouchableOpacity>
+
+          {history.length > 0 && (
+            <TouchableOpacity onPress={handleClearHistory}>
+              <Text style={styles.clearButton}>Xóa lịch sử</Text>
+            </TouchableOpacity>
+          )}
+        </View>
+      </View>
+
+     {loading ? (
+        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
           <TripleRingLoader />
           <Text style={{ marginTop: 10 }}>Đang tải dữ liệu...</Text>
         </View>
       ) : history.length === 0 ? (
-        <View style={styles.emptyContainer}>
-          <Text style={styles.emptyText}>Chưa có lịch sử tìm kiếm</Text>
+        <View style={styles.emptyWrapper}>
+          <Image
+            source={require('../../assets/images/history-background.jpg')}
+            style={styles.backgroundImage}
+          />
+          <View style={styles.overlay} />
+
+          <View style={styles.emptyContent}>
+            <View style={styles.heartBox}>
+              <View style={styles.heartIcon}>
+                <Image
+                  source={require('../../assets/images/history_icon.jpg')}
+                  style={{ width: 60, height: 60, resizeMode: 'contain' }}
+                />
+              </View>
+              <Text style={styles.heartText}>Chưa có lịch sử tìm kiếm</Text>
+            </View>
+
+            <Text style={styles.messageText}>
+              Bạn chưa tìm kiếm sản phẩm nào. Hãy{' '}
+              <Text
+                style={styles.exploreLink}
+                onPress={() => router.push('/drawer/explore')}
+              >
+                khám phá
+              </Text>{' '}
+              ngay bây giờ nhé!
+            </Text>
+          </View>
         </View>
       ) : (
         <ScrollView contentContainerStyle={styles.scrollContent}>
@@ -73,8 +139,7 @@ const styles = StyleSheet.create({
   header: {
     fontSize: 20,
     fontWeight: 'bold',
-    padding: 16,
-    
+    paddingVertical: 10,
     paddingTop: 50,
     backgroundColor: '#fff',
   },
@@ -123,6 +188,17 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontWeight: '600',
   },
+  buttonGroup: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+  },
+  backButton: {
+    color: 'blue',
+    marginRight: 10,
+    marginTop: 30,
+    fontWeight: '500',
+  },
   bottomTab: {
     flexDirection: 'row',
     justifyContent: 'space-around',
@@ -148,7 +224,6 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderColor: '#eee',
   },
-
   queryText: {
     fontSize: 16,
     fontWeight: '500',
@@ -167,5 +242,72 @@ const styles = StyleSheet.create({
   emptyText: {
     fontSize: 16,
     color: '#888',
+  },
+  headerRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 16,
+    backgroundColor: '#fff',
+  },
+  clearButton: {
+    fontSize: 14,
+    color: '#d11a2a',
+    fontWeight: '500',
+    paddingTop: 30,
+  },
+  heartBox: {
+    backgroundColor: '#EAAE99',
+    padding: 50,
+    borderRadius: 20,
+    alignItems: 'center',
+    marginTop: '30%',
+  },
+  heartText: {
+    marginTop: 10,
+    color: '#333',
+    fontSize: 18,
+    fontWeight: 'bold',
+  },
+  heartIcon: {
+    width: 80,
+    height: 80,
+    borderRadius: 15,
+    backgroundColor: '#fff',
+    justifyContent: 'center',
+    alignItems: 'center',
+    elevation: 4,
+    marginBottom: 10,
+  },
+  emptyWrapper: {
+    flex: 1,
+    alignItems: 'center',
+  },
+  overlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(0,0,0,0.3)',
+  },
+  emptyContent: {
+    position: 'absolute',
+    alignItems: 'center',
+    paddingHorizontal: 20,
+  },
+  messageText: {
+    textAlign: 'center',
+    fontSize: 16,
+    color: '#fff',
+    marginTop: 30,
+    lineHeight: 22,
+  },
+  exploreLink: {
+    fontWeight: 'bold',
+    textDecorationLine: 'underline',
+    color: '#FFD700',
+  },
+  backgroundImage: {
+    ...StyleSheet.absoluteFillObject,
+    width: '100%',
+    height: '100%',
+    resizeMode: 'cover',
   },
 });

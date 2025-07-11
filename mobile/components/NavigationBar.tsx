@@ -12,11 +12,12 @@ export default function NavigationBar() {
     { icon: 'search', label: 'Khám phá', route: '/drawer/explore' },
     { icon: 'heart', label: 'Yêu thích', route: '/drawer/favorites' },
     { icon: 'user', label: 'Cá nhân', route: '/drawer/profile' },
+    { icon: 'cog', label: 'Admin', route: '/admin' }
   ]
 
   return (
     <View style={styles.bottomTabWrapper}>
-      <BlurView intensity={100} tint="light" style={styles.bottomTab}>
+      <View style={styles.bottomTab}>
         {tabs.map((tab, index) => {
           const isActive = pathname === tab.route
           return (
@@ -34,7 +35,7 @@ export default function NavigationBar() {
                 <FontAwesome
                   name={tab.icon}
                   size={28}
-                  color={isActive ? '#000' : '#888'}
+                  color={isActive ? 'red' : '#888'}
                 />
                 <Text style={[styles.tabText, isActive && styles.tabTextActive]}>
                   {tab.label}
@@ -43,7 +44,7 @@ export default function NavigationBar() {
             </TouchableOpacity>
           )
         })}
-      </BlurView>
+      </View>
     </View>
   )
 }
@@ -59,18 +60,20 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-around',
     alignItems: 'center',
-    paddingVertical: 10,
+    padding:5,
     position: 'absolute',
     borderTopColor: '#ddd',
-    borderRadius: 40,
+    borderRadius: 35,
     bottom: 0,
     left: 0,
     right: 0,
-    height: 90,
+    height: 100,
     shadowColor: '#000',
     shadowOpacity: 0.08,
     shadowRadius: 8,
     overflow: 'hidden',
+    backgroundColor: 'white',
+    
   },
   tab: {
     alignItems: 'center',
@@ -83,7 +86,7 @@ const styles = StyleSheet.create({
     fontWeight: '500',
   },
   tabTextActive: {
-    color: '#000',
+    color: 'red',
     fontWeight: 'bold',
   },
 })

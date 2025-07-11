@@ -65,7 +65,7 @@ export default function YeuThichScreen() {
       try {
         const userIdString = await AsyncStorage.getItem('user_id');
         if (!userIdString) {
-          console.warn('❗ Không tìm thấy user_id trong AsyncStorage');
+          console.warn('Không tìm thấy user_id trong AsyncStorage');
           setLoading(false);
           return;
         }
@@ -103,11 +103,6 @@ export default function YeuThichScreen() {
 
     try {
       if (isFav) {
-        console.log('Xoá yêu thích với:', {
-          product_id: productId,
-          user_id: userId,
-          product_platform_id: productPlatformId,
-        });
         await removeFromFavorites(productId, userId, productPlatformId);
         setFavoriteIds(prev => {
           const updated = new Set(prev);
@@ -193,7 +188,7 @@ export default function YeuThichScreen() {
                     </Text>
 
                     <Text style={styles.originalPrice}>
-                      {pf.discount.toLocaleString()}₫
+                      {(pf.price + pf.discount).toLocaleString()}₫
                     </Text>
 
                     <Text style={styles.cardSubtitle}>

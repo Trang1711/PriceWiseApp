@@ -10,8 +10,9 @@ import {
   Button,
   ActivityIndicator,
   Alert,
+  ImageBackground,
 } from 'react-native';
-import { FontAwesome } from '@expo/vector-icons';
+import { FontAwesome, FontAwesome5 } from '@expo/vector-icons';
 import { useLocalSearchParams } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';
 import Slider from '@react-native-community/slider';
@@ -21,7 +22,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import RefreshWrapper from '@/components/RefreshWrapper';
 import axios from 'axios';
 import TripleRingLoader from '@/components/TripleRingLoader';
-
+    
 interface ProductItem {
   logo_url?: string;
   product_platform_id: number;
@@ -80,28 +81,52 @@ export default function Explore() {
     }
   }, [minPrice, maxPrice]);
 
+  // useEffect(() => {
+  //   if (!categoryId) return;
+
+  //   setLoading(true);
+
+  //   setSelectedCategory({
+  //     id: String(categoryId),
+  //     label: categoryName || '',
+  //   });
+
+  //   fetch(`${BASE_URL}/products/by-category/${categoryId}`)
+  //     .then((res) => res.json())
+  //     .then((data) => {
+  //       setProducts(data || []);
+  //       setResults([]);
+  //     })
+  //     .catch((err) => {
+  //       console.error("Fetch error:", err);
+  //       setProducts([]);
+  //     })
+  //     .finally(() => setLoading(false));
+  // }, [categoryId, categoryName]);
+
   useEffect(() => {
-    if (!categoryId) return;
+  if (!categoryId) return;
 
-    setLoading(true);
+  setLoading(true);
 
-    setSelectedCategory({
-      id: String(categoryId),
-      label: categoryName || '',
-    });
+  setSelectedCategory({
+    id: String(categoryId),
+    label: categoryName || '',
+  });
 
-    fetch(`${BASE_URL}/products/by-category/${categoryId}`)
-      .then((res) => res.json())
-      .then((data) => {
-        setProducts(data || []);
-        setResults([]);
-      })
-      .catch((err) => {
-        console.error("Fetch error:", err);
-        setProducts([]);
-      })
-      .finally(() => setLoading(false));
-  }, [categoryId, categoryName]);
+  fetch(`${BASE_URL}/products/by-category/${categoryId}`)
+    .then((res) => res.json())
+    .then((data) => {
+      setProducts(data || []);
+      setResults([]);
+    })
+    .catch((err) => {
+      console.error("Fetch error:", err);
+      setProducts([]);
+    })
+    .finally(() => setLoading(false));
+}, [categoryId, categoryName]);
+
 
   useEffect(() => {
     const fetchFavorites = async () => {
@@ -208,11 +233,11 @@ export default function Explore() {
 
       // Hiển thị kết quả
       const allCards: ResultItem[] = data.flatMap((product) => {
-        if (!product.platforms || product.platforms.length === 0) return [];
+        if (!product.product_platforms || product.product_platforms.length === 0) return [];
 
-        return product.platforms.map((pf) => ({
+        return product.product_platforms.map((pf) => ({
           product_id: product.product_id,
-          product_platform_id: pf.product_platform_id,
+          product_platform_id: pf.product_platform_id, 
           platform_id: pf.platform.platform_id,
           price: pf.price,
           shipping_fee: pf.shipping_fee,
@@ -324,17 +349,18 @@ export default function Explore() {
       )
     )
   : products
-      .filter((p) => p.price >= minPrice && p.price <= maxPrice)
-      .map((p) =>
-        renderProductCard(
-          p.product_id,
-          p.product_platform_id, 
-          p.image_url,
-          p.name,
-          p.price,
-          p.platform
-        )
-      );
+    .filter((p) => p.price >= minPrice && p.price <= maxPrice)
+    .map((p) =>
+      renderProductCard(
+        p.product_id,
+        p.product_platform_id,
+        p.image_url,
+        p.name,
+        p.price,
+        p.platform
+      )
+    );
+
 
   if (loading) {
     return (
@@ -353,6 +379,7 @@ export default function Explore() {
       <View style={styles.searchContainer}>
         <TextInput
           placeholder="Tìm sản phẩm..."
+          placeholderTextColor={'#9C9C9C'}
           style={styles.searchInput}
           value={searchText}
           onChangeText={setSearchText}
@@ -439,11 +466,56 @@ export default function Explore() {
       </Modal>
 
       {/* Results */}
-      <RefreshWrapper onRefresh={handleRefreshExplore} style={{ paddingBottom: 20 }}>
+      {/* <RefreshWrapper onRefresh={handleRefreshExplore} style={{ paddingBottom: 100 }}>
         {searchText ? (
           <Text style={styles.resultsText}>{results.length} kết quả cho "{searchText}"</Text>
         ) : null}
         <View style={styles.productRow}>{displayProducts}</View>
+      </RefreshWrapper> */}
+      <RefreshWrapper onRefresh={handleRefreshExplore} style={{ paddingBottom: 100 }}>
+        {searchText ? (
+          <Text style={styles.resultsText}>{results.length} kết quả cho "{searchText}"</Text>
+        ) : null}
+
+       {searchText && results.length === 0 ? (
+        <View style={styles.emptyWrapper}>
+            <View style={styles.emptyContent}>
+              <FontAwesome name="search" size={64} color="#999" />
+              <Text style={styles.emptyText}>Không tìm thấy kết quả nào</Text>
+            </View>
+        </View>
+
+      ) : !searchText && results.length === 0 && products.length === 0 ? (
+       <ImageBackground
+        source={require('../assets/images/logo.png')}
+        style={styles.fullBackgroundImage}
+        imageStyle={{ opacity: 0.25 }} 
+        resizeMode='contain'
+      >
+        <View style={styles.overlayContent}>
+          <Text style={styles.suggestTitle}>Khám phá danh mục</Text>
+
+          <View style={styles.suggestGrid}>
+            {categories.map((cat) => (
+              <TouchableOpacity
+                key={cat.id}
+                style={styles.suggestBox}
+                onPress={() =>
+                  router.push({
+                    pathname: '/drawer/explore',
+                    params: { categoryId: cat.id, categoryName: cat.label },
+                  })
+                }
+              >
+                <Text style={styles.suggestText}>{cat.label}</Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+        </View>
+      </ImageBackground>
+      ) : (
+        <View style={styles.productRow}>{displayProducts}</View>
+      )}
       </RefreshWrapper>
     </View>
   );
@@ -634,4 +706,99 @@ const styles = StyleSheet.create({
     backgroundColor: '#eee',
     borderRadius: 6,
   },
+  title: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 12,
+    color: '#333',
+  },
+  categoryItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 10,
+  },
+  icon: {
+    marginRight: 12,
+  },
+  catText: {
+    fontSize: 16,
+    color: '#555',
+  },
+  emptyWrapper: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 40,
+    height: 300,
+    position: 'relative',
+  },
+  emptyBackground: {
+    ...StyleSheet.absoluteFillObject,
+    resizeMode: 'cover',
+  },
+  emptyOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(0,0,0,0.4)',
+  },
+  emptyText: {
+    color: '#111',
+    marginTop: 16,
+    fontSize: 18,
+    fontWeight: '500',
+  },
+  suggestionBackground: {
+    marginTop: 10,
+    paddingVertical: 30,
+    paddingHorizontal: 20,
+    borderRadius: 12,
+    overflow: 'hidden',
+    width: '100%',
+  },
+  suggestTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: '#333',
+    marginBottom: 16,
+    textAlign: 'center',
+  },
+  suggestGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'center',
+    gap: 10,
+  },
+  suggestBox: {
+    backgroundColor: 'transparent',
+    paddingVertical: 10,
+    paddingHorizontal: 14,
+    borderRadius: 8,
+    margin: 6,
+    elevation: 2,
+  },
+  suggestText: {
+    color: '#333',
+    fontWeight: '500',
+    textAlign: 'center',
+  },
+  fullBackgroundImage: {
+    flex: 1,
+    resizeMode: 'cover',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+
+  overlayContent: {
+    flex: 1,
+    width: '100%',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 20,
+  },
+  emptyContent: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 20,
+  },
+
+  
+
 });

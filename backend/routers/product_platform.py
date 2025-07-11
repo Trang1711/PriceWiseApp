@@ -1,8 +1,9 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 from database.db import get_db
-from models.product import ProductPlatform, Product, Platform
+from models.product import ProductPlatform, Product
 from schemas.schemas import ProductCardOut
+from models.platform import Platform
 
 router = APIRouter()
 

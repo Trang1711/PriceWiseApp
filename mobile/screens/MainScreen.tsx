@@ -6,6 +6,7 @@ import {
   RefreshControl,
   SafeAreaView,
   ScrollView,
+  StatusBar,
   StyleSheet,
   Text,
   TextInput,
@@ -163,9 +164,15 @@ export default function HomeScreen() {
   };
 
   return (
-    <View style={{ flex: 1 }}>
+    <SafeAreaView style={{ flex: 1, backgroundColor:'white',  }}>
+      <StatusBar 
+      barStyle={'dark-content'}
+      backgroundColor={'red'}
+      >
+
+      </StatusBar>
       <ScrollView contentContainerStyle={{ paddingBottom: 120 }} 
-      style={[styles.container, { marginTop: 20 }]} 
+      style={styles.container} 
       refreshControl={
         <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
       }>
@@ -188,6 +195,11 @@ export default function HomeScreen() {
             />
           </View>
         </View> */}
+
+        <View style={styles.header}>
+          <Text style={styles.headerTitle}>Trang chủ</Text>
+          <Image source={require('../assets/images/logo.png')} style={styles.logoContainer} />
+        </View>
 
         {/* Home Slider */}
         <HomeSlider 
@@ -258,7 +270,7 @@ export default function HomeScreen() {
 
         {/* Khoảng cách giữa các section */}
         <View style={styles.sectionSpacing} />
-        <Text style={styles.sectionTitle}>Sản phẩm nổi bật</Text>
+        <Text style={styles.sectionTitle2}>Sản phẩm nổi bật</Text>
         <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginVertical: 16 }}>
           <View style={{ flexDirection: 'row' }}>
           {products.map((item, index) => (
@@ -266,6 +278,7 @@ export default function HomeScreen() {
                 key={`${item.productId}-${item.productPlatformId}`} 
                 productId={item.productId}
                 productPlatformId={item.productPlatformId}
+                productName={item.productName}
                 platformLogo={item.platformLogo}
                 productImage={item.productImage}
                 currentPrice={item.currentPrice}
@@ -340,7 +353,7 @@ export default function HomeScreen() {
 
       {/* Thanh điều hướng dưới cùng */}
 
-    </View>
+    </SafeAreaView>
   );
 }
 
@@ -352,8 +365,11 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 20,
     paddingTop: 40,
-   
+    backgroundColor: '#fff',
+    marginTop:-30,
   },
+  header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 5 },
+  headerTitle: { fontSize: 20, fontWeight: 'bold' },
   headerContainer: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -363,19 +379,18 @@ const styles = StyleSheet.create({
     marginRight: 10,
   },
   logoContainer: {
-        width: 60, // Chiều rộng của khung
-        height: 60, // Chiều cao của khung
-        borderRadius: 30, // Bán kính để tạo hình tròn
-        overflow: 'hidden', // Ẩn phần hình ảnh ra ngoài khung
-        justifyContent: 'center', // Căn giữa hình ảnh
-        alignItems: 'center', // Căn giữa hình ảnh
-        backgroundColor: '#fff', // Màu nền của khung (có thể thay đổi)
+    width: 60, 
+    height: 50, 
+    overflow: 'hidden', 
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#fff',
     },
-    logo: {
-        width: '110%', 
-        height: '100%', 
-        resizeMode: 'contain', 
-    },
+  logo: {
+    width: '110%', 
+    height: '100%', 
+    resizeMode: 'contain', 
+  },
   searchBox: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -431,9 +446,19 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 20,
     fontWeight: 'bold',
-    marginBottom: 15,
+    marginTop: 50,
+    marginBottom: 20,
     color: '#333',
   },
+
+  sectionTitle2: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    marginTop: 30,
+    marginBottom: 7,
+    color: '#333',
+  },
+
   categoryContainer: {
     flexDirection: 'row',
     marginBottom: 20,
