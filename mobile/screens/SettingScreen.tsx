@@ -9,6 +9,5 @@ export default function SettingsScreen() {
       <View style={{ height: 100, width: 100, backgroundColor: 'red' }}></View>
       <NavigationBar />
     </View>
-
   );
 }

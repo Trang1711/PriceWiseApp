@@ -53,7 +53,7 @@ const teamMembers = [
     github: 'https://github.com/dieupvn',
     linkedin: 'https://linkedin.com/in/dieupvn',
     instagram: 'https://instagram.com/dieupvn',
-    skills: ['node-js', 'python', 'database'],
+    skills: ['github', 'node-js', 'java', 'python', 'database'],
     color: 'rgb(68, 164, 242)',
     avatar: require('../assets/images/Sam.jpg'),
   },
@@ -66,7 +66,7 @@ const teamMembers = [
     github: 'https://github.com/dieupvn',
     linkedin: 'https://linkedin.com/in/dieupvn',
     instagram: 'https://instagram.com/dieupvn',
-    skills: ['react', 'android', 'expo'],
+    skills: ['react', 'android', 'react-native'],
     color: 'rgb(240, 34, 34)',
     avatar: require('../assets/images/avatar.png'),
   },
@@ -94,6 +94,10 @@ const iconMap: Record<string, (color: string) => JSX.Element> = {
   'node-js': (color) => <FontAwesome5 name="node-js" size={20} color={color} />,
   python: (color) => <FontAwesome5 name="python" size={20} color={color} />,
   database: (color) => <MaterialCommunityIcons name="database" size={20} color={color} />,
+  java: (color) => <FontAwesome5 name="java" size={20} color={color} />,
+  android: (color) => <FontAwesome5 name="android" size={20} color={color} />,
+  expo: (color) => <FontAwesome5 name="expo" size={20} color={color} />,
+  'react-native': (color) => <FontAwesome5 name="mobile-alt" size={20} color={color} />,
   bug: (color) => <FontAwesome name="bug" size={20} color={color} />,
   jira: (color) => <FontAwesome5 name="jira" size={20} color={color} />,
   selenium: (color) => <MaterialCommunityIcons name="robot" size={20} color={color} />,
@@ -107,7 +111,7 @@ const AboutUsScreen = () => {
   const playSound = async () => {
     const sound = new Audio.Sound();
     try {
-      await sound.loadAsync(require('../assets/sounds/let-me-know.mp3'));
+      await sound.loadAsync(require('../assets/sounds/happy-cat.mp3'));
       await sound.playAsync();
     } catch (error) {
       console.error('Lỗi phát âm thanh:', error);
@@ -226,7 +230,18 @@ const AboutUsScreen = () => {
                         </TouchableOpacity>
                     )}
                     </View>
-                <View style={styles.divider} />
+                    <View style={styles.divider} />
+                    <View style={styles.skillIcons}>
+                    {selectedMember?.skills?.map((skill, idx) => (
+                      <View key={idx} style={{ marginHorizontal: 8, alignItems: 'center' }}>
+                        {iconMap[skill]?.(selectedMember.color) || (
+                          <FontAwesome name="question" size={20} color={selectedMember.color} />
+                        )}
+                        <Text style={[styles.modalText, { fontSize: 12, marginTop: 4 }]}>{skill}</Text>
+                      </View>
+                    ))}
+                    </View>
+                  <View style={styles.divider} />
 
                 <Pressable
                     onPress={() => setSelectedMember(null)}

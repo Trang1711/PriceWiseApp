@@ -14,6 +14,7 @@ import { useRouter } from 'expo-router';
 import { BASE_URL } from '@/constants';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import TripleRingLoader from '@/components/TripleRingLoader';
+import CustomLoading from '@/components/CustomLoading';
 
 export default function SignInScreen() {
   const [passwordVisible, setPasswordVisible] = useState(false);
@@ -53,7 +54,7 @@ export default function SignInScreen() {
     }
 
     try {
-      setLoading(true); // 👉 Bắt đầu loading
+      setLoading(true);
 
       const response = await fetch(`${BASE_URL}/login`, {
         method: "POST",
@@ -98,7 +99,8 @@ export default function SignInScreen() {
   if (loading) {
     return (
       <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-        <TripleRingLoader />
+        {/* <TripleRingLoader /> */}
+        <CustomLoading />
         <Text style={{ marginTop: 10 }}>Đang xác thực...</Text>
       </View>
     );

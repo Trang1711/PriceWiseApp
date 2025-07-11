@@ -12,7 +12,7 @@ export default function NavigationBar() {
     { icon: 'search', label: 'Khám phá', route: '/drawer/explore' },
     { icon: 'heart', label: 'Yêu thích', route: '/drawer/favorites' },
     { icon: 'user', label: 'Cá nhân', route: '/drawer/profile' },
-    // { icon: 'cart-shopping', label: 'Admin', route: '/admin/add_product' },
+    { icon: 'cog', label: 'Admin', route: '/admin' }
   ]
 
   return (
@@ -35,7 +35,7 @@ export default function NavigationBar() {
                 <FontAwesome
                   name={tab.icon}
                   size={28}
-                  color={isActive ? '#000' : '#888'}
+                  color={isActive ? 'red' : '#888'}
                 />
                 <Text style={[styles.tabText, isActive && styles.tabTextActive]}>
                   {tab.label}
@@ -84,7 +84,7 @@ const styles = StyleSheet.create({
     fontWeight: '500',
   },
   tabTextActive: {
-    color: '#000',
+    color: 'red',
     fontWeight: 'bold',
   },
 })

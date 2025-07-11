@@ -22,7 +22,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import RefreshWrapper from '@/components/RefreshWrapper';
 import axios from 'axios';
 import TripleRingLoader from '@/components/TripleRingLoader';
-
+    
 interface ProductItem {
   logo_url?: string;
   product_platform_id: number;
