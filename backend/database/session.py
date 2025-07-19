@@ -3,7 +3,7 @@ from sqlalchemy.orm import sessionmaker
 
 DATABASE_URL = (
     "mssql+pyodbc://SamWison_SQLLogin_1:6gq7tg7e39@AppPriceWiseDB.mssql.somee.com/AppPriceWiseDB"
-    "?driver=ODBC+Driver+17+for+SQL+Server"
+    "?driver=ODBC+Driver+18+for+SQL+Server"
     "&Encrypt=yes"
     "&TrustServerCertificate=yes"
 )

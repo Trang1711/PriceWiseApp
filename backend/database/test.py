@@ -1,7 +1,7 @@
 import pyodbc
 
 conn = pyodbc.connect(
-    "Driver={ODBC Driver 17 for SQL Server};"
+    "Driver={ODBC Driver 18 for SQL Server};"
     "Server=AppPriceWiseDB.mssql.somee.com;"
     "Database=AppPriceWiseDB;"
     "Uid=SamWison_SQLLogin_1;"
