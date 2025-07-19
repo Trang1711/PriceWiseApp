@@ -4,4 +4,6 @@ pyodbc
 python-dotenv
 pydantic
 sqlalchemy
+email-validator
+
 
