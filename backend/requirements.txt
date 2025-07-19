@@ -5,5 +5,7 @@ python-dotenv
 pydantic
 sqlalchemy
 email-validator
+python-jose
+
 
 
