@@ -4,7 +4,6 @@ import {
   Alert,
   Image,
   RefreshControl,
-  SafeAreaView,
   ScrollView,
   StatusBar,
   StyleSheet,
@@ -26,6 +25,7 @@ import NavigationBar from '@/components/NavigationBar';
 import CustomLoading from '@/components/CustomLoading';
 import TripleRingLoader from '@/components/TripleRingLoader';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function HomeScreen() {
   const navigation = useNavigation();
@@ -55,11 +55,11 @@ export default function HomeScreen() {
           updated.delete(productPlatformId);
           return updated;
         });
-        Alert.alert("Đã xoá khỏi yêu thích");
+        Alert.alert("Thông báo", "Đã xoá khỏi yêu thích");
       } else {
         await addToFavorites(productId, userId, productPlatformId);
         setFavoriteIds((prev) => new Set(prev).add(productPlatformId));
-        Alert.alert("Đã thêm vào yêu thích");
+        Alert.alert("Thông báo", "Đã thêm vào yêu thích");
       }
     } catch (error) {
       console.error("Lỗi khi xử lý yêu thích:", error);
@@ -164,13 +164,7 @@ export default function HomeScreen() {
   };
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor:'white',  }}>
-      <StatusBar 
-      barStyle={'dark-content'}
-      backgroundColor={'red'}
-      >
-
-      </StatusBar>
+    <SafeAreaView style={{ flex: 1, backgroundColor:'white'}}>
       <ScrollView contentContainerStyle={{ paddingBottom: 120 }} 
       style={styles.container} 
       refreshControl={

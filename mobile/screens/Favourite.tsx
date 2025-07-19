@@ -1,6 +1,6 @@
-import FontAwesome from '@expo/vector-icons/build/FontAwesome';
-import { router } from 'expo-router';
-import React, { ReactNode, useEffect, useState } from 'react';
+import FontAwesome from "@expo/vector-icons/build/FontAwesome";
+import { router } from "expo-router";
+import React, { ReactNode, useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -10,17 +10,16 @@ import {
   Dimensions,
   ScrollView,
   ActivityIndicator,
-} from 'react-native';
-import { useNavigation } from '@react-navigation/native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { BASE_URL } from '@/constants';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { Linking } from 'react-native';
-import TripleRingLoader from '@/components/TripleRingLoader';
-import { Ionicons } from '@expo/vector-icons';
-import { addToFavorites, removeFromFavorites } from '@/constants';
-import { Alert } from 'react-native';
-
+} from "react-native";
+import { useNavigation } from "@react-navigation/native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { BASE_URL } from "@/constants";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { Linking } from "react-native";
+import TripleRingLoader from "@/components/TripleRingLoader";
+import { Ionicons } from "@expo/vector-icons";
+import { addToFavorites, removeFromFavorites } from "@/constants";
+import { Alert } from "react-native";
 
 interface FavoriteProduct {
   favorite_id: number;
@@ -48,7 +47,7 @@ interface FavoriteProduct {
   };
 }
 
-const { width } = Dimensions.get('window');
+const { width } = Dimensions.get("window");
 
 export default function YeuThichScreen() {
   const navigation = useNavigation();
@@ -63,9 +62,9 @@ export default function YeuThichScreen() {
   useEffect(() => {
     const fetchUserIdAndFavorites = async () => {
       try {
-        const userIdString = await AsyncStorage.getItem('user_id');
+        const userIdString = await AsyncStorage.getItem("user_id");
         if (!userIdString) {
-          console.warn('Không tìm thấy user_id trong AsyncStorage');
+          console.warn("Không tìm thấy user_id trong AsyncStorage");
           setLoading(false);
           return;
         }
@@ -76,13 +75,13 @@ export default function YeuThichScreen() {
 
         if (response.ok) {
           setFavorites(data);
-          const ids = new Set(data.map(item => item.product_platform_id));
+          const ids = new Set(data.map((item) => item.product_platform_id));
           setFavoriteIds(ids);
         } else {
-          console.error('API lỗi:', response.status, data);
+          console.error("API lỗi:", response.status, data);
         }
       } catch (error) {
-        console.error('Lỗi fetch:', error);
+        console.error("Lỗi fetch:", error);
       } finally {
         setLoading(false);
       }
@@ -91,10 +90,16 @@ export default function YeuThichScreen() {
     fetchUserIdAndFavorites();
   }, []);
 
-  const toggleFavorite = async (productId: number, productPlatformId: number) => {
-    const userIdStr = await AsyncStorage.getItem('user_id');
+  const toggleFavorite = async (
+    productId: number,
+    productPlatformId: number
+  ) => {
+    const userIdStr = await AsyncStorage.getItem("user_id");
     if (!userIdStr) {
-      Alert.alert("Thông báo", "Vui lòng đăng nhập để sử dụng chức năng yêu thích.");
+      Alert.alert(
+        "Thông báo",
+        "Vui lòng đăng nhập để sử dụng chức năng yêu thích."
+      );
       return;
     }
 
@@ -104,16 +109,18 @@ export default function YeuThichScreen() {
     try {
       if (isFav) {
         await removeFromFavorites(productId, userId, productPlatformId);
-        setFavoriteIds(prev => {
+        setFavoriteIds((prev) => {
           const updated = new Set(prev);
           updated.delete(productPlatformId);
           return updated;
         });
-        setFavorites(prev => prev.filter(f => f.product_platform_id !== productPlatformId));
+        setFavorites((prev) =>
+          prev.filter((f) => f.product_platform_id !== productPlatformId)
+        );
         Alert.alert("Đã xoá khỏi yêu thích");
       } else {
         await addToFavorites(productId, userId, productPlatformId);
-        setFavoriteIds(prev => new Set(prev).add(productPlatformId));
+        setFavoriteIds((prev) => new Set(prev).add(productPlatformId));
         Alert.alert("Đã thêm vào yêu thích");
       }
     } catch (error) {
@@ -124,7 +131,7 @@ export default function YeuThichScreen() {
 
   if (loading) {
     return (
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
         <TripleRingLoader />
         <Text style={{ marginTop: 10 }}>Đang tải dữ liệu...</Text>
       </View>
@@ -132,53 +139,71 @@ export default function YeuThichScreen() {
   }
 
   return (
-    <View style={[styles.container, favorites.length > 0 && styles.whiteBackground]}>
+    <View
+      style={[styles.container, favorites.length > 0 && styles.whiteBackground]}
+    >
       {favorites.length === 0 && (
         <Image
-          source={require('../assets/images/background.jpg')}
+          source={require("../assets/images/background.jpg")}
           style={styles.backgroundImage}
         />
       )}
 
-      <View style={favorites.length === 0 ? styles.overlayEmpty : styles.overlayFilled}>
+      <View
+        style={
+          favorites.length === 0 ? styles.overlayEmpty : styles.overlayFilled
+        }
+      >
         {favorites.length === 0 ? (
           <>
-           <View style={styles.heartBox}>
-            <View style={styles.heartIcon}>
-              <Image
-                source={require('../assets/images/heart_icon.jpg')}
-                style={{ width: 70, height: 70, resizeMode: 'contain' }}
-              />
+            <View style={styles.heartBox}>
+              <View style={styles.heartIcon}>
+                <Image
+                  source={require("../assets/images/heart_icon.jpg")}
+                  style={{ width: 70, height: 70, resizeMode: "contain" }}
+                />
+              </View>
+              <Text style={styles.heartText}>Sản phẩm yêu thích</Text>
             </View>
-            <Text style={styles.heartText}>Sản phẩm yêu thích</Text>
-          </View>
 
-          <Text style={styles.messageText}>
-            Hiện tại chưa có sản phẩm, hãy cùng{' '}
-            <Text
-              style={{ fontWeight: 'bold', textDecorationLine: 'underline', color: 'black' }}
-              onPress={() => router.push('/drawer/explore')}
-            >
-              Khám phá
+            <Text style={styles.messageText}>
+              Hiện tại chưa có sản phẩm, hãy cùng{" "}
+              <Text
+                style={{
+                  fontWeight: "bold",
+                  textDecorationLine: "underline",
+                  color: "black",
+                }}
+                onPress={() => router.push("/drawer/explore")}
+              >
+                Khám phá
+              </Text>{" "}
+              các sản phẩm
             </Text>
-            {' '}các sản phẩm 
-          </Text>
           </>
         ) : (
-         <ScrollView contentContainerStyle={styles.scrollContent}>
+          <ScrollView contentContainerStyle={styles.scrollContent}>
             <View style={styles.fullWidthCenter}>
-              <Text style={styles.resultTitle}>Danh sách sản phẩm yêu thích</Text>
+              <Text style={styles.resultTitle}>
+                Danh sách sản phẩm yêu thích
+              </Text>
             </View>
             <View style={styles.rowWrap}>
-              {favorites.map(item => {
+              {favorites.map((item) => {
                 const pf = item.product_platform;
                 const total = pf.price + (pf.shipping_fee || 0);
 
                 return (
                   <View key={item.favorite_id} style={styles.card}>
-                    <View>
-                      <Image source={{ uri: pf.product.image_url }} style={styles.image} />
-                      <Image source={{ uri: pf.platform.logo_url }} style={styles.platformLogo} />
+                    <View style={styles.imageWrapper}>
+                      <Image
+                        source={{ uri: pf.platform.logo_url }}
+                        style={styles.platformLogo}
+                      />
+                      <Image
+                        source={{ uri: pf.product.image_url }}
+                        style={styles.image}
+                      />
                     </View>
 
                     <Text style={styles.cardTitle}>{pf.product.name}</Text>
@@ -200,7 +225,8 @@ export default function YeuThichScreen() {
                     </Text>
 
                     <Text style={styles.status}>
-                      Trạng thái: <Text style={styles.statusValue}>Còn hàng</Text>
+                      Trạng thái:{" "}
+                      <Text style={styles.statusValue}>Còn hàng</Text>
                     </Text>
 
                     <Text style={styles.cardSubtitle}>
@@ -212,19 +238,35 @@ export default function YeuThichScreen() {
                         style={styles.buyButtonFlex}
                         onPress={() => Linking.openURL(pf.product_url)}
                       >
-                        <FontAwesome name="shopping-cart" size={16} color="#fff" />
+                        <FontAwesome
+                          name="shopping-cart"
+                          size={16}
+                          color="#fff"
+                        />
                         <Text style={styles.buyButtonText}>Tới nơi bán</Text>
                       </TouchableOpacity>
 
                       <TouchableOpacity
                         style={styles.heartButton}
-                        onPress={() => toggleFavorite(item.product_platform.product.product_id, item.product_platform_id)}
+                        onPress={() =>
+                          toggleFavorite(
+                            item.product_platform.product.product_id,
+                            item.product_platform_id
+                          )
+                        }
                       >
-
                         <Ionicons
-                          name={favoriteIds.has(item.product_platform_id) ? 'heart' : 'heart-outline'}
+                          name={
+                            favoriteIds.has(item.product_platform_id)
+                              ? "heart"
+                              : "heart-outline"
+                          }
                           size={24}
-                          color={favoriteIds.has(item.product_platform_id) ? 'red' : 'gray'}
+                          color={
+                            favoriteIds.has(item.product_platform_id)
+                              ? "red"
+                              : "gray"
+                          }
                         />
                       </TouchableOpacity>
                     </View>
@@ -245,96 +287,96 @@ const styles = StyleSheet.create({
   },
   backgroundImage: {
     ...StyleSheet.absoluteFillObject,
-    width: '100%',
-    height: '100%',
-    resizeMode: 'cover',
+    width: "100%",
+    height: "100%",
+    resizeMode: "cover",
   },
   overlayEmpty: {
     flex: 1,
-    marginTop: '40%',
-    alignItems: 'center',
+    marginTop: "40%",
+    alignItems: "center",
     paddingHorizontal: 20,
   },
   overlayFilled: {
     flex: 1,
-    alignItems: 'center',
-    marginTop: '8%',
+    alignItems: "center",
+    marginTop: "8%",
   },
   heartBox: {
-    backgroundColor: '#EAAE99',
+    backgroundColor: "#EAAE99",
     padding: 50,
     borderRadius: 20,
-    alignItems: 'center',
-    marginBottom: '22%',
+    alignItems: "center",
+    marginBottom: "22%",
   },
   heartText: {
     marginTop: 10,
-    color: '#333',
+    color: "#333",
     fontSize: 18,
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
   heartIcon: {
     width: 80,
     height: 80,
     borderRadius: 15,
-    backgroundColor: '#fff',
-    justifyContent: 'center',
-    alignItems: 'center',
+    backgroundColor: "#fff",
+    justifyContent: "center",
+    alignItems: "center",
     elevation: 4,
     marginBottom: 10,
   },
   messageText: {
-    textAlign: 'center',
+    textAlign: "center",
     fontSize: 16,
-    color: '#333',
+    color: "#333",
   },
   bottomTab: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    backgroundColor: '#EAAE99',
+    flexDirection: "row",
+    justifyContent: "space-around",
+    backgroundColor: "#EAAE99",
     paddingVertical: 12,
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
-    position: 'absolute',
+    position: "absolute",
     bottom: 0,
     width: width,
   },
   tab: {
-    alignItems: 'center',
+    alignItems: "center",
   },
   tabText: {
     marginTop: 4,
     fontSize: 12,
-    color: '#000',
+    color: "#000",
   },
   whiteBackground: {
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
   },
   scrollContent: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    flexWrap: "wrap",
+    justifyContent: "space-between",
     paddingTop: 20,
-    paddingBottom: 80,
+    paddingBottom: 100,
   },
   resultTitle: {
     fontSize: 20,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     marginBottom: 16,
-    color: '#333',
-    textAlign: 'center',
+    color: "#333",
+    textAlign: "center",
   },
   card: {
-    width: (width - 30) / 2, 
+    width: (width - 30) / 2,
     borderWidth: 1,
-    borderColor: '#ccc',
+    borderColor: "#ccc",
     borderRadius: 8,
     padding: 10,
-    backgroundColor: 'white',
+    backgroundColor: "white",
     marginBottom: 16,
 
     // Shadow
-    shadowColor: '#000',
+    shadowColor: "#000",
     marginHorizontal: 2,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.15,
@@ -342,58 +384,57 @@ const styles = StyleSheet.create({
     elevation: 6,
   },
   topIcons: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    width: '100%',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    width: "100%",
     marginBottom: 10,
-    
   },
   logo1: {
     width: 30,
     height: 30,
-    resizeMode: 'contain',
+    resizeMode: "contain",
     borderRadius: 8,
   },
   image: {
-    width: '100%',
+    width: "100%",
     height: 150,
-    resizeMode: 'contain',
+    resizeMode: "contain",
     marginBottom: 8,
   },
   priceContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
   },
   originalPrice: {
-    textDecorationLine: 'line-through',
-    color: '#888',
+    textDecorationLine: "line-through",
+    color: "#888",
     marginRight: 5,
   },
   discount: {
-    color: 'red',
-    fontWeight: 'bold',
+    color: "red",
+    fontWeight: "bold",
   },
   currentPrice: {
     fontSize: 20,
-    fontWeight: 'bold',
-    color: 'red',
+    fontWeight: "bold",
+    color: "red",
   },
   details: {
     marginVertical: 10,
   },
   rating: {
-    color: '#888',
+    color: "#888",
   },
   buttonRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
     marginTop: 10,
   },
   buyButtonFlex: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: 'red',
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "red",
     paddingVertical: 8,
     paddingHorizontal: 10,
     borderRadius: 5,
@@ -402,12 +443,12 @@ const styles = StyleSheet.create({
   },
   heartButton: {
     padding: 5,
-    backgroundColor: '#f0f0f0',
+    backgroundColor: "#f0f0f0",
     borderRadius: 5,
   },
   buyButtonText: {
-    color: 'white',
-    fontWeight: 'bold',
+    color: "white",
+    fontWeight: "bold",
     marginLeft: 5,
   },
   cartIcon: {
@@ -415,41 +456,37 @@ const styles = StyleSheet.create({
   },
   status: {
     marginBottom: 2,
-    color: '#000',
+    color: "#000",
   },
   statusValue: {
-    fontWeight: 'bold',
-    color: 'green',
+    fontWeight: "bold",
+    color: "green",
   },
   cardTitle: {
     fontSize: 16,
-    fontWeight: '600',
+    fontWeight: "600",
     marginBottom: 4,
   },
   cardSubtitle: {
     fontSize: 14,
-    color: '#555',
+    color: "#555",
   },
   rowWrap: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    flexWrap: "wrap",
+    justifyContent: "space-between",
     paddingHorizontal: 10,
   },
   platformLogo: {
-    width: 24,
-    height: 24,
+    width: 32,
+    height: 32,
     resizeMode: 'contain',
-    position: 'absolute',
-    top: 5,
-    left: 5,
     backgroundColor: '#fff',
-    borderRadius: 12,
-    padding: 2,
-    zIndex: 1,
+    borderRadius: 8,
+    marginBottom: 8,
   },
   fullWidthCenter: {
-    width: '100%',
-    alignItems: 'center',
+    width: "100%",
+    alignItems: "center",
   },
 });
