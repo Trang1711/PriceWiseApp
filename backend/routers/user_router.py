@@ -1,7 +1,7 @@
 # routers/user_router.py
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
-from backend.schemas.schemas import UserUpdate
+from schemas.schemas import UserUpdate
 from database.db import get_db
 from models.user import User
 from pydantic import BaseModel  

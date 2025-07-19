@@ -3,8 +3,8 @@ from fastapi import APIRouter, Depends, Form, HTTPException
 from fastapi.responses import HTMLResponse, RedirectResponse
 from sqlalchemy.orm import Session
 from pydantic import BaseModel, EmailStr
-from backend.core.config import BASE_URL
-from backend.models.user import User
+from core.config import BASE_URL
+from models.user import User
 from database.session import get_db
 from services.email_service import send_email
 
