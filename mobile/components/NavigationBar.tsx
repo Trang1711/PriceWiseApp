@@ -12,7 +12,7 @@ export default function NavigationBar() {
     { icon: 'search', label: 'Khám phá', route: '/drawer/explore' },
     { icon: 'heart', label: 'Yêu thích', route: '/drawer/favorites' },
     { icon: 'user', label: 'Cá nhân', route: '/drawer/profile' },
-    { icon: 'cog', label: 'Admin', route: '/admin' }
+    // { icon: 'cog', label: 'Admin', route: '/admin' }
   ]
 
   return (

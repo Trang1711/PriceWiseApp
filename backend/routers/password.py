@@ -39,7 +39,7 @@ def forgot_password(data: ForgotPasswordRequest, db: Session = Depends(get_db)):
 
 @router.get("/reset-password/{user_id}", response_class=HTMLResponse)
 def reset_password_form(user_id: int):
-    return RedirectResponse(url=f"mobile://reset-password/{user_id}")
+    return RedirectResponse(url=f"pricewiseapp://reset-password/{user_id}")
 
 @router.post("/reset-password/{user_id}", response_class=HTMLResponse)
 def reset_password_submit(user_id: int, new_password: str = Form(...), db: Session = Depends(get_db)):

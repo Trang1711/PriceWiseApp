@@ -1,13 +1,13 @@
 {
   "expo": {
-    "name": "mobile",
-    "slug": "mobile",
+    "name": "PriceWiseApp",
+    "slug": "pricewiseapp",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/logo.png",
-    "scheme": "mobile",
+    "scheme": "pricewiseapp",
     "deepLinks": [
-      "mobile://reset-password/:user_id"
+      "pricewiseapp://reset-password/:user_id"
     ],
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
@@ -40,6 +40,18 @@
     ],
     "experiments": {
       "typedRoutes": true
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "fd6b7e4d-04ee-4b5a-ab9b-bcfb139a0d07"
+      }
+    },
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/fd6b7e4d-04ee-4b5a-ab9b-bcfb139a0d07"
     }
   }
 }

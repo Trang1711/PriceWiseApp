@@ -71,21 +71,10 @@ export default function HomeScreen() {
     setRefreshing(true);
     // Gọi API hoặc load lại dữ liệu ở đây
     setTimeout(() => {
-      setRefreshing(false); // Kết thúc refresh
+      setRefreshing(false);
     }, 2000);
   }, []);
 
-  // useEffect(() => {
-  //   axios.get(`${BASE_URL}/api/products`)
-  //     .then((res) => {
-  //       setProducts(res.data);
-  //       setLoading(false);
-  //     })
-  //     .catch((err) => {
-  //       console.error('Error fetching data', err);
-  //       setLoading(false);
-  //     });
-  // }, []);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -103,20 +92,6 @@ export default function HomeScreen() {
 
     fetchData();
   }, []);
-
-
-  // if (loading) {
-  //   return <ActivityIndicator size="large" color="#000" />;
-  // }
-
-  // if (loading) {
-  //   return (
-  //     <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-  //       <ActivityIndicator size="large" color="#007BFF" />
-  //       <Text style={{ marginTop: 10 }}>Đang tải dữ liệu...</Text>
-  //     </View>
-  //   );
-  // }
 
   if (loading) {
     return (
@@ -150,9 +125,6 @@ export default function HomeScreen() {
   ];
 
   const handleSliderItemPress = (item: any) => {
-    // Xử lý khi người dùng nhấn vào slide
-    console.log('Slider item pressed:', item.title);
-    // Có thể mở link hoặc navigate đến trang chi tiết
   };
 
   const handleToggleFavorite = (index) => {

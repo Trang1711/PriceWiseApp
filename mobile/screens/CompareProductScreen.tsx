@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -7,10 +7,11 @@ import {
   TouchableOpacity,
   Linking,
   StyleSheet,
-} from 'react-native';
-import { router, useLocalSearchParams } from 'expo-router';
-import { BASE_URL } from '@/constants';
-import { SafeAreaView } from 'react-native-safe-area-context'; 
+} from "react-native";
+import { router, useLocalSearchParams } from "expo-router";
+import { BASE_URL } from "@/constants";
+import { SafeAreaView } from "react-native-safe-area-context";
+import TripleRingLoader from "@/components/TripleRingLoader";
 
 interface PlatformData {
   platform: string;
@@ -31,42 +32,59 @@ interface PlatformData {
 export default function CompareProductScreen() {
   const [productData, setProductData] = useState<PlatformData[]>([]);
   const { productId } = useLocalSearchParams<{ productId?: string }>();
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     if (!productId) return;
 
     fetch(`${BASE_URL}/products/${productId}/compare`)
-      .then(res => res.json())
-      .then(data => {
-        const colors = ['#fff0f3', '#e0f7ff', '#f3f0ff'];
+      .then((res) => res.json())
+      .then((data) => {
+        const colors = ["#fff0f3", "#e0f7ff", "#f3f0ff"];
         const coloredData = data.map((item: PlatformData, index: number) => ({
           ...item,
           color: colors[index % colors.length],
         }));
 
         setProductData(coloredData);
+        setLoading(false);
       })
-      .catch(err => {
-        console.error('Fetch error:', err);
+      .catch((err) => {
+        console.error("Fetch error:", err);
         setProductData([]);
       });
   }, [productId]);
 
+  if (loading) {
+    return (
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+        <TripleRingLoader />
+        <Text style={{ marginTop: 10 }}>Đang tải dữ liệu...</Text>
+      </View>
+    );
+  }
+
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: '#fff8fc' }}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: "#fff8fc" }}>
       <ScrollView style={styles.container}>
         <Text style={styles.title}>So sánh sản phẩm trên các sàn</Text>
 
         <View style={styles.cardContainer}>
           {productData.map((item, index) => (
-            <View key={index} style={[styles.productCard, { backgroundColor: item.color }]}>
+            <View
+              key={index}
+              style={[styles.productCard, { backgroundColor: item.color }]}
+            >
               <Text style={styles.platformBadge}>{item.platform}</Text>
               <Image
                 source={{ uri: item.image_url }}
                 style={styles.productImage}
               />
               {item.logo_url ? (
-                <Image source={{ uri: item.logo_url }} style={styles.platformLogo} />
+                <Image
+                  source={{ uri: item.logo_url }}
+                  style={styles.platformLogo}
+                />
               ) : (
                 <Text>No Logo</Text>
               )}
@@ -75,7 +93,7 @@ export default function CompareProductScreen() {
                 style={styles.buyButton}
                 onPress={() => Linking.openURL(item.product_url)}
               >
-              <Text style={styles.buyButtonText}>🛒 Xem ngay</Text>
+                <Text style={styles.buyButtonText}>🛒 Xem ngay</Text>
               </TouchableOpacity>
             </View>
           ))}
@@ -88,31 +106,53 @@ export default function CompareProductScreen() {
           <View style={[styles.tableRow, styles.tableHeader]}>
             <Text style={styles.labelCell}>Tiêu chí</Text>
             {productData.map((item, i) => (
-              <Text key={i} style={styles.valueCellHeader}>{item.platform}</Text>
+              <Text key={i} style={styles.valueCellHeader}>
+                {item.platform}
+              </Text>
             ))}
           </View>
 
           {/* Các dòng so sánh */}
           {[
-            ['Giá bán', (item: PlatformData) => `${item.price.toLocaleString()} đ`],
-            ['Giảm giá', (item: PlatformData) => `${item.discount.toLocaleString()} đ`],
-            ['% KM', (item: PlatformData) => `${item.discount_percentage}%`],
-            ['Đánh giá', (item: PlatformData) => `${item.rating}`],
-            ['Lượt đánh giá', (item: PlatformData) => `${item.review_count}`],
-            ['Phí ship', (item: PlatformData) => item.shipping_fee === 0 ? 'Miễn phí' : `${item.shipping_fee.toLocaleString()} đ`],
-            ['Giao hàng', (item: PlatformData) => item.estimated_delivery_time],
-            ['Chính hãng', (item: PlatformData) => item.is_official ? '✅' : '❌'],
+            [
+              "Giá bán",
+              (item: PlatformData) => `${item.price.toLocaleString()} đ`,
+            ],
+            [
+              "Giảm giá",
+              (item: PlatformData) => `${item.discount.toLocaleString()} đ`,
+            ],
+            ["% KM", (item: PlatformData) => `${item.discount_percentage}%`],
+            ["Đánh giá", (item: PlatformData) => `${item.rating}`],
+            ["Lượt đánh giá", (item: PlatformData) => `${item.review_count}`],
+            [
+              "Phí ship",
+              (item: PlatformData) =>
+                item.shipping_fee === 0
+                  ? "Miễn phí"
+                  : `${item.shipping_fee.toLocaleString()} đ`,
+            ],
+            ["Giao hàng", (item: PlatformData) => item.estimated_delivery_time],
+            [
+              "Chính hãng",
+              (item: PlatformData) => (item.is_official ? "✅" : "❌"),
+            ],
           ].map(([label, getValue], idx) => (
             <View key={idx} style={styles.tableRow}>
               <Text style={styles.labelCell}>{label}</Text>
               {productData.map((item, i) => (
-                <Text key={i} style={styles.valueCell}>{getValue(item)}</Text>
+                <Text key={i} style={styles.valueCell}>
+                  {getValue(item)}
+                </Text>
               ))}
             </View>
           ))}
         </View>
 
-        <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
+        <TouchableOpacity
+          style={styles.backButton}
+          onPress={() => router.back()}
+        >
           <Text style={styles.backButtonText}>Quay lại</Text>
         </TouchableOpacity>
       </ScrollView>
@@ -126,30 +166,30 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 22,
-    fontWeight: 'bold',
-    textAlign: 'center',
-    color: '#d63384',
+    fontWeight: "bold",
+    textAlign: "center",
+    color: "#d63384",
     marginBottom: 20,
   },
   cardContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    justifyContent: "space-between",
     marginBottom: 24,
   },
   productCard: {
-    width: '30%',
-    alignItems: 'center',
+    width: "30%",
+    alignItems: "center",
     borderRadius: 14,
     padding: 10,
-    shadowColor: '#ccc',
+    shadowColor: "#ccc",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.3,
     elevation: 2,
   },
   platformBadge: {
-    backgroundColor: '#ff69b4',
-    color: '#fff',
-    fontWeight: 'bold',
+    backgroundColor: "#ff69b4",
+    color: "#fff",
+    fontWeight: "bold",
     paddingVertical: 2,
     paddingHorizontal: 8,
     borderRadius: 10,
@@ -159,83 +199,83 @@ const styles = StyleSheet.create({
   productImage: {
     width: 70,
     height: 70,
-    resizeMode: 'contain',
+    resizeMode: "contain",
   },
   platformLogo: {
     width: 50,
     height: 20,
-    resizeMode: 'contain',
+    resizeMode: "contain",
     marginVertical: 6,
   },
   price: {
-    color: '#dc3545',
-    fontWeight: 'bold',
+    color: "#dc3545",
+    fontWeight: "bold",
     fontSize: 14,
   },
   buyButton: {
     marginTop: 8,
-    backgroundColor: '#ff69b4',
+    backgroundColor: "#ff69b4",
     borderRadius: 6,
     paddingVertical: 6,
     paddingHorizontal: 12,
   },
   buyButtonText: {
-    color: '#fff',
+    color: "#fff",
     fontSize: 11,
   },
   sectionTitle: {
     fontSize: 18,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     marginBottom: 14,
-    color: '#20c997',
+    color: "#20c997",
   },
   table: {
-    backgroundColor: '#fff5fb',
+    backgroundColor: "#fff5fb",
     borderRadius: 10,
     borderWidth: 1,
-    borderColor: '#f8d7da',
-    overflow: 'hidden',
+    borderColor: "#f8d7da",
+    overflow: "hidden",
   },
   tableHeader: {
-    backgroundColor: '#fce4ec',
+    backgroundColor: "#fce4ec",
   },
   tableRow: {
-    flexDirection: 'row',
+    flexDirection: "row",
     borderBottomWidth: 0.5,
-    borderColor: '#f3c6cb',
+    borderColor: "#f3c6cb",
     paddingVertical: 12,
-    alignItems: 'center',
+    alignItems: "center",
   },
   labelCell: {
     flex: 1.6,
-    fontWeight: '600',
+    fontWeight: "600",
     paddingHorizontal: 8,
     fontSize: 13,
-    color: '#343a40',
+    color: "#343a40",
   },
   valueCell: {
     flex: 1,
-    textAlign: 'center',
+    textAlign: "center",
     fontSize: 13,
-    color: '#495057',
+    color: "#495057",
   },
   valueCellHeader: {
     flex: 1,
-    textAlign: 'center',
+    textAlign: "center",
     fontSize: 13,
-    fontWeight: 'bold',
-    color: '#d63384',
+    fontWeight: "bold",
+    color: "#d63384",
   },
   backButton: {
     marginTop: 20,
     padding: 10,
-    backgroundColor: '#f0f',
+    backgroundColor: "#f0f",
     borderRadius: 8,
-    alignItems: 'center',
+    alignItems: "center",
   },
   backButtonText: {
-    color: '#fff',
+    color: "#fff",
     fontSize: 16,
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
 });

@@ -1,9 +1,6 @@
 import axios from 'axios';
 
-// export const BASE_URL = "http://172.17.153.219:8000";
-export const BASE_URL = "http://192.168.23.138:8000";
-// export const BASE_URL = "http://172.17.152.63:8000"
-// export const BASE_URL="http://172.17.153.105:8000"
+export const BASE_URL = "https://pricewiseapp.onrender.com";
 
 const api = axios.create({
     baseURL: BASE_URL,
@@ -28,7 +25,6 @@ export const addToFavorites = (productId: number, userId: number, productPlatfor
     user_id: userId,
     product_platform_id: productPlatformId,
   });
-  
 };
 
 // export const removeFromFavorites = (productId: number, userId: number, productPlatformId: number) => {

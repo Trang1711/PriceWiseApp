@@ -166,10 +166,6 @@ const AboutUsScreen = () => {
             <View style={styles.info}>
               <Text style={styles.name}>{member.name}</Text>
               <Text style={styles.role}>{member.role}</Text>
-              {/* <View style={styles.emailRow}>
-                <FontAwesome name="envelope" size={16} color={isDark ? '#ccc' : member.color} style={{ marginRight: 6 }} />
-                <Text style={[styles.email, { color: member.color }]}>{member.email}</Text>
-              </View> */}
             </View>
           </TouchableOpacity>
         </Animatable.View>
@@ -179,10 +175,6 @@ const AboutUsScreen = () => {
         <Modal visible={!!selectedMember} transparent animationType="slide">
             <View style={styles.modalOverlay}>
                 <Animatable.View animation="zoomIn" duration={400} style={styles.modalContent}>
-                {/* <Image
-                    source={selectedMember?.avatar}
-                    style={[styles.modalAvatar, { borderColor: selectedMember?.color }]}
-                /> */}
                 <View style={{ position: 'relative', marginBottom: 16 }}>
                     <RippleEffect color={selectedMember?.color} />
                     <Image

@@ -81,29 +81,6 @@ export default function Explore() {
     }
   }, [minPrice, maxPrice]);
 
-  // useEffect(() => {
-  //   if (!categoryId) return;
-
-  //   setLoading(true);
-
-  //   setSelectedCategory({
-  //     id: String(categoryId),
-  //     label: categoryName || '',
-  //   });
-
-  //   fetch(`${BASE_URL}/products/by-category/${categoryId}`)
-  //     .then((res) => res.json())
-  //     .then((data) => {
-  //       setProducts(data || []);
-  //       setResults([]);
-  //     })
-  //     .catch((err) => {
-  //       console.error("Fetch error:", err);
-  //       setProducts([]);
-  //     })
-  //     .finally(() => setLoading(false));
-  // }, [categoryId, categoryName]);
-
   useEffect(() => {
   if (!categoryId) return;
 
@@ -148,36 +125,6 @@ export default function Explore() {
 
     fetchFavorites();
   }, []);
-
-  // const toggleFavorite = async (productId: number) => {
-  //   const userIdStr = await AsyncStorage.getItem('user_id');
-  //   if (!userIdStr) {
-  //     Alert.alert("Thông báo", "Vui lòng đăng nhập để sử dụng chức năng yêu thích.");
-  //     return;
-  //   }
-
-  //   const userId = parseInt(userIdStr);
-  //   const isFav = favoriteIds.has(productId);
-
-  //   try {
-  //     if (isFav) {
-  //       await removeFromFavorites(productId, userId);
-  //       setFavoriteIds((prev) => {
-  //         const updated = new Set(prev);
-  //         updated.delete(productId);
-  //         return updated;
-  //       });
-  //       Alert.alert("Đã xoá khỏi yêu thích");
-  //     } else {
-  //       await addToFavorites(productId, userId);
-  //       setFavoriteIds((prev) => new Set(prev).add(productId));
-  //       Alert.alert("Đã thêm vào yêu thích");
-  //     }
-  //   } catch (error) {
-  //     console.error("Lỗi khi xử lý yêu thích:", error);
-  //     Alert.alert("Lỗi", "Không thể xử lý yêu thích.");
-  //   }
-  // };
 
   const toggleFavorite = async (productId: number, productPlatformId: number) => {
     const userIdStr = await AsyncStorage.getItem('user_id');
@@ -291,17 +238,6 @@ export default function Explore() {
     platformName?: string
   ) => (
     <View key={`product-${productPlatformId}`} style={styles.card}>
-      {/* <TouchableOpacity
-        onPress={() => toggleFavorite(productId, productPlatformId)}
-        style={styles.heartButton}
-      >
-        <FontAwesome
-          name={favoriteIds.has(productPlatformId) ? 'heart' : 'heart-o'}
-          size={20}
-          color={favoriteIds.has(productPlatformId) ? 'red' : 'gray'}
-        />
-      </TouchableOpacity> */}
-
       <Image source={{ uri: imageUrl }} style={styles.productImage} />
       <Text style={styles.productName}>{name}</Text>
       <Text style={styles.price}>{price.toLocaleString()} đ</Text>
