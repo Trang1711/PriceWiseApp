@@ -761,13 +761,13 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   suggestGrid: {
-    flexDirection: 'row',
+    flexDirection: 'column',
     flexWrap: 'wrap',
     justifyContent: 'center',
-    gap: 10,
+    gap: 18,
   },
   suggestBox: {
-    backgroundColor: 'transparent',
+    backgroundColor: '#f0f0f0',
     paddingVertical: 10,
     paddingHorizontal: 14,
     borderRadius: 8,

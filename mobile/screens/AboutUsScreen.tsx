@@ -111,7 +111,7 @@ const AboutUsScreen = () => {
   const playSound = async () => {
     const sound = new Audio.Sound();
     try {
-      await sound.loadAsync(require('../assets/sounds/happy-cat.mp3'));
+      await sound.loadAsync(require('../assets/sounds/meme-finales.mp3'));
       await sound.playAsync();
     } catch (error) {
       console.error('Lỗi phát âm thanh:', error);
