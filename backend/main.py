@@ -46,4 +46,4 @@ app.include_router(platform.router)
 # Deep link reset password
 @app.get("/open-app/reset-password/{user_id}")
 def open_app_reset(user_id: int):
-    return RedirectResponse(url=f"mobile://reset-password/{user_id}")
+    return RedirectResponse(url=f"pricewise://reset-password/{user_id}")
