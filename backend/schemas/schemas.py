@@ -300,28 +300,6 @@ class ProductPlatformOut(BaseModel):
         orm_mode = True
         from_attributes = True
 
-# ===================== PRODUCT DETAIL WITH PLATFORMS =====================
-# class ProductPlatformInfo(BaseModel):
-#     price: float
-#     discount: Optional[float]
-#     discount_percentage: Optional[float]
-#     rating: Optional[float]
-#     review_count: Optional[int]
-#     product_url: Optional[str]
-#     shipping_fee: Optional[float]
-#     estimated_delivery_time: Optional[str]
-#     is_official: Optional[bool]
-#     platform: PlatformOut
-
-#     class Config:
-#         orm_mode = True
-
-# class ProductInfo(ProductOut):
-#     product_platforms: List[ProductPlatformInfo] = Field(default_factory=list)
-
-#     class Config:
-#         orm_mode = True
-
 class PlatformOut(BaseModel):
     platform_id: int
     name: str

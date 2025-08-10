@@ -1,5 +1,6 @@
-from email.mime.text import MIMEText
 import smtplib
+from email.mime.text import MIMEText
+from email.utils import formataddr
 
 def send_email(to: str, subject: str, body: str):
     smtp_server = "smtp.gmail.com"
@@ -9,7 +10,7 @@ def send_email(to: str, subject: str, body: str):
 
     msg = MIMEText(body, "html", "utf-8")
     msg["Subject"] = subject
-    msg["From"] = smtp_user
+    msg["From"] = formataddr(("PriceWiseApp", smtp_user)) 
     msg["To"] = to
 
     with smtplib.SMTP(smtp_server, smtp_port) as server:
